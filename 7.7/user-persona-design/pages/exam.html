@@ -1,0 +1,390 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Untitled</title>
+    <style id="theme-vars">
+:root {
+  /* === Brand Colors === */
+  --color-primary: #1a1a2e;
+  --color-primary-light: #2d2d44;
+  --color-primary-tint: rgba(26, 26, 46, 0.08);
+  --color-primary-text: #ffffff;
+
+  /* === Neutral Palette === */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f7f7f8;
+  --color-bg-tertiary: #eeeeef;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-border: #e5e5e7;
+  --color-border-subtle: #f0f0f2;
+
+  /* === Text === */
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #6b6b80;
+  --color-text-tertiary: #9d9dae;
+  --color-text-inverse: #ffffff;
+
+  /* === State Colors === */
+  --state-success: #22c55e;
+  --state-warning: #f59e0b;
+  --state-error: #ef4444;
+  --state-info: #3b82f6;
+
+  /* === Radius === */
+  --radius-sm: 2px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* === Shadows (border-first, minimal shadow) === */
+  --shadow-card: 0 0 0 1px var(--color-border-subtle);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 1px var(--color-border);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.06), 0 0 0 1px var(--color-border-subtle);
+
+  /* === Typography === */
+  --font-display: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* === Font Size Scale === */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+
+  /* === Line Height === */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* === Letter Spacing === */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.05em;
+
+  /* === Font Weight === */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* === Spacing === */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* === Layout === */
+  --max-width: 1200px;
+  --content-padding: 2rem;
+}
+
+/* === Typography Classes === */
+.display-4xl {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+.display-3xl {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+.heading-xl {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+}
+
+.heading-lg {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+}
+
+.body-base {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+}
+
+.body-sm {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.body-xs {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-tertiary);
+}
+
+.label-md {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-surface); color: var(--color-text-primary); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main class="max-w-[var(--max-width)] mx-auto px-[var(--content-padding)] py-12 lg:py-16">
+
+        <!-- Section 1: Persona Header -->
+        <section class="mb-12 lg:mb-16">
+            <div class="flex items-start gap-6 lg:gap-8 p-8 lg:p-10 rounded-[var(--radius-lg)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                <div class="shrink-0 w-16 h-16 lg:w-20 lg:h-20 rounded-full flex items-center justify-center text-white text-2xl lg:text-3xl font-bold" style="background: var(--color-primary);">
+                    考
+                </div>
+                <div class="flex-1 min-w-0">
+                    <h1 class="display-3xl truncate mb-2" style="text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;">考试备考者</h1>
+                    <p class="body-sm mb-4 truncate">雅思 / 托福 / 考研复试考生</p>
+                    <blockquote class="body-base pl-4" style="border-left: 3px solid var(--color-primary);">
+                        <p class="italic" style="color: var(--color-text-secondary);">"雅思口语 Part 2 总是卡住，考官追问就不知道怎么回答了。"</p>
+                    </blockquote>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 2: Demographics Row -->
+        <section class="mb-12 lg:mb-16">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <p class="body-xs mb-1 truncate">年龄</p>
+                    <p class="heading-lg truncate">18-28岁</p>
+                </div>
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <p class="body-xs mb-1 truncate">英语水平</p>
+                    <p class="heading-lg truncate">四六级~雅思6.0目标</p>
+                </div>
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <p class="body-xs mb-1 truncate">使用频率</p>
+                    <p class="heading-lg truncate">考前1-3个月密集训练</p>
+                </div>
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <p class="body-xs mb-1 truncate">付费意愿</p>
+                    <p class="heading-lg truncate">中高（专项训练包/冲刺营）</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 3: Two-Column Detail Grid -->
+        <section class="mb-12 lg:mb-16">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <!-- Left: 行为特征 -->
+                <div class="p-6 lg:p-8 rounded-[var(--radius-lg)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <h2 class="heading-xl mb-6 truncate">行为特征</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--color-primary);"></span>
+                            <p class="body-base line-clamp-3">考试目标明确（雅思/托福/考研/四六级），有清晰的分数压力</p>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--color-primary);"></span>
+                            <p class="body-base line-clamp-3">考前1-3个月会集中备考，每天愿意投入30-60分钟</p>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--color-primary);"></span>
+                            <p class="body-base line-clamp-3">通常有培训机构或自学材料，但口语练习环节不足</p>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--color-primary);"></span>
+                            <p class="body-base line-clamp-3">依赖模板但考官追问时容易暴露准备痕迹</p>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--color-primary);"></span>
+                            <p class="body-base line-clamp-3">希望模拟真实考试环境进行计时训练</p>
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- Right: 痛点与需求 -->
+                <div class="p-6 lg:p-8 rounded-[var(--radius-lg)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <h2 class="heading-xl mb-6 truncate">痛点与需求</h2>
+                    <ul class="space-y-4">
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--state-error);"></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="body-base font-semibold mb-0.5 truncate">回答结构弱</p>
+                                <p class="body-sm line-clamp-2">Part 1 能说，Part 2 说不满，Part 3 追问接不住</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--state-error);"></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="body-base font-semibold mb-0.5 truncate">表达模板化</p>
+                                <p class="body-sm line-clamp-2">背诵的答案缺少自然感和个人观点</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--state-error);"></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="body-base font-semibold mb-0.5 truncate">缺少模拟追问</p>
+                                <p class="body-sm line-clamp-2">自己练没有考官追问，实际考试容易慌</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--state-error);"></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="body-base font-semibold mb-0.5 truncate">计时压力</p>
+                                <p class="body-sm line-clamp-2">口语考试有严格时间限制，平时缺少计时训练</p>
+                            </div>
+                        </li>
+                        <li class="flex items-start gap-3">
+                            <span class="shrink-0 w-1.5 h-1.5 rounded-full mt-2" style="background: var(--state-error);"></span>
+                            <div class="flex-1 min-w-0">
+                                <p class="body-base font-semibold mb-0.5 truncate">发音不自信</p>
+                                <p class="body-sm line-clamp-2">不确定自己的发音是否影响评分</p>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 4: 典型使用场景 -->
+        <section class="mb-12 lg:mb-16">
+            <h2 class="display-3xl mb-8" style="text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;">典型使用场景</h2>
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)] flex flex-col" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <div class="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[var(--radius-md)] mb-4" style="background: var(--color-primary-tint);">
+                        <i data-lucide="message-circle" class="w-5 h-5" style="color: var(--color-primary);"></i>
+                    </div>
+                    <p class="heading-lg mb-2 truncate">雅思 Part 1</p>
+                    <p class="body-sm line-clamp-2">日常话题快速回答（爱好、家乡、工作等）</p>
+                </div>
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)] flex flex-col" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <div class="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[var(--radius-md)] mb-4" style="background: var(--color-primary-tint);">
+                        <i data-lucide="mic" class="w-5 h-5" style="color: var(--color-primary);"></i>
+                    </div>
+                    <p class="heading-lg mb-2 truncate">雅思 Part 2</p>
+                    <p class="body-sm line-clamp-2">1分钟准备 + 2分钟独白</p>
+                </div>
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)] flex flex-col" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <div class="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[var(--radius-md)] mb-4" style="background: var(--color-primary-tint);">
+                        <i data-lucide="search" class="w-5 h-5" style="color: var(--color-primary);"></i>
+                    </div>
+                    <p class="heading-lg mb-2 truncate">雅思 Part 3</p>
+                    <p class="body-sm line-clamp-2">考官深度追问，需要展开论证</p>
+                </div>
+                <div class="p-5 lg:p-6 rounded-[var(--radius-md)] flex flex-col" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                    <div class="shrink-0 inline-flex items-center justify-center w-10 h-10 rounded-[var(--radius-md)] mb-4" style="background: var(--color-primary-tint);">
+                        <i data-lucide="graduation-cap" class="w-5 h-5" style="color: var(--color-primary);"></i>
+                    </div>
+                    <p class="heading-lg mb-2 truncate">考研复试</p>
+                    <p class="body-sm line-clamp-2">英文自我介绍 + 专业问题回答</p>
+                </div>
+            </div>
+        </section>
+
+        <!-- Section 5: 对产品的期望 -->
+        <section class="mb-12 lg:mb-16">
+            <h2 class="display-3xl mb-8" style="text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;">对产品的期望</h2>
+            <div class="p-6 lg:p-8 rounded-[var(--radius-lg)]" style="box-shadow: var(--shadow-card); background: var(--color-surface);">
+                <ul class="space-y-4">
+                    <li class="flex items-start gap-4">
+                        <span class="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-[var(--radius-sm)] mt-0.5" style="background: var(--color-primary);">
+                            <i data-lucide="check" class="w-3.5 h-3.5" style="color: var(--color-primary-text);"></i>
+                        </span>
+                        <p class="body-base">模拟真实考试流程，有计时和追问</p>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-[var(--radius-sm)] mt-0.5" style="background: var(--color-primary);">
+                            <i data-lucide="check" class="w-3.5 h-3.5" style="color: var(--color-primary-text);"></i>
+                        </span>
+                        <p class="body-base">告诉我我的回答能得几分，哪里扣分了</p>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-[var(--radius-sm)] mt-0.5" style="background: var(--color-primary);">
+                            <i data-lucide="check" class="w-3.5 h-3.5" style="color: var(--color-primary-text);"></i>
+                        </span>
+                        <p class="body-base">给我高分表达替换模板化的句子</p>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-[var(--radius-sm)] mt-0.5" style="background: var(--color-primary);">
+                            <i data-lucide="check" class="w-3.5 h-3.5" style="color: var(--color-primary-text);"></i>
+                        </span>
+                        <p class="body-base">让我反复练同一话题，看到进步</p>
+                    </li>
+                    <li class="flex items-start gap-4">
+                        <span class="shrink-0 inline-flex items-center justify-center w-6 h-6 rounded-[var(--radius-sm)] mt-0.5" style="background: var(--color-primary);">
+                            <i data-lucide="check" class="w-3.5 h-3.5" style="color: var(--color-primary-text);"></i>
+                        </span>
+                        <p class="body-base">考前冲刺期能高频率使用</p>
+                    </li>
+                </ul>
+            </div>
+        </section>
+
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

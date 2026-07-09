@@ -1,0 +1,231 @@
+{
+  "main": {
+    "id": "0ed6b98918e2a3a2",
+    "type": "split",
+    "children": [
+      {
+        "id": "20c7d259575a72c2",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "125c260ec3bee907",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "openspec/project.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "project"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "7853cf80df0fc4cc",
+    "type": "split",
+    "children": [
+      {
+        "id": "28982ca2cc9af55f",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "1d0503eecf016856",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "9fbb84abfebe178b",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "1aa7e3133a81a465",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 263.5
+  },
+  "right": {
+    "id": "41031833729a35c5",
+    "type": "split",
+    "children": [
+      {
+        "id": "c65c0c42f422acdf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "c1e09ae0d7b53c1e",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "7.7/产品图谱.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "产品图谱 的反向链接列表"
+            }
+          },
+          {
+            "id": "f772a3f12e4cac3e",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "7.7/产品图谱.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "产品图谱 的出链列表"
+            }
+          },
+          {
+            "id": "cef0dad9af2f408a",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "077c2627904d7eec",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "9a9ed8295f0e3e23",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "7.7/产品图谱.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "产品图谱 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false,
+      "workspaces:管理工作区布局": false
+    }
+  },
+  "active": "125c260ec3bee907",
+  "lastOpenFiles": [
+    "7.9/realtime-voice-demo/dist/index.html",
+    "7.9/realtime-voice-demo/dist/assets/index-2mho1VBx.js",
+    "7.9/realtime-voice-demo/dist/assets/index-O-6zWvb9.css",
+    "7.9/realtime-voice-demo/dist/assets",
+    "7.9/realtime-voice-demo/tsconfig.tsbuildinfo",
+    "7.9/realtime-voice-demo/dist/server/shared/types.js",
+    "7.9/realtime-voice-demo/dist/server/shared/constants.js",
+    "7.9/realtime-voice-demo/dist/server/server/server.js",
+    "7.9/realtime-voice-demo/dist/server/server/realtimeSession.js",
+    "7.9/realtime-voice-demo/dist/server/server/qwenProvider.js",
+    "7.9/realtime-voice-demo/dist/server/server/config.js",
+    "7.9/realtime-voice-demo/node_modules/rxjs/README.md",
+    "7.9/realtime-voice-demo/node_modules/rxjs/CODE_OF_CONDUCT.md",
+    "7.9/realtime-voice-demo/node_modules/rxjs/CHANGELOG.md",
+    "7.9/realtime-voice-demo/node_modules/caniuse-lite/README.md",
+    "7.9/realtime-voice-demo/node_modules/typescript/SECURITY.md",
+    "7.9/realtime-voice-demo/node_modules/typescript/README.md",
+    "7.9/realtime-voice-demo/node_modules/vite/node_modules/@esbuild/darwin-x64/README.md",
+    "7.9/realtime-voice-demo/node_modules/react-dom/README.md",
+    "7.9/realtime-voice-demo/node_modules/vite/README.md",
+    "7.9/realtime-voice-demo/node_modules/vite/LICENSE.md",
+    "7.9/realtime-voice-demo/node_modules/concurrently/README.md",
+    "7.9/realtime-voice-demo/node_modules/vite/node_modules/esbuild/README.md",
+    "7.9/realtime-voice-demo/node_modules/vite/node_modules/esbuild/LICENSE.md",
+    "7.9/realtime-voice-demo/node_modules/express/node_modules/debug/CHANGELOG.md",
+    "7.9/realtime-voice-demo/node_modules/@types/serve-static/node_modules/@types/send/README.md",
+    "7.9/realtime-voice-demo/node_modules/express/node_modules/debug/README.md",
+    "7.9/realtime-voice-demo/node_modules/body-parser/node_modules/debug/CHANGELOG.md",
+    "7.9/realtime-voice-demo/node_modules/chalk/node_modules/supports-color/readme.md",
+    "7.9/realtime-voice-demo/node_modules/body-parser/node_modules/debug/README.md",
+    "7.9/realtime-voice-demo/node_modules/express/node_modules/ms/readme.md",
+    "7.9/realtime-voice-demo/node_modules/react/README.md",
+    "7.9/realtime-voice-demo/node_modules/express/node_modules/ms/license.md",
+    "7.9/realtime-voice-demo/node_modules/express/Readme.md",
+    "7.9/realtime-voice-demo/node_modules/express/History.md",
+    "7.9/realtime-voice-demo/node_modules/@vitejs/plugin-react/README.md",
+    "7.9/realtime-voice-demo/node_modules/concurrently/docs/demo.gif",
+    "7.8/个人主页原型图.png",
+    "7.8/个人主页原型图.svg",
+    "7.8/个人主页客户端原型图.svg",
+    "7.8/个人主页客户端原型图.png"
+  ]
+}

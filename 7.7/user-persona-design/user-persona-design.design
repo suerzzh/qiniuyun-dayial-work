@@ -1,0 +1,77 @@
+{
+  "data": [
+    {
+      "id": "page-overview",
+      "title": "用户画像总览",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1751856000000,
+      "canvasData": {
+        "x": 0,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/overview.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "page-workplace",
+      "title": "职场人画像",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1751856000000,
+      "canvasData": {
+        "x": 620,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/workplace.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "page-exam",
+      "title": "考试备考画像",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1751856000000,
+      "canvasData": {
+        "x": 1368,
+        "y": -12,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/exam.html",
+        "interactions": []
+      }
+    },
+    {
+      "id": "page-study-abroad",
+      "title": "留学生画像",
+      "type": "page",
+      "version": 1,
+      "createdAt": 1751856000000,
+      "canvasData": {
+        "x": 1860,
+        "y": 0,
+        "group": 0
+      },
+      "devMetadata": {
+        "htmlSrc": "pages/study-abroad.html",
+        "interactions": []
+      }
+    }
+  ],
+  "config": {
+    "autoLayout": false,
+    "deviceType": "desktop",
+    "projectName": "AI英语口语陪练 · 用户画像",
+    "windowSize": {
+      "width": 800,
+      "height": 600
+    }
+  }
+}

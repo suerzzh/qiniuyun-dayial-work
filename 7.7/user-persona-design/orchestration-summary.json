@@ -1,0 +1,124 @@
+{
+  "project": {
+    "name": "AI英语口语陪练 · 用户画像",
+    "path": "/Users/mac/Desktop/七牛云/7.7/user-persona-design",
+    "operation": "create",
+    "deviceType": "desktop",
+    "language": "zh-CN",
+    "dashboardMode": false,
+    "styleDefinitionBrief": "极简商务风：黑白灰主色调，大量留白，数据感强，偏咨询报告风格，适合呈现用户研究文档",
+    "designRead": "User persona document / product team / minimal corporate / medium density / avoid colorful playful elements",
+    "designDials": {
+      "layoutVariance": 2,
+      "motionIntensity": 1,
+      "visualDensity": 3
+    },
+    "styleContinuityAnchors": {
+      "colorSystem": {
+        "primaryColorRole": "dark navy #1a1a2e used for headers, key text, and primary buttons",
+        "brandHuePolicy": "single dark primary; no secondary/accent hue; all hierarchy via neutral tints",
+        "stateColors": "semantic success/warning/error/info only"
+      },
+      "shapeSystem": "restrained radius: sm 2px, md 8px, lg 12px, max 12px",
+      "typographySystem": "Inter + Noto Sans SC dual stack; display same as body; tight tracking for headings",
+      "spacingSystem": "8px base grid; generous section padding 48-96px for breathing room",
+      "componentLanguage": "border-first cards with 1px subtle border; no visible shadow on static surfaces",
+      "surfaceAndDepth": "border-led depth; shadow only on hover/elevated layers; alpha max 0.05",
+      "imageryAndIconography": "minimal imagery; icon-based decorative elements; data visualization preferred",
+      "interactionTone": "subtle hover transitions; no animation spectacle"
+    },
+    "sharedProjectShellContract": {
+      "navigationShell": "none (single-page sections within each page, no shared nav across pages)",
+      "primaryColorSystem": "dark navy #1a1a2e",
+      "typographySystem": "Inter + Noto Sans SC, tight heading tracking, comfortable body leading",
+      "radiusScale": "sm 2px, md 8px, lg 12px, max 12px",
+      "surfaceDepthModel": "1px border cards; no shadow on static",
+      "ctaStyle": "not applicable (document, not product)",
+      "alignmentRules": "centered content column max-w 1200px with generous horizontal padding"
+    }
+  },
+  "designSource": {
+    "operatingMode": "free-explore",
+    "cssFilePath": "/Users/mac/Desktop/七牛云/7.7/user-persona-design/colors_and_type.css",
+    "brandPrefix": "",
+    "themeMode": "light",
+    "designDecisionSummary": "极简商务风：黑白灰主色调，大量留白，数据感强，适合用户研究文档呈现",
+    "styleConstraints": {
+      "radiusMax": 12,
+      "spacingBase": 8,
+      "fontSizeBody": 16,
+      "fontSizeMin": 12,
+      "controlHeightDefault": 32,
+      "controlHeightLarge": 38
+    }
+  },
+  "pages": [
+    {
+      "nodeId": "page-overview",
+      "slug": "overview",
+      "title": "用户画像总览",
+      "htmlSrc": "pages/overview.html",
+      "pageIndex": 1,
+      "pageType": "information-dense",
+      "businessScenario": "用户画像总览页，展示四类核心用户群的概览信息和对比",
+      "visualNorthStar": "简洁大气的文档首页，标题区加粗突出，下方以四列卡片呈现四类用户群",
+      "compositionPattern": "Title block + 4-column persona summary cards",
+      "continuityAnchors": ["dark navy headings", "border-first cards", "Inter+Noto Sans SC type system"],
+      "componentPlan": [],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "qualityRisks": []
+    },
+    {
+      "nodeId": "page-workplace",
+      "slug": "workplace",
+      "title": "职场人画像",
+      "htmlSrc": "pages/workplace.html",
+      "pageIndex": 2,
+      "pageType": "information-dense",
+      "businessScenario": "外企/跨境/互联网职场人的详细用户画像，包含基本信息、行为特征、痛点和需求",
+      "visualNorthStar": "咨询报告风格的详细画像卡片，左侧人物信息面板，右侧结构化的行为/痛点/需求模块",
+      "compositionPattern": "Persona header card + dual-column detail grid",
+      "continuityAnchors": ["dark navy headings", "border-first cards", "Inter+Noto Sans SC type system"],
+      "componentPlan": [],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "qualityRisks": []
+    },
+    {
+      "nodeId": "page-exam",
+      "slug": "exam",
+      "title": "考试备考画像",
+      "htmlSrc": "pages/exam.html",
+      "pageIndex": 3,
+      "pageType": "information-dense",
+      "businessScenario": "雅思/托福/考研等口语考试备考用户的详细画像",
+      "visualNorthStar": "与职场画像保持一致的报告风格，突出考试场景和备考周期特征",
+      "compositionPattern": "Persona header card + dual-column detail grid",
+      "continuityAnchors": ["dark navy headings", "border-first cards", "Inter+Noto Sans SC type system"],
+      "componentPlan": [],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "qualityRisks": []
+    },
+    {
+      "nodeId": "page-study-abroad",
+      "slug": "study-abroad",
+      "title": "留学生画像",
+      "htmlSrc": "pages/study-abroad.html",
+      "pageIndex": 4,
+      "pageType": "information-dense",
+      "businessScenario": "准备留学或正在留学的用户详细画像",
+      "visualNorthStar": "与职场画像保持一致的报告风格，突出海外场景和社交焦虑特征",
+      "compositionPattern": "Persona header card + dual-column detail grid",
+      "continuityAnchors": ["dark navy headings", "border-first cards", "Inter+Noto Sans SC type system"],
+      "componentPlan": [],
+      "imagePlan": [],
+      "chartsRequired": false,
+      "qualityRisks": []
+    }
+  ],
+  "assets": [],
+  "wiringPlan": [],
+  "hiddenInteractionPlan": []
+}

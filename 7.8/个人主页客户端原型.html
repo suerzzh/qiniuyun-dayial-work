@@ -1,0 +1,688 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 英语口语陪练 - 个人主页客户端原型</title>
+  <style>
+    :root {
+      --ink: #171821;
+      --text: #252936;
+      --muted: #717784;
+      --line: #dfe4ec;
+      --soft-line: #edf0f5;
+      --bg: #eef1f5;
+      --panel: #ffffff;
+      --panel-soft: #f8fafc;
+      --accent: #226f68;
+      --accent-soft: #e8f5f2;
+      --gold: #a96822;
+      --gold-soft: #fff3df;
+      --blue: #2f5f9f;
+      --blue-soft: #eef5ff;
+      --red: #a44747;
+      --red-soft: #fff1f1;
+      --radius: 18px;
+      --shadow: 0 28px 70px rgba(16, 24, 40, 0.14);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      min-height: 100vh;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+      display: grid;
+      place-items: center;
+      padding: 32px;
+    }
+
+    .stage {
+      width: 1080px;
+      min-height: 1440px;
+      background: #f4f6f8;
+      border: 1px solid #d8dde6;
+      border-radius: 24px;
+      display: grid;
+      grid-template-columns: 1fr 430px 1fr;
+      gap: 34px;
+      align-items: center;
+      padding: 52px;
+    }
+
+    .note {
+      align-self: start;
+      padding-top: 54px;
+    }
+
+    .note h1 {
+      margin: 0 0 14px;
+      color: var(--ink);
+      font-size: 34px;
+      line-height: 1.15;
+      font-weight: 820;
+    }
+
+    .note p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 16px;
+      line-height: 1.7;
+    }
+
+    .legend {
+      margin-top: 28px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .legend-item {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 12px;
+      padding: 13px 14px;
+    }
+
+    .legend-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 14px;
+      margin-bottom: 4px;
+    }
+
+    .legend-item span {
+      display: block;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .phone-shell {
+      width: 430px;
+      height: 932px;
+      border-radius: 52px;
+      background: #101217;
+      padding: 12px;
+      box-shadow: var(--shadow);
+    }
+
+    .phone {
+      width: 100%;
+      height: 100%;
+      border-radius: 42px;
+      background: #f6f7f9;
+      overflow: hidden;
+      position: relative;
+      border: 1px solid rgba(255, 255, 255, 0.18);
+    }
+
+    .status-bar {
+      height: 34px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 22px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .status-icons {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+
+    .pill {
+      width: 70px;
+      height: 22px;
+      border-radius: 99px;
+      background: #101217;
+      position: absolute;
+      left: 50%;
+      top: 8px;
+      transform: translateX(-50%);
+    }
+
+    .app {
+      height: calc(100% - 34px);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .content {
+      flex: 1;
+      overflow: hidden;
+      padding: 14px 18px 88px;
+    }
+
+    .top {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .top-title {
+      display: grid;
+      gap: 4px;
+    }
+
+    .top-title span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 620;
+    }
+
+    .top-title h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 24px;
+      line-height: 1.1;
+      font-weight: 830;
+    }
+
+    .icon-button {
+      width: 38px;
+      height: 38px;
+      border: 1px solid var(--line);
+      border-radius: 13px;
+      background: #fff;
+      display: grid;
+      place-items: center;
+      color: var(--ink);
+      font-size: 18px;
+    }
+
+    .profile-card {
+      background: var(--ink);
+      color: #fff;
+      border-radius: 24px;
+      padding: 18px;
+      display: grid;
+      gap: 16px;
+      margin-bottom: 14px;
+    }
+
+    .profile-main {
+      display: grid;
+      grid-template-columns: 58px 1fr auto;
+      gap: 12px;
+      align-items: center;
+    }
+
+    .avatar {
+      width: 58px;
+      height: 58px;
+      border-radius: 20px;
+      background: #fff;
+      color: var(--ink);
+      display: grid;
+      place-items: center;
+      font-weight: 850;
+      font-size: 20px;
+    }
+
+    .profile-main h3 {
+      margin: 0 0 5px;
+      font-size: 18px;
+      font-weight: 800;
+      line-height: 1.1;
+    }
+
+    .profile-main p {
+      margin: 0;
+      color: rgba(255, 255, 255, 0.72);
+      font-size: 12px;
+      line-height: 1.35;
+    }
+
+    .member-badge {
+      min-width: 62px;
+      min-height: 28px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.18);
+      display: grid;
+      place-items: center;
+      color: #fff;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .progress-wrap {
+      display: grid;
+      gap: 8px;
+    }
+
+    .progress-text {
+      display: flex;
+      justify-content: space-between;
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .progress-bar {
+      height: 8px;
+      border-radius: 99px;
+      background: rgba(255, 255, 255, 0.14);
+      overflow: hidden;
+    }
+
+    .progress-bar span {
+      display: block;
+      width: 62%;
+      height: 100%;
+      border-radius: 99px;
+      background: #64c6b7;
+    }
+
+    .stats {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 9px;
+      margin-bottom: 14px;
+    }
+
+    .stat {
+      background: #fff;
+      border: 1px solid var(--soft-line);
+      border-radius: 17px;
+      padding: 12px 10px;
+    }
+
+    .stat strong {
+      display: block;
+      color: var(--ink);
+      font-size: 20px;
+      line-height: 1;
+      margin-bottom: 6px;
+    }
+
+    .stat span {
+      color: var(--muted);
+      font-size: 11px;
+      white-space: nowrap;
+    }
+
+    .section-head {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin: 16px 2px 9px;
+    }
+
+    .section-head h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 16px;
+      font-weight: 810;
+    }
+
+    .section-head span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 660;
+    }
+
+    .quick-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 8px;
+    }
+
+    .quick {
+      min-height: 76px;
+      border: 1px solid var(--soft-line);
+      background: #fff;
+      border-radius: 17px;
+      padding: 10px 6px;
+      display: grid;
+      justify-items: center;
+      align-content: center;
+      gap: 7px;
+      text-align: center;
+    }
+
+    .quick .q-icon {
+      width: 31px;
+      height: 31px;
+      border-radius: 12px;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .quick span {
+      color: var(--text);
+      font-size: 11px;
+      font-weight: 720;
+      line-height: 1.15;
+    }
+
+    .green {
+      background: var(--accent-soft);
+      color: var(--accent);
+    }
+
+    .blue {
+      background: var(--blue-soft);
+      color: var(--blue);
+    }
+
+    .gold {
+      background: var(--gold-soft);
+      color: var(--gold);
+    }
+
+    .red {
+      background: var(--red-soft);
+      color: var(--red);
+    }
+
+    .promo {
+      border: 1px solid #ded5c2;
+      background: #fffaf0;
+      border-radius: 20px;
+      padding: 14px;
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 10px;
+      align-items: center;
+      margin-top: 10px;
+    }
+
+    .promo strong {
+      color: var(--ink);
+      font-size: 14px;
+      display: block;
+      margin-bottom: 5px;
+    }
+
+    .promo span {
+      color: #7a5b31;
+      font-size: 12px;
+      line-height: 1.4;
+    }
+
+    .promo-button {
+      border: 0;
+      border-radius: 12px;
+      background: var(--ink);
+      color: #fff;
+      min-height: 34px;
+      padding: 0 12px;
+      font-size: 12px;
+      font-weight: 760;
+    }
+
+    .records {
+      display: grid;
+      gap: 8px;
+    }
+
+    .record {
+      border: 1px solid var(--soft-line);
+      background: #fff;
+      border-radius: 18px;
+      padding: 12px;
+      display: grid;
+      grid-template-columns: 42px 1fr auto;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .record-icon {
+      width: 42px;
+      height: 42px;
+      border-radius: 15px;
+      display: grid;
+      place-items: center;
+      font-size: 15px;
+      font-weight: 800;
+    }
+
+    .record h4 {
+      margin: 0 0 5px;
+      color: var(--ink);
+      font-size: 13px;
+      font-weight: 780;
+      line-height: 1.2;
+    }
+
+    .record p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 11px;
+      line-height: 1.35;
+    }
+
+    .tag {
+      min-width: 46px;
+      min-height: 26px;
+      border-radius: 99px;
+      background: var(--panel-soft);
+      border: 1px solid var(--soft-line);
+      display: grid;
+      place-items: center;
+      color: var(--muted);
+      font-size: 11px;
+      font-weight: 700;
+    }
+
+    .bottom-nav {
+      position: absolute;
+      left: 14px;
+      right: 14px;
+      bottom: 12px;
+      height: 66px;
+      border: 1px solid var(--line);
+      background: rgba(255, 255, 255, 0.94);
+      border-radius: 24px;
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      align-items: center;
+      box-shadow: 0 18px 36px rgba(16, 24, 40, 0.12);
+    }
+
+    .tab {
+      display: grid;
+      justify-items: center;
+      gap: 4px;
+      color: var(--muted);
+      font-size: 10px;
+      font-weight: 720;
+    }
+
+    .tab .tab-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 9px;
+      display: grid;
+      place-items: center;
+      font-size: 13px;
+      color: inherit;
+    }
+
+    .tab.active {
+      color: var(--accent);
+    }
+
+    .tab.active .tab-icon {
+      background: var(--accent-soft);
+    }
+  </style>
+</head>
+<body>
+  <main class="stage">
+    <aside class="note">
+      <h1>个人主页<br>客户端原型</h1>
+      <p>将原桌面仪表盘改为 App 客户端的信息层级：先给用户“我练了什么、下一步去哪练”的即时感，再承接反馈、历史场景和高级训练。</p>
+      <div class="legend">
+        <div class="legend-item">
+          <strong>轻量沉淀</strong>
+          <span>用三组数据和最近记录表达进度，不做复杂能力看板。</span>
+        </div>
+        <div class="legend-item">
+          <strong>复练导向</strong>
+          <span>历史场景、反馈记录和错题本都能回到练习流程。</span>
+        </div>
+        <div class="legend-item">
+          <strong>商业化承接</strong>
+          <span>高级场景入口保持克制，作为明确目标用户的下一步。</span>
+        </div>
+      </div>
+    </aside>
+
+    <section class="phone-shell" aria-label="移动端个人主页原型">
+      <div class="phone">
+        <div class="pill" aria-hidden="true"></div>
+        <div class="status-bar">
+          <span>9:41</span>
+          <div class="status-icons"><span>5G</span><span>▰</span></div>
+        </div>
+        <div class="app">
+          <div class="content">
+            <header class="top">
+              <div class="top-title">
+                <span>Profile</span>
+                <h2>我的学习</h2>
+              </div>
+              <button class="icon-button" aria-label="设置">⚙</button>
+            </header>
+
+            <section class="profile-card">
+              <div class="profile-main">
+                <div class="avatar">M</div>
+                <div>
+                  <h3>Mia Chen</h3>
+                  <p>目标：外企面试 + 日常开口<br>当前等级：B1 练习中</p>
+                </div>
+                <div class="member-badge">基础版</div>
+              </div>
+              <div class="progress-wrap">
+                <div class="progress-text">
+                  <span>本周开口目标</span>
+                  <span>62%</span>
+                </div>
+                <div class="progress-bar"><span></span></div>
+              </div>
+            </section>
+
+            <section class="stats" aria-label="学习概况">
+              <div class="stat">
+                <strong>18</strong>
+                <span>累计练习</span>
+              </div>
+              <div class="stat">
+                <strong>246</strong>
+                <span>开口分钟</span>
+              </div>
+              <div class="stat">
+                <strong>7</strong>
+                <span>连续天数</span>
+              </div>
+            </section>
+
+            <div class="section-head">
+              <h3>常用入口</h3>
+              <span>全部</span>
+            </div>
+            <section class="quick-grid" aria-label="个人主页快捷入口">
+              <div class="quick">
+                <div class="q-icon green">▶</div>
+                <span>继续复练</span>
+              </div>
+              <div class="quick">
+                <div class="q-icon blue">✓</div>
+                <span>反馈记录</span>
+              </div>
+              <div class="quick">
+                <div class="q-icon gold">☆</div>
+                <span>历史场景</span>
+              </div>
+              <div class="quick">
+                <div class="q-icon red">⚙</div>
+                <span>语音设置</span>
+              </div>
+            </section>
+
+            <section class="promo">
+              <div>
+                <strong>高级场景训练</strong>
+                <span>IELTS 口语、英文面试、职场汇报专项。</span>
+              </div>
+              <button class="promo-button">查看</button>
+            </section>
+
+            <div class="section-head">
+              <h3>最近练习</h3>
+              <span>查看记录</span>
+            </div>
+            <section class="records" aria-label="最近练习">
+              <article class="record">
+                <div class="record-icon green">F</div>
+                <div>
+                  <h4>自由聊天：周末计划</h4>
+                  <p>今天 12 分钟 · 低压力连续对话</p>
+                </div>
+                <div class="tag">回看</div>
+              </article>
+              <article class="record">
+                <div class="record-icon blue">S</div>
+                <div>
+                  <h4>外企面试自我介绍</h4>
+                  <p>昨天 · 已生成反馈 · 可复练</p>
+                </div>
+                <div class="tag">复练</div>
+              </article>
+              <article class="record">
+                <div class="record-icon gold">I</div>
+                <div>
+                  <h4>IELTS Part 2 旅行经历</h4>
+                  <p>专业场景 · 分项建议 3 条</p>
+                </div>
+                <div class="tag">继续</div>
+              </article>
+            </section>
+          </div>
+
+          <nav class="bottom-nav" aria-label="底部导航">
+            <div class="tab"><div class="tab-icon">⌂</div><span>首页</span></div>
+            <div class="tab"><div class="tab-icon">◌</div><span>场景</span></div>
+            <div class="tab"><div class="tab-icon">●</div><span>聊天</span></div>
+            <div class="tab active"><div class="tab-icon">◉</div><span>我的</span></div>
+          </nav>
+        </div>
+      </div>
+    </section>
+
+    <aside class="note">
+      <h1>页面重点</h1>
+      <p>客户端首页不追求一屏塞满所有数据，而是让用户在手机上快速完成“看进度、找记录、去复练、进专项”的动作。</p>
+      <div class="legend">
+        <div class="legend-item">
+          <strong>顶部个人卡</strong>
+          <span>承接账号、目标、等级和本周开口目标。</span>
+        </div>
+        <div class="legend-item">
+          <strong>快捷入口</strong>
+          <span>把反馈、历史场景、语音设置放在拇指可达区域。</span>
+        </div>
+        <div class="legend-item">
+          <strong>最近练习</strong>
+          <span>区分自由聊天、普通场景和专业训练，延续验收边界。</span>
+        </div>
+      </div>
+    </aside>
+  </main>
+</body>
+</html>

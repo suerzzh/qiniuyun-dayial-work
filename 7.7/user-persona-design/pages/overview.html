@@ -1,0 +1,351 @@
+<!DOCTYPE html>
+<html lang="zh-CN" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>用户画像总览</title>
+    <style id="theme-vars">
+:root {
+  /* === Brand Colors === */
+  --color-primary: #1a1a2e;
+  --color-primary-light: #2d2d44;
+  --color-primary-tint: rgba(26, 26, 46, 0.08);
+  --color-primary-text: #ffffff;
+
+  /* === Neutral Palette === */
+  --color-bg: #ffffff;
+  --color-bg-secondary: #f7f7f8;
+  --color-bg-tertiary: #eeeeef;
+  --color-surface: #ffffff;
+  --color-surface-elevated: #ffffff;
+  --color-border: #e5e5e7;
+  --color-border-subtle: #f0f0f2;
+
+  /* === Text === */
+  --color-text-primary: #1a1a2e;
+  --color-text-secondary: #6b6b80;
+  --color-text-tertiary: #9d9dae;
+  --color-text-inverse: #ffffff;
+
+  /* === State Colors === */
+  --state-success: #22c55e;
+  --state-warning: #f59e0b;
+  --state-error: #ef4444;
+  --state-info: #3b82f6;
+
+  /* === Radius === */
+  --radius-sm: 2px;
+  --radius-md: 8px;
+  --radius-lg: 12px;
+  --radius-full: 9999px;
+
+  /* === Shadows (border-first, minimal shadow) === */
+  --shadow-card: 0 0 0 1px var(--color-border-subtle);
+  --shadow-card-hover: 0 2px 8px rgba(0, 0, 0, 0.04), 0 0 0 1px var(--color-border);
+  --shadow-elevated: 0 4px 16px rgba(0, 0, 0, 0.06), 0 0 0 1px var(--color-border-subtle);
+
+  /* === Typography === */
+  --font-display: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-body: 'Inter', 'Noto Sans SC', -apple-system, BlinkMacSystemFont, sans-serif;
+  --font-mono: 'SF Mono', 'Fira Code', 'Consolas', monospace;
+
+  /* === Font Size Scale === */
+  --text-xs: 0.75rem;
+  --text-sm: 0.875rem;
+  --text-base: 1rem;
+  --text-lg: 1.125rem;
+  --text-xl: 1.25rem;
+  --text-2xl: 1.5rem;
+  --text-3xl: 2rem;
+  --text-4xl: 2.5rem;
+
+  /* === Line Height === */
+  --leading-tight: 1.25;
+  --leading-snug: 1.375;
+  --leading-normal: 1.5;
+  --leading-relaxed: 1.625;
+
+  /* === Letter Spacing === */
+  --tracking-tight: -0.02em;
+  --tracking-normal: 0em;
+  --tracking-wide: 0.05em;
+
+  /* === Font Weight === */
+  --weight-normal: 400;
+  --weight-medium: 500;
+  --weight-semibold: 600;
+  --weight-bold: 700;
+
+  /* === Spacing === */
+  --space-1: 0.25rem;
+  --space-2: 0.5rem;
+  --space-3: 0.75rem;
+  --space-4: 1rem;
+  --space-5: 1.25rem;
+  --space-6: 1.5rem;
+  --space-8: 2rem;
+  --space-10: 2.5rem;
+  --space-12: 3rem;
+  --space-16: 4rem;
+  --space-20: 5rem;
+  --space-24: 6rem;
+
+  /* === Layout === */
+  --max-width: 1200px;
+  --content-padding: 2rem;
+}
+
+/* === Typography Classes === */
+.display-4xl {
+  font-family: var(--font-display);
+  font-size: var(--text-4xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+.display-3xl {
+  font-family: var(--font-display);
+  font-size: var(--text-3xl);
+  font-weight: var(--weight-bold);
+  line-height: var(--leading-tight);
+  letter-spacing: var(--tracking-tight);
+  color: var(--color-text-primary);
+}
+
+.heading-xl {
+  font-family: var(--font-display);
+  font-size: var(--text-xl);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+}
+
+.heading-lg {
+  font-family: var(--font-display);
+  font-size: var(--text-lg);
+  font-weight: var(--weight-semibold);
+  line-height: var(--leading-snug);
+  color: var(--color-text-primary);
+}
+
+.body-base {
+  font-family: var(--font-body);
+  font-size: var(--text-base);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-primary);
+}
+
+.body-sm {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+}
+
+.body-xs {
+  font-family: var(--font-body);
+  font-size: var(--text-xs);
+  font-weight: var(--weight-normal);
+  line-height: var(--leading-normal);
+  color: var(--color-text-tertiary);
+}
+
+.label-md {
+  font-family: var(--font-body);
+  font-size: var(--text-sm);
+  font-weight: var(--weight-medium);
+  line-height: var(--leading-normal);
+  color: var(--color-text-secondary);
+  letter-spacing: var(--tracking-wide);
+  text-transform: uppercase;
+}
+
+    </style>
+    <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4.3.1/dist/index.global.js"></script>
+    <script src="https://unpkg.com/lucide@1.8.0/dist/umd/lucide.min.js"></script>
+    <style type="text/tailwindcss">
+  @theme inline {
+    --color-primary: var(--color-primary);
+    --color-border: var(--color-border);
+  }
+  @layer base {
+    body { background: var(--color-surface); color: var(--color-text-primary); }
+    td, th { @apply break-words; word-break: break-all; word-break: auto-phrase; }
+    th { @apply whitespace-nowrap; }
+  }
+    </style>
+    <style>
+      .no-scrollbar::-webkit-scrollbar { display: none; }
+      .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      [data-icon] {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        -webkit-mask-size: contain;
+        mask-size: contain;
+        -webkit-mask-repeat: no-repeat;
+        mask-repeat: no-repeat;
+        -webkit-mask-position: center;
+        mask-position: center;
+        background-color: currentColor;
+      }
+    </style>
+</head>
+<body class="min-h-screen font-sans antialiased">
+    <main>
+      <div class="mx-auto" style="max-width: var(--max-width); padding: var(--space-16) var(--content-padding) var(--space-24);">
+
+        <!-- Title Section -->
+        <section class="mb-16">
+          <p class="body-sm mb-4" style="color: var(--color-text-tertiary); letter-spacing: var(--tracking-wide);">AI英语口语陪练 · 产品研究</p>
+          <h1 class="display-3xl mb-6" style="text-wrap: balance; word-break: keep-all; overflow-wrap: break-word;">用户画像总览</h1>
+          <p class="body-base" style="max-width: 680px; color: var(--color-text-secondary); line-height: var(--leading-relaxed);">基于产品调研、竞品分析和用户访谈，我们识别出四类核心目标用户群体</p>
+        </section>
+
+        <!-- Core Insight Bar -->
+        <section class="mb-16" style="border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg); padding: var(--space-6) var(--space-8); background: var(--color-bg-secondary);">
+          <div class="flex items-start gap-3">
+            <i data-lucide="target" style="width: 20px; height: 20px; color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 2px;"></i>
+            <p class="body-sm" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">
+              <span class="heading-lg" style="color: var(--color-text-primary); margin-right: var(--space-2);">核心用户画像</span>
+              18–35岁中国成人英语学习者，具备一定英语基础，但口语输出能力不足，尤其在真实场景中存在开口恐惧
+            </p>
+          </div>
+        </section>
+
+        <!-- Four Persona Summary Cards -->
+        <section class="mb-16">
+          <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+
+            <!-- Card 1: 职场冲刺者 -->
+            <div style="border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg); padding: var(--space-8); background: var(--color-surface);">
+              <div class="flex items-center gap-4 mb-5">
+                <div class="flex items-center justify-center shrink-0" style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--color-primary-tint);">
+                  <span class="heading-xl" style="color: var(--color-primary);">职</span>
+                </div>
+                <div>
+                  <h2 class="heading-xl mb-1">职场冲刺者</h2>
+                  <p class="body-xs" style="letter-spacing: var(--tracking-wide);">THE WORKPLACE STRIVER</p>
+                </div>
+              </div>
+              <p class="body-sm mb-6" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">外企/跨境/互联网职场人，需要英文面试、会议发言、项目汇报</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">22-35岁</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">职场英语</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">面试准备</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">会议发言</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-primary); border: 1px solid var(--color-primary-tint); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); background: var(--color-primary-tint);">表达不自然</span>
+              </div>
+            </div>
+
+            <!-- Card 2: 考试备考者 -->
+            <div style="border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg); padding: var(--space-8); background: var(--color-surface);">
+              <div class="flex items-center gap-4 mb-5">
+                <div class="flex items-center justify-center shrink-0" style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--color-primary-tint);">
+                  <span class="heading-xl" style="color: var(--color-primary);">考</span>
+                </div>
+                <div>
+                  <h2 class="heading-xl mb-1">考试备考者</h2>
+                  <p class="body-xs" style="letter-spacing: var(--tracking-wide);">THE EXAM PREPPER</p>
+                </div>
+              </div>
+              <p class="body-sm mb-6" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">雅思/托福/考研复试口语考生，目标明确，愿意短期集中训练</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">18-28岁</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">雅思托福</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">考研复试</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">短期冲刺</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-primary); border: 1px solid var(--color-primary-tint); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); background: var(--color-primary-tint);">表达模板化</span>
+              </div>
+            </div>
+
+            <!-- Card 3: 留学生 -->
+            <div style="border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg); padding: var(--space-8); background: var(--color-surface);">
+              <div class="flex items-center gap-4 mb-5">
+                <div class="flex items-center justify-center shrink-0" style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--color-primary-tint);">
+                  <span class="heading-xl" style="color: var(--color-primary);">留</span>
+                </div>
+                <div>
+                  <h2 class="heading-xl mb-1">留学生</h2>
+                  <p class="body-xs" style="letter-spacing: var(--tracking-wide);">THE STUDY-ABROAD STUDENT</p>
+                </div>
+              </div>
+              <p class="body-sm mb-6" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">准备或正在海外留学，需要应对课堂讨论、社交、日常生活的英语场景</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">18-25岁</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">留学准备</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">课堂讨论</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">社交英语</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-primary); border: 1px solid var(--color-primary-tint); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); background: var(--color-primary-tint);">书面强口语弱</span>
+              </div>
+            </div>
+
+            <!-- Card 4: 开口恐惧者 -->
+            <div style="border: 1px solid var(--color-border-subtle); border-radius: var(--radius-lg); padding: var(--space-8); background: var(--color-surface);">
+              <div class="flex items-center gap-4 mb-5">
+                <div class="flex items-center justify-center shrink-0" style="width: 48px; height: 48px; border-radius: var(--radius-lg); background: var(--color-primary-tint);">
+                  <span class="heading-xl" style="color: var(--color-primary);">口</span>
+                </div>
+                <div>
+                  <h2 class="heading-xl mb-1">开口恐惧者</h2>
+                  <p class="body-xs" style="letter-spacing: var(--tracking-wide);">THE RELUCTANT SPEAKER</p>
+                </div>
+              </div>
+              <p class="body-sm mb-6" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">有英语基础但长期不敢开口，需要一个低压力的练习入口</p>
+              <div class="flex flex-wrap gap-2">
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">广泛年龄</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">开口恐惧</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">缺少陪练</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-text-secondary); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3);">需要鼓励</span>
+                <span class="inline-flex items-center whitespace-nowrap" style="font-size: var(--text-xs); color: var(--color-primary); border: 1px solid var(--color-primary-tint); border-radius: var(--radius-md); padding: var(--space-1) var(--space-3); background: var(--color-primary-tint);">想要打卡</span>
+              </div>
+            </div>
+
+          </div>
+        </section>
+
+        <!-- Common Traits Section -->
+        <section class="mb-16">
+          <h2 class="heading-xl mb-8">共同特征</h2>
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+            <div class="flex items-start gap-3" style="padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <i data-lucide="book-open" style="width: 18px; height: 18px; color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 1px;"></i>
+              <p class="body-sm" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">有一定英语基础，词汇和阅读能力尚可</p>
+            </div>
+            <div class="flex items-start gap-3" style="padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <i data-lucide="message-circle" style="width: 18px; height: 18px; color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 1px;"></i>
+              <p class="body-sm" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">口语输出能力明显不足</p>
+            </div>
+            <div class="flex items-start gap-3" style="padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <i data-lucide="shield" style="width: 18px; height: 18px; color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 1px;"></i>
+              <p class="body-sm" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">缺少低压力、可持续的练习环境</p>
+            </div>
+            <div class="flex items-start gap-3" style="padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <i data-lucide="cpu" style="width: 18px; height: 18px; color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 1px;"></i>
+              <p class="body-sm" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">对AI接受度较高</p>
+            </div>
+            <div class="flex items-start gap-3" style="padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <i data-lucide="credit-card" style="width: 18px; height: 18px; color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 1px;"></i>
+              <p class="body-sm" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">愿意为场景化训练付费</p>
+            </div>
+            <div class="flex items-start gap-3" style="padding: var(--space-5) var(--space-6); border: 1px solid var(--color-border-subtle); border-radius: var(--radius-md);">
+              <i data-lucide="check-circle" style="width: 18px; height: 18px; color: var(--color-text-tertiary); flex-shrink: 0; margin-top: 1px;"></i>
+              <p class="body-sm" style="color: var(--color-text-secondary); line-height: var(--leading-relaxed);">希望获得具体、可执行的反馈</p>
+            </div>
+          </div>
+        </section>
+
+        <!-- Footer Note -->
+        <footer class="pt-8" style="border-top: 1px solid var(--color-border-subtle);">
+          <p class="body-xs" style="color: var(--color-text-tertiary);">数据来源：AI英语口语陪练产品调研与构思备忘录 · 产品分析 · 汇报文档</p>
+        </footer>
+
+      </div>
+    </main>
+    <script>lucide.createIcons();</script>
+</body>
+</html>

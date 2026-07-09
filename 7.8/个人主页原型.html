@@ -1,0 +1,933 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AI 英语口语陪练 - 个人主页原型</title>
+  <style>
+    :root {
+      --ink: #1a1a2e;
+      --text: #262938;
+      --muted: #6b7280;
+      --line: #d9dee8;
+      --soft-line: #edf0f5;
+      --bg: #f6f7f9;
+      --panel: #ffffff;
+      --panel-soft: #fbfcfe;
+      --accent: #2f5f9f;
+      --accent-soft: #eef5ff;
+      --green: #2f7d62;
+      --green-soft: #edf8f4;
+      --orange: #a15c1b;
+      --orange-soft: #fff6ed;
+      --red: #a83c3c;
+      --red-soft: #fff1f1;
+      --radius: 8px;
+      --shadow: 0 18px 50px rgba(18, 24, 40, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--text);
+      font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif;
+      letter-spacing: 0;
+    }
+
+    .canvas {
+      width: 1440px;
+      min-height: 1024px;
+      margin: 0 auto;
+      display: grid;
+      grid-template-columns: 248px 1fr;
+      background: var(--bg);
+    }
+
+    .sidebar {
+      background: #ffffff;
+      border-right: 1px solid var(--line);
+      padding: 28px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 0 4px;
+    }
+
+    .brand-mark {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      background: var(--ink);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-weight: 800;
+      font-size: 15px;
+    }
+
+    .brand h1 {
+      font-size: 17px;
+      line-height: 1.2;
+      margin: 0;
+      color: var(--ink);
+      font-weight: 760;
+    }
+
+    .brand p {
+      margin: 2px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .nav {
+      display: grid;
+      gap: 8px;
+    }
+
+    .nav-item {
+      display: grid;
+      grid-template-columns: 28px 1fr;
+      align-items: center;
+      min-height: 40px;
+      padding: 0 12px;
+      border-radius: var(--radius);
+      color: #404554;
+      font-size: 14px;
+      font-weight: 620;
+    }
+
+    .nav-item.active {
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .nav-icon {
+      width: 18px;
+      height: 18px;
+      display: grid;
+      place-items: center;
+      font-size: 14px;
+    }
+
+    .side-note {
+      margin-top: auto;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      padding: 16px;
+      background: var(--panel-soft);
+    }
+
+    .side-note .label {
+      color: var(--muted);
+      font-size: 12px;
+      margin-bottom: 8px;
+    }
+
+    .side-note .main {
+      color: var(--ink);
+      font-size: 22px;
+      font-weight: 800;
+      line-height: 1;
+    }
+
+    .side-note .sub {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .main {
+      padding: 28px 32px 36px;
+    }
+
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 24px;
+    }
+
+    .title-block h2 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 30px;
+      line-height: 1.1;
+      font-weight: 820;
+    }
+
+    .title-block p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 14px;
+    }
+
+    .actions {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    .button {
+      min-height: 38px;
+      border: 1px solid var(--line);
+      border-radius: var(--radius);
+      background: #fff;
+      padding: 0 14px;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--text);
+      font-size: 13px;
+      font-weight: 680;
+    }
+
+    .button.primary {
+      border-color: var(--ink);
+      background: var(--ink);
+      color: #fff;
+    }
+
+    .profile-hero {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      display: grid;
+      grid-template-columns: 1.35fr 1fr;
+      overflow: hidden;
+      margin-bottom: 20px;
+    }
+
+    .profile-left {
+      padding: 24px;
+      display: grid;
+      grid-template-columns: auto 1fr;
+      gap: 18px;
+      align-items: center;
+      border-right: 1px solid var(--soft-line);
+    }
+
+    .avatar {
+      width: 72px;
+      height: 72px;
+      border-radius: 12px;
+      background: linear-gradient(135deg, #1a1a2e, #3d557a);
+      color: #fff;
+      display: grid;
+      place-items: center;
+      font-size: 24px;
+      font-weight: 820;
+    }
+
+    .profile-copy h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 22px;
+      font-weight: 800;
+    }
+
+    .profile-copy p {
+      margin: 7px 0 0;
+      color: var(--muted);
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .tag-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 14px;
+    }
+
+    .tag {
+      border: 1px solid var(--line);
+      background: #fff;
+      border-radius: 999px;
+      padding: 5px 10px;
+      color: #51596a;
+      font-size: 12px;
+      font-weight: 650;
+    }
+
+    .profile-right {
+      padding: 22px;
+      display: grid;
+      grid-template-columns: repeat(2, minmax(0, 1fr));
+      gap: 12px;
+      background: var(--panel-soft);
+    }
+
+    .metric {
+      border: 1px solid var(--soft-line);
+      background: #fff;
+      border-radius: var(--radius);
+      padding: 16px;
+    }
+
+    .metric .value {
+      color: var(--ink);
+      font-size: 25px;
+      line-height: 1;
+      font-weight: 820;
+    }
+
+    .metric .name {
+      margin-top: 8px;
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 620;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: 1.55fr 1fr;
+      gap: 20px;
+      align-items: start;
+    }
+
+    .stack {
+      display: grid;
+      gap: 20px;
+    }
+
+    .panel {
+      border: 1px solid var(--line);
+      background: var(--panel);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+
+    .panel-head {
+      padding: 18px 20px 14px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--soft-line);
+    }
+
+    .panel-head h3 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 17px;
+      font-weight: 780;
+    }
+
+    .panel-head span {
+      color: var(--muted);
+      font-size: 12px;
+      font-weight: 640;
+    }
+
+    .progress-area {
+      padding: 20px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 18px;
+    }
+
+    .progress-chart {
+      height: 178px;
+      border: 1px solid var(--soft-line);
+      border-radius: var(--radius);
+      background: linear-gradient(180deg, #fff, #fbfcfe);
+      padding: 18px;
+      display: grid;
+      align-items: end;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 10px;
+    }
+
+    .bar {
+      background: var(--accent);
+      border-radius: 6px 6px 2px 2px;
+      min-height: 24px;
+      opacity: 0.92;
+    }
+
+    .progress-list {
+      display: grid;
+      gap: 10px;
+    }
+
+    .progress-item {
+      border: 1px solid var(--soft-line);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 16px;
+      align-items: center;
+    }
+
+    .progress-item strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .progress-item small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .status-pill {
+      border-radius: 999px;
+      padding: 5px 9px;
+      font-size: 12px;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .status-pill.green {
+      color: var(--green);
+      background: var(--green-soft);
+    }
+
+    .status-pill.orange {
+      color: var(--orange);
+      background: var(--orange-soft);
+    }
+
+    .status-pill.blue {
+      color: var(--accent);
+      background: var(--accent-soft);
+    }
+
+    .records {
+      display: grid;
+    }
+
+    .record {
+      display: grid;
+      grid-template-columns: 110px 1fr 120px;
+      gap: 14px;
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--soft-line);
+      align-items: center;
+    }
+
+    .record:last-child {
+      border-bottom: 0;
+    }
+
+    .record .time {
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .record h4 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    .record p {
+      margin: 6px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .type {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 28px;
+      border-radius: 999px;
+      padding: 0 10px;
+      background: var(--panel-soft);
+      border: 1px solid var(--line);
+      font-size: 12px;
+      font-weight: 720;
+      color: #51596a;
+      white-space: nowrap;
+    }
+
+    .feedback-list {
+      padding: 18px 20px 20px;
+      display: grid;
+      gap: 14px;
+    }
+
+    .feedback-card {
+      border: 1px solid var(--soft-line);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius);
+      padding: 14px 14px 14px 16px;
+      background: #fff;
+    }
+
+    .feedback-card h4 {
+      margin: 0 0 8px;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 760;
+    }
+
+    .feedback-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.55;
+    }
+
+    .replace {
+      margin-top: 10px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .quote {
+      background: var(--panel-soft);
+      border: 1px solid var(--soft-line);
+      border-radius: 6px;
+      padding: 10px;
+      font-size: 12px;
+      line-height: 1.45;
+      color: #454b5b;
+    }
+
+    .quote.good {
+      background: var(--green-soft);
+      border-color: #cfe8dc;
+      color: #245a47;
+    }
+
+    .scenario-grid {
+      padding: 18px 20px 20px;
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+    }
+
+    .scenario {
+      border: 1px solid var(--soft-line);
+      border-radius: var(--radius);
+      padding: 14px;
+      min-height: 116px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: #fff;
+    }
+
+    .scenario h4 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 14px;
+      line-height: 1.35;
+      font-weight: 760;
+    }
+
+    .scenario p {
+      margin: 8px 0 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.45;
+    }
+
+    .scenario .bottom {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 14px;
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .right-column {
+      display: grid;
+      gap: 20px;
+    }
+
+    .settings {
+      padding: 18px 20px 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .setting-row {
+      border: 1px solid var(--soft-line);
+      border-radius: var(--radius);
+      padding: 12px;
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      background: #fff;
+    }
+
+    .setting-row strong {
+      display: block;
+      color: var(--ink);
+      font-size: 13px;
+      margin-bottom: 4px;
+    }
+
+    .setting-row small {
+      color: var(--muted);
+      font-size: 12px;
+    }
+
+    .switch {
+      width: 42px;
+      height: 24px;
+      border-radius: 999px;
+      background: var(--ink);
+      position: relative;
+      flex: 0 0 auto;
+    }
+
+    .switch::after {
+      content: "";
+      position: absolute;
+      width: 18px;
+      height: 18px;
+      top: 3px;
+      right: 3px;
+      border-radius: 50%;
+      background: #fff;
+    }
+
+    .select-chip {
+      border: 1px solid var(--line);
+      border-radius: 999px;
+      padding: 6px 10px;
+      color: var(--ink);
+      font-size: 12px;
+      font-weight: 720;
+      white-space: nowrap;
+    }
+
+    .premium-list {
+      padding: 18px 20px 20px;
+      display: grid;
+      gap: 12px;
+    }
+
+    .premium-card {
+      border-radius: var(--radius);
+      border: 1px solid var(--line);
+      padding: 14px;
+      background: #fff;
+      display: grid;
+      gap: 10px;
+    }
+
+    .premium-card.featured {
+      border-color: #b9c9df;
+      background: #f7fbff;
+    }
+
+    .premium-card h4 {
+      margin: 0;
+      color: var(--ink);
+      font-size: 14px;
+      font-weight: 780;
+    }
+
+    .premium-card p {
+      margin: 0;
+      color: var(--muted);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .premium-card .line {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12px;
+      color: var(--muted);
+    }
+
+    .price {
+      color: var(--ink);
+      font-size: 15px;
+      font-weight: 820;
+    }
+  </style>
+</head>
+<body>
+  <div class="canvas">
+    <aside class="sidebar">
+      <div class="brand">
+        <div class="brand-mark">AI</div>
+        <div>
+          <h1>AI 口语陪练</h1>
+          <p>低压力场景训练</p>
+        </div>
+      </div>
+
+      <nav class="nav">
+        <div class="nav-item"><span class="nav-icon">◇</span><span>自由聊天</span></div>
+        <div class="nav-item"><span class="nav-icon">□</span><span>场景广场</span></div>
+        <div class="nav-item active"><span class="nav-icon">●</span><span>个人主页</span></div>
+        <div class="nav-item"><span class="nav-icon">△</span><span>错题本</span></div>
+        <div class="nav-item"><span class="nav-icon">＋</span><span>高级场景</span></div>
+        <div class="nav-item"><span class="nav-icon">◎</span><span>设置</span></div>
+      </nav>
+
+      <div class="side-note">
+        <div class="label">今日建议</div>
+        <div class="main">8 min</div>
+        <div class="sub">继续复练“酒店延迟退房”，优先使用 2 条新表达。</div>
+      </div>
+    </aside>
+
+    <main class="main">
+      <header class="topbar">
+        <div class="title-block">
+          <h2>个人主页</h2>
+          <p>记录练习、回看反馈、继续复练，不做复杂看板。</p>
+        </div>
+        <div class="actions">
+          <button class="button">查看学习报告</button>
+          <button class="button primary">开始今日练习</button>
+        </div>
+      </header>
+
+      <section class="profile-hero">
+        <div class="profile-left">
+          <div class="avatar">龙</div>
+          <div class="profile-copy">
+            <h3>占付龙</h3>
+            <p>目标：外企实习面试 + 日常场景开口训练。当前偏好中文解释，AI 回复保持中短句。</p>
+            <div class="tag-row">
+              <span class="tag">反馈语言：中文</span>
+              <span class="tag">默认难度：CET-4</span>
+              <span class="tag">训练重点：表达自然度</span>
+            </div>
+          </div>
+        </div>
+        <div class="profile-right">
+          <div class="metric">
+            <div class="value">12</div>
+            <div class="name">累计练习次数</div>
+          </div>
+          <div class="metric">
+            <div class="value">86m</div>
+            <div class="name">累计开口时长</div>
+          </div>
+          <div class="metric">
+            <div class="value">5d</div>
+            <div class="name">连续练习天数</div>
+          </div>
+          <div class="metric">
+            <div class="value">18</div>
+            <div class="name">待复练表达</div>
+          </div>
+        </div>
+      </section>
+
+      <div class="grid">
+        <div class="stack">
+          <section class="panel">
+            <div class="panel-head">
+              <h3>学习概况</h3>
+              <span>最近 7 天</span>
+            </div>
+            <div class="progress-area">
+              <div class="progress-chart" aria-label="最近七天开口时长柱状图">
+                <div class="bar" style="height: 42%;"></div>
+                <div class="bar" style="height: 54%;"></div>
+                <div class="bar" style="height: 36%;"></div>
+                <div class="bar" style="height: 68%;"></div>
+                <div class="bar" style="height: 74%;"></div>
+                <div class="bar" style="height: 52%;"></div>
+                <div class="bar" style="height: 86%;"></div>
+              </div>
+              <div class="progress-list">
+                <div class="progress-item">
+                  <div>
+                    <strong>自由聊天稳定启动</strong>
+                    <small>平均 6.5 分钟，低压力入口成立</small>
+                  </div>
+                  <span class="status-pill green">良好</span>
+                </div>
+                <div class="progress-item">
+                  <div>
+                    <strong>场景模拟完成率</strong>
+                    <small>3 个普通场景已完成学-读-说</small>
+                  </div>
+                  <span class="status-pill blue">进行中</span>
+                </div>
+                <div class="progress-item">
+                  <div>
+                    <strong>反馈复练</strong>
+                    <small>18 条表达等待二次复练</small>
+                  </div>
+                  <span class="status-pill orange">待处理</span>
+                </div>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h3>最近练习记录</h3>
+              <span>自由聊天与场景训练分开展示</span>
+            </div>
+            <div class="records">
+              <div class="record">
+                <div class="time">今天 20:36<br>8 分钟</div>
+                <div>
+                  <h4>自由聊天：聊今天的工作状态</h4>
+                  <p>低压力连续交流，不生成评分报告，记录有效开口时长。</p>
+                </div>
+                <span class="type">自由聊天</span>
+              </div>
+              <div class="record">
+                <div class="time">今天 18:12<br>学-读-说</div>
+                <div>
+                  <h4>酒店前台申请延迟退房</h4>
+                  <p>已完成跟读和模拟对话，生成 2 条建议复练句。</p>
+                </div>
+                <span class="type">普通场景</span>
+              </div>
+              <div class="record">
+                <div class="time">昨天 21:08<br>Part 2</div>
+                <div>
+                  <h4>IELTS Speaking Part 2 练习</h4>
+                  <p>保留题目、回答和分项反馈，标注为练习参考。</p>
+                </div>
+                <span class="type">专业训练</span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h3>错题本 / 反馈记录</h3>
+              <span>主要来自模拟对话与专业训练</span>
+            </div>
+            <div class="feedback-list">
+              <div class="feedback-card">
+                <h4>表达自然度：任务完成，但说法偏中式</h4>
+                <p>场景：酒店延迟退房。建议优先复练 “extend my checkout time” 和 “Is there any extra charge?”。</p>
+                <div class="replace">
+                  <div class="quote">I want checkout later. Is OK?</div>
+                  <div class="quote good">Could I extend my checkout time? Is there any extra charge?</div>
+                </div>
+              </div>
+              <div class="feedback-card">
+                <h4>面试回答结构：缺少结果描述</h4>
+                <p>场景：外企实习面试。回答项目经历时建议使用“背景 - 行动 - 结果”结构。</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h3>历史场景</h3>
+              <span>一键回到曾经练过的任务</span>
+            </div>
+            <div class="scenario-grid">
+              <div class="scenario">
+                <div>
+                  <h4>酒店前台延迟退房</h4>
+                  <p>普通场景，已完成 2 次模拟。</p>
+                </div>
+                <div class="bottom"><span>复练</span><span>3 句待巩固</span></div>
+              </div>
+              <div class="scenario">
+                <div>
+                  <h4>向同事解释项目延期</h4>
+                  <p>普通职场沟通，待完成跟读。</p>
+                </div>
+                <div class="bottom"><span>继续</span><span>学-读-说</span></div>
+              </div>
+              <div class="scenario">
+                <div>
+                  <h4>咖啡店说明饮品偏好</h4>
+                  <p>旅行生活场景，可快速复练。</p>
+                </div>
+                <div class="bottom"><span>开始</span><span>5 min</span></div>
+              </div>
+            </div>
+          </section>
+        </div>
+
+        <aside class="right-column">
+          <section class="panel">
+            <div class="panel-head">
+              <h3>基础设置</h3>
+              <span>轻量可控</span>
+            </div>
+            <div class="settings">
+              <div class="setting-row">
+                <div>
+                  <strong>反馈语言</strong>
+                  <small>早期解释以中文为主</small>
+                </div>
+                <span class="select-chip">中文</span>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <strong>AI 语速</strong>
+                  <small>自由聊天默认中速</small>
+                </div>
+                <span class="select-chip">中速</span>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <strong>自由聊天纠错</strong>
+                  <small>不在聊天中强制纠错</small>
+                </div>
+                <span class="switch" aria-label="关闭强纠错"></span>
+              </div>
+              <div class="setting-row">
+                <div>
+                  <strong>保存学习记录</strong>
+                  <small>用于历史场景和复练入口</small>
+                </div>
+                <span class="switch" aria-label="开启保存记录"></span>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel">
+            <div class="panel-head">
+              <h3>高级场景入口</h3>
+              <span>后续商业化承接</span>
+            </div>
+            <div class="premium-list">
+              <div class="premium-card featured">
+                <h4>IELTS 口语专业训练</h4>
+                <p>Part 1 / Part 2 / Part 3 专项练习，反馈标注为练习参考。</p>
+                <div class="line"><span>专项包</span><span class="price">¥29.9 起</span></div>
+              </div>
+              <div class="premium-card">
+                <h4>英文面试训练项目</h4>
+                <p>输入简历和 JD，先确认 Brief，再进入模拟面试。</p>
+                <div class="line"><span>训练营</span><span class="price">¥49 起</span></div>
+              </div>
+              <div class="premium-card">
+                <h4>30 天专项陪练</h4>
+                <p>阶段反馈、复练任务和能力报告，适合强目标用户。</p>
+                <div class="line"><span>专项陪练</span><span class="price">¥199 起</span></div>
+              </div>
+            </div>
+          </section>
+        </aside>
+      </div>
+    </main>
+  </div>
+</body>
+</html>

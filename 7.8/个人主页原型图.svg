@@ -1,0 +1,229 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1440" height="1024" viewBox="0 0 1440 1024">
+  <defs>
+    <style>
+      .bg { fill: #f6f7f9; }
+      .panel { fill: #ffffff; stroke: #d9dee8; stroke-width: 1; }
+      .soft { fill: #fbfcfe; stroke: #edf0f5; stroke-width: 1; }
+      .ink { fill: #1a1a2e; }
+      .text { fill: #262938; font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif; }
+      .muted { fill: #6b7280; font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif; }
+      .white { fill: #ffffff; font-family: Inter, "Noto Sans SC", "PingFang SC", "Microsoft YaHei", Arial, sans-serif; }
+      .h1 { font-size: 30px; font-weight: 800; }
+      .h2 { font-size: 18px; font-weight: 760; }
+      .h3 { font-size: 15px; font-weight: 740; }
+      .body { font-size: 13px; font-weight: 500; }
+      .small { font-size: 12px; font-weight: 500; }
+      .tiny { font-size: 11px; font-weight: 500; }
+      .bold { font-weight: 760; }
+      .nav { font-size: 14px; font-weight: 680; }
+      .metric { font-size: 26px; font-weight: 820; }
+      .blue { fill: #2f5f9f; }
+      .blue-soft { fill: #eef5ff; }
+      .green { fill: #2f7d62; }
+      .green-soft { fill: #edf8f4; }
+      .orange { fill: #a15c1b; }
+      .orange-soft { fill: #fff6ed; }
+      .line { stroke: #edf0f5; stroke-width: 1; }
+      .bar { fill: #2f5f9f; opacity: .92; }
+    </style>
+    <filter id="shadow" x="-20%" y="-20%" width="140%" height="140%">
+      <feDropShadow dx="0" dy="16" stdDeviation="18" flood-color="#121828" flood-opacity="0.08"/>
+    </filter>
+  </defs>
+
+  <rect class="bg" x="0" y="0" width="1440" height="1024"/>
+
+  <!-- Sidebar -->
+  <rect class="panel" x="0" y="0" width="248" height="1024"/>
+  <rect class="ink" x="24" y="28" width="36" height="36" rx="8"/>
+  <text class="white bold" x="42" y="51" font-size="15" text-anchor="middle">AI</text>
+  <text class="text bold" x="72" y="43" font-size="17">AI 口语陪练</text>
+  <text class="muted small" x="72" y="60">低压力场景训练</text>
+
+  <g transform="translate(20,112)">
+    <text class="muted tiny" x="4" y="-18">主导航</text>
+    <rect fill="#ffffff" x="0" y="0" width="208" height="40" rx="8"/>
+    <text class="text nav" x="48" y="26">自由聊天</text>
+    <text class="muted" x="20" y="26" font-size="15">◇</text>
+    <rect fill="#ffffff" x="0" y="48" width="208" height="40" rx="8"/>
+    <text class="text nav" x="48" y="74">场景广场</text>
+    <text class="muted" x="20" y="74" font-size="15">□</text>
+    <rect class="ink" x="0" y="96" width="208" height="40" rx="8"/>
+    <text class="white nav" x="48" y="122">个人主页</text>
+    <text class="white" x="20" y="122" font-size="15">●</text>
+    <rect fill="#ffffff" x="0" y="144" width="208" height="40" rx="8"/>
+    <text class="text nav" x="48" y="170">错题本</text>
+    <text class="muted" x="20" y="170" font-size="15">△</text>
+    <rect fill="#ffffff" x="0" y="192" width="208" height="40" rx="8"/>
+    <text class="text nav" x="48" y="218">高级场景</text>
+    <text class="muted" x="20" y="218" font-size="15">＋</text>
+    <rect fill="#ffffff" x="0" y="240" width="208" height="40" rx="8"/>
+    <text class="text nav" x="48" y="266">设置</text>
+    <text class="muted" x="20" y="266" font-size="15">◎</text>
+  </g>
+
+  <rect class="soft" x="20" y="846" width="208" height="138" rx="8"/>
+  <text class="muted small" x="36" y="878">今日建议</text>
+  <text class="text" x="36" y="914" font-size="28" font-weight="820">8 min</text>
+  <text class="muted small" x="36" y="944">继续复练“酒店延迟退房”</text>
+  <text class="muted small" x="36" y="964">优先使用 2 条新表达。</text>
+
+  <!-- Top -->
+  <text class="text h1" x="280" y="62">个人主页</text>
+  <text class="muted body" x="280" y="88">记录练习、回看反馈、继续复练，不做复杂看板。</text>
+  <rect class="panel" x="1138" y="36" width="126" height="38" rx="8"/>
+  <text class="text small bold" x="1201" y="60" text-anchor="middle">学习报告</text>
+  <rect class="ink" x="1276" y="36" width="132" height="38" rx="8"/>
+  <text class="white small bold" x="1342" y="60" text-anchor="middle">开始今日练习</text>
+
+  <!-- Hero -->
+  <rect class="panel" x="280" y="112" width="1128" height="184" rx="8" filter="url(#shadow)"/>
+  <line class="line" x1="880" y1="112" x2="880" y2="296"/>
+  <rect x="304" y="156" width="72" height="72" rx="12" fill="#1a1a2e"/>
+  <text class="white" x="340" y="201" font-size="24" font-weight="820" text-anchor="middle">龙</text>
+  <text class="text" x="394" y="170" font-size="22" font-weight="800">占付龙</text>
+  <text class="muted body" x="394" y="196">目标：外企实习面试 + 日常场景开口训练。</text>
+  <text class="muted body" x="394" y="216">当前偏好中文解释，AI 回复保持中短句。</text>
+  <rect class="panel" x="394" y="238" width="104" height="28" rx="14"/>
+  <text class="muted small" x="446" y="256" text-anchor="middle">中文反馈</text>
+  <rect class="panel" x="506" y="238" width="102" height="28" rx="14"/>
+  <text class="muted small" x="557" y="256" text-anchor="middle">CET-4 难度</text>
+  <rect class="panel" x="616" y="238" width="132" height="28" rx="14"/>
+  <text class="muted small" x="682" y="256" text-anchor="middle">表达自然度</text>
+
+  <g transform="translate(904,134)">
+    <rect class="panel" x="0" y="0" width="226" height="62" rx="8"/>
+    <text class="text metric" x="16" y="33">12</text>
+    <text class="muted small" x="16" y="52">累计练习次数</text>
+    <rect class="panel" x="244" y="0" width="226" height="62" rx="8"/>
+    <text class="text metric" x="260" y="33">86m</text>
+    <text class="muted small" x="260" y="52">累计开口时长</text>
+    <rect class="panel" x="0" y="78" width="226" height="62" rx="8"/>
+    <text class="text metric" x="16" y="111">5d</text>
+    <text class="muted small" x="16" y="130">连续练习天数</text>
+    <rect class="panel" x="244" y="78" width="226" height="62" rx="8"/>
+    <text class="text metric" x="260" y="111">18</text>
+    <text class="muted small" x="260" y="130">待复练表达</text>
+  </g>
+
+  <!-- Main columns -->
+  <rect class="panel" x="280" y="316" width="714" height="244" rx="8"/>
+  <text class="text h2" x="300" y="352">学习概况</text>
+  <text class="muted small" x="930" y="352" text-anchor="end">最近 7 天</text>
+  <line class="line" x1="280" y1="370" x2="994" y2="370"/>
+  <rect class="soft" x="300" y="392" width="330" height="146" rx="8"/>
+  <rect class="bar" x="320" y="472" width="28" height="46" rx="5"/>
+  <rect class="bar" x="364" y="456" width="28" height="62" rx="5"/>
+  <rect class="bar" x="408" y="482" width="28" height="36" rx="5"/>
+  <rect class="bar" x="452" y="438" width="28" height="80" rx="5"/>
+  <rect class="bar" x="496" y="430" width="28" height="88" rx="5"/>
+  <rect class="bar" x="540" y="458" width="28" height="60" rx="5"/>
+  <rect class="bar" x="584" y="412" width="28" height="106" rx="5"/>
+  <g transform="translate(650,392)">
+    <rect class="panel" x="0" y="0" width="324" height="42" rx="8"/>
+    <text class="text h3" x="12" y="18">自由聊天稳定启动</text>
+    <text class="muted tiny" x="12" y="34">平均 6.5 分钟，低压力入口成立</text>
+    <rect class="green-soft" x="258" y="10" width="50" height="22" rx="11"/>
+    <text class="green tiny bold" x="283" y="25" text-anchor="middle">良好</text>
+    <rect class="panel" x="0" y="52" width="324" height="42" rx="8"/>
+    <text class="text h3" x="12" y="70">场景模拟完成率</text>
+    <text class="muted tiny" x="12" y="86">3 个普通场景已完成学-读-说</text>
+    <rect class="blue-soft" x="246" y="62" width="62" height="22" rx="11"/>
+    <text class="blue tiny bold" x="277" y="77" text-anchor="middle">进行中</text>
+    <rect class="panel" x="0" y="104" width="324" height="42" rx="8"/>
+    <text class="text h3" x="12" y="122">反馈复练</text>
+    <text class="muted tiny" x="12" y="138">18 条表达等待二次复练</text>
+    <rect class="orange-soft" x="246" y="114" width="62" height="22" rx="11"/>
+    <text class="orange tiny bold" x="277" y="129" text-anchor="middle">待处理</text>
+  </g>
+
+  <rect class="panel" x="1014" y="316" width="394" height="244" rx="8"/>
+  <text class="text h2" x="1034" y="352">基础设置</text>
+  <text class="muted small" x="1388" y="352" text-anchor="end">轻量可控</text>
+  <line class="line" x1="1014" y1="370" x2="1408" y2="370"/>
+  <g transform="translate(1034,392)">
+    <rect class="panel" x="0" y="0" width="354" height="38" rx="8"/>
+    <text class="text h3" x="12" y="16">反馈语言</text>
+    <text class="muted tiny" x="12" y="31">早期解释以中文为主</text>
+    <rect class="panel" x="292" y="8" width="48" height="22" rx="11"/>
+    <text class="text tiny bold" x="316" y="23" text-anchor="middle">中文</text>
+    <rect class="panel" x="0" y="50" width="354" height="38" rx="8"/>
+    <text class="text h3" x="12" y="66">AI 语速</text>
+    <text class="muted tiny" x="12" y="81">自由聊天默认中速</text>
+    <rect class="panel" x="292" y="58" width="48" height="22" rx="11"/>
+    <text class="text tiny bold" x="316" y="73" text-anchor="middle">中速</text>
+    <rect class="panel" x="0" y="100" width="354" height="38" rx="8"/>
+    <text class="text h3" x="12" y="116">自由聊天纠错</text>
+    <text class="muted tiny" x="12" y="131">不在聊天中强制纠错</text>
+    <rect class="ink" x="300" y="108" width="40" height="22" rx="11"/>
+    <circle cx="329" cy="119" r="8" fill="#fff"/>
+  </g>
+
+  <!-- Records -->
+  <rect class="panel" x="280" y="580" width="714" height="184" rx="8"/>
+  <text class="text h2" x="300" y="616">最近练习记录</text>
+  <text class="muted small" x="974" y="616" text-anchor="end">自由聊天与场景训练分开展示</text>
+  <line class="line" x1="280" y1="634" x2="994" y2="634"/>
+  <g transform="translate(300,656)">
+    <text class="muted small" x="0" y="16">今天 20:36</text>
+    <text class="text h3" x="116" y="14">自由聊天：聊今天的工作状态</text>
+    <text class="muted small" x="116" y="34">低压力连续交流，不生成评分报告，记录有效开口时长。</text>
+    <rect class="soft" x="558" y="0" width="100" height="28" rx="14"/>
+    <text class="muted tiny bold" x="608" y="18" text-anchor="middle">自由聊天</text>
+    <line class="line" x1="-20" y1="48" x2="694" y2="48"/>
+    <text class="muted small" x="0" y="82">今天 18:12</text>
+    <text class="text h3" x="116" y="80">酒店前台申请延迟退房</text>
+    <text class="muted small" x="116" y="100">已完成跟读和模拟对话，生成 2 条建议复练句。</text>
+    <rect class="soft" x="558" y="66" width="100" height="28" rx="14"/>
+    <text class="muted tiny bold" x="608" y="84" text-anchor="middle">普通场景</text>
+  </g>
+
+  <!-- Premium -->
+  <rect class="panel" x="1014" y="580" width="394" height="404" rx="8"/>
+  <text class="text h2" x="1034" y="616">高级场景入口</text>
+  <text class="muted small" x="1388" y="616" text-anchor="end">商业化承接</text>
+  <line class="line" x1="1014" y1="634" x2="1408" y2="634"/>
+  <g transform="translate(1034,656)">
+    <rect class="blue-soft" x="0" y="0" width="354" height="88" rx="8" stroke="#b9c9df"/>
+    <text class="text h3" x="14" y="24">IELTS 口语专业训练</text>
+    <text class="muted small" x="14" y="46">Part 1 / 2 / 3 专项练习，反馈为练习参考。</text>
+    <text class="muted tiny" x="14" y="70">专项包</text>
+    <text class="text h3" x="340" y="70" text-anchor="end">¥29.9 起</text>
+    <rect class="panel" x="0" y="104" width="354" height="88" rx="8"/>
+    <text class="text h3" x="14" y="128">英文面试训练项目</text>
+    <text class="muted small" x="14" y="150">输入简历和 JD，确认 Brief 后模拟面试。</text>
+    <text class="muted tiny" x="14" y="174">训练营</text>
+    <text class="text h3" x="340" y="174" text-anchor="end">¥49 起</text>
+    <rect class="panel" x="0" y="208" width="354" height="88" rx="8"/>
+    <text class="text h3" x="14" y="232">30 天专项陪练</text>
+    <text class="muted small" x="14" y="254">阶段反馈、复练任务和能力报告。</text>
+    <text class="muted tiny" x="14" y="278">专项陪练</text>
+    <text class="text h3" x="340" y="278" text-anchor="end">¥199 起</text>
+  </g>
+
+  <!-- Feedback and scenarios -->
+  <rect class="panel" x="280" y="784" width="342" height="200" rx="8"/>
+  <text class="text h2" x="300" y="820">错题本 / 反馈记录</text>
+  <line class="line" x1="280" y1="838" x2="622" y2="838"/>
+  <rect x="300" y="858" width="302" height="106" rx="8" fill="#ffffff" stroke="#edf0f5"/>
+  <rect x="300" y="858" width="4" height="106" fill="#2f5f9f"/>
+  <text class="text h3" x="316" y="882">表达自然度：说法偏中式</text>
+  <text class="muted small" x="316" y="906">场景：酒店延迟退房。建议复练</text>
+  <text class="muted small" x="316" y="926">extend my checkout time / extra charge。</text>
+  <text class="green small" x="316" y="952">Could I extend my checkout time?</text>
+
+  <rect class="panel" x="642" y="784" width="352" height="200" rx="8"/>
+  <text class="text h2" x="662" y="820">历史场景</text>
+  <text class="muted small" x="974" y="820" text-anchor="end">一键复练</text>
+  <line class="line" x1="642" y1="838" x2="994" y2="838"/>
+  <g transform="translate(662,858)">
+    <rect class="soft" x="0" y="0" width="148" height="106" rx="8"/>
+    <text class="text h3" x="12" y="22">酒店延迟退房</text>
+    <text class="muted tiny" x="12" y="46">普通场景</text>
+    <text class="muted tiny" x="12" y="86">3 句待巩固</text>
+    <rect class="soft" x="164" y="0" width="148" height="106" rx="8"/>
+    <text class="text h3" x="176" y="22">解释项目延期</text>
+    <text class="muted tiny" x="176" y="46">职场沟通</text>
+    <text class="muted tiny" x="176" y="86">继续学-读-说</text>
+  </g>
+</svg>
