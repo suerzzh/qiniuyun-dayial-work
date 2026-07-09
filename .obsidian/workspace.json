@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "openspec/project.md",
+                "file": "7.9/Realtime语音Demo方案与核心流程.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "project"
+              "title": "Realtime语音Demo方案与核心流程"
             }
           }
         ]
@@ -186,6 +186,10 @@
   },
   "active": "125c260ec3bee907",
   "lastOpenFiles": [
+    "7.9/国内端到端Realtime语音Demo开发设计文档.md",
+    "7.9/Realtime语音Demo方案与核心流程.md",
+    "7.9/UniSpeaking产品计划书_v2.md",
+    "openspec/project.md",
     "7.9/realtime-voice-demo/dist/assets/index-O-6zWvb9.css",
     "7.9/realtime-voice-demo/dist/assets/index--sfGb8Bi.js",
     "7.9/realtime-voice-demo/dist/assets",
@@ -196,8 +200,6 @@
     "7.9/realtime-voice-demo/dist/server/server/qwenProvider.test.js",
     "7.9/realtime-voice-demo/dist/server/server/qwenProvider.js",
     "7.9/realtime-voice-demo/dist/server/server/config.js",
-    "7.9/realtime-voice-demo/dist/server/server/callId.js",
-    "7.9/UniSpeaking产品计划书_v2.md",
     "7.9/realtime-voice-demo/node_modules/rxjs/README.md",
     "7.9/realtime-voice-demo/node_modules/rxjs/CODE_OF_CONDUCT.md",
     "7.9/realtime-voice-demo/node_modules/rxjs/CHANGELOG.md",
@@ -220,8 +222,6 @@
     "7.9/realtime-voice-demo/node_modules/express/node_modules/ms/readme.md",
     "7.9/realtime-voice-demo/node_modules/react/README.md",
     "7.9/realtime-voice-demo/node_modules/express/node_modules/ms/license.md",
-    "7.9/realtime-voice-demo/node_modules/express/Readme.md",
-    "7.9/realtime-voice-demo/node_modules/express/History.md",
     "7.9/realtime-voice-demo/node_modules/concurrently/docs/demo.gif",
     "7.8/个人主页原型图.png",
     "7.8/个人主页原型图.svg",

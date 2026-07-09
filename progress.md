@@ -316,5 +316,16 @@
   - `7.9/realtime-voice-demo/server/qwenProvider.test.ts`
   - `7.9/realtime-voice-demo/dist/` updated by `npm run build`
 
+### Phase 18: Realtime Voice Demo方案与核心流程整理
+- **Status:** complete
+- Actions taken:
+  - 按用户要求整理 Demo 的设计方案、核心流程和已使用能力。
+  - 复核 `7.9/国内端到端Realtime语音Demo开发设计文档.md` 与 `7.9/realtime-voice-demo/README.md`。
+  - 输出面向汇报/交接的中文结构：Demo 定位、技术方案、核心链路、模块职责、功能清单、边界和当前价值。
+  - 按用户要求将整理内容写入 `7.9/Realtime语音Demo方案与核心流程.md`。
+- Files modified:
+  - `7.9/Realtime语音Demo方案与核心流程.md` created
+  - `progress.md` updated
+
 ---
 *Update after completing each phase or encountering errors.*
