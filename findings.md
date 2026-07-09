@@ -106,6 +106,9 @@
 - 根因：React state updater 不是立即同步执行；代码在 `server.ai_text_done` 中先注册 updater，随后把 `currentAiMessageRef.current = null`。当 updater 稍后执行时再读取 `currentAiMessageRef.current!.id`，就会读到 `null.id` 并导致 App 崩溃黑屏。
 - 同类风险还存在于 `tempUserMessageRef.current!.id` 和 `server.ai_text_delta` 的 updater 中。正确修法是先构造局部常量 `updated`，再 `setMessages((msgs) => replaceMessageById(msgs, updated))`，updater 不再依赖 mutable ref。
 - 已新增 `src/messageState.ts` 的 `replaceMessageById` 纯函数，并新增 `test/messageState.test.ts` 回归测试。测试最初 RED：缺少 `messageState.ts`；实现后 GREEN。
+- 2026-07-09 用户反馈：用户说话能被记录并显示在对话框，但 AI 没有回复。对照阿里云 Qwen-Omni-Realtime 官方文档，WebSocket 在“输出文本+音频”模式下，文本回复通过 `response.audio_transcript.delta` 和 `response.audio_transcript.done` 返回；`response.text.delta/done` 是仅输出文本或 WebRTC DataChannel 场景的文本事件。
+- 当前 `server/qwenProvider.ts` 原先只映射 `response.text.delta/done`，没有映射 `response.audio_transcript.delta/done`，因此当 Qwen 返回音频模式下的 AI 文本转录时，后端会进入 `provider_event_unhandled`，前端不会收到 `server.ai_text_delta/done`。
+- 已新增 `server/qwenProvider.test.ts` 的回归测试：模拟 `response.audio_transcript.delta/done`，要求触发 `onAiTextDelta/onAiTextDone` 且不进入 `provider_event_unhandled`。测试先 RED，补映射后 GREEN。
 
 ## Technical Decisions
 | Decision | Rationale |
@@ -119,6 +122,7 @@
 | Realtime Demo 调试先修错误呈现路径 | 供应商端点无效可能需要用户在阿里云侧调整 Workspace/地域/API Key，但应用应先准确显示 `provider_ws_connect_failed` 和响应体，不能误导为正常结束 |
 | 黑屏排查应优先检查麦克风权限链路 | 供应商握手已成功；前端点击停在 `requesting_mic`，说明连接后端前的 `getUserMedia`/系统权限步骤没有完成 |
 | React 消息更新不能在 updater 中读取会被清空的 ref | 这会在 AI 快速返回 `server.ai_text_delta` 和 `server.ai_text_done` 时触发竞态；后续类似逻辑应捕获局部快照 |
+| Qwen text+audio 模式必须监听 `response.audio_transcript.*` | Demo 配置 `modalities: ['text','audio']`，不能只监听 `response.text.*`，否则 AI 回复文本不会显示 |
 
 ## Issues Encountered
 | Issue | Resolution |

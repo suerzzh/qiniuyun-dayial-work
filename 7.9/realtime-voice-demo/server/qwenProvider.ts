@@ -194,8 +194,10 @@ export class QwenProviderClient {
   // 关键映射（详见 realtime-event-contract/spec.md）：
   //   conversation.item.input_audio_transcription.delta -> user_transcript_delta
   //   conversation.item.input_audio_transcription.completed -> user_transcript_final
-  //   response.text.delta -> ai_text_delta
-  //   response.text.done -> ai_text_done
+  //   response.audio_transcript.delta -> ai_text_delta（text+audio 输出模式）
+  //   response.audio_transcript.done -> ai_text_done（text+audio 输出模式）
+  //   response.text.delta -> ai_text_delta（text-only 输出模式）
+  //   response.text.done -> ai_text_done（text-only 输出模式）
   //   response.audio.delta -> ai_audio_delta
   //   response.audio.done -> ai_audio_done
   //   input_audio_buffer.speech_started -> user_speaking 状态
@@ -264,6 +266,18 @@ export class QwenProviderClient {
       }
 
       case 'response.text.done': {
+        const itemId = String((evt as any).item_id || (evt as any).response_id || '')
+        this.cb.onAiTextDone(itemId)
+        break
+      }
+
+      case 'response.audio_transcript.delta': {
+        const delta = String((evt as any).delta || '')
+        if (delta) this.cb.onAiTextDelta(delta)
+        break
+      }
+
+      case 'response.audio_transcript.done': {
         const itemId = String((evt as any).item_id || (evt as any).response_id || '')
         this.cb.onAiTextDone(itemId)
         break

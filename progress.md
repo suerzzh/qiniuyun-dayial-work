@@ -298,5 +298,23 @@
   - `7.9/realtime-voice-demo/test/messageState.test.ts`
   - `7.9/realtime-voice-demo/dist/` updated by `npm run build`
 
+### Phase 17: Realtime Voice Demo AI Reply Event Mapping Fix
+- **Status:** complete
+- Actions taken:
+  - 根据用户反馈重新定位链路：用户语音可转写，说明浏览器音频采集、浏览器到后端、后端到 Qwen ASR 链路基本可用。
+  - 阅读 `server/qwenProvider.ts` 和 `server/realtimeSession.ts`，确认 AI 文本只监听 `response.text.delta/done`。
+  - 查阅阿里云 Qwen-Omni-Realtime 官方文档，确认 WebSocket text+audio 输出模式下，文本通过 `response.audio_transcript.delta/done` 返回，音频通过 `response.audio.delta/done` 返回。
+  - 在 `server/qwenProvider.test.ts` 增加 `Qwen audio transcript events are mapped to AI text callbacks` 测试，先运行 RED，失败表现为 `textDeltas` 为空。
+  - 修改 `server/qwenProvider.ts`，增加 `response.audio_transcript.delta` -> `onAiTextDelta`、`response.audio_transcript.done` -> `onAiTextDone` 映射，并更新注释。
+- Verification:
+  - `node --test --import tsx server/qwenProvider.test.ts`: pass, 2/2
+  - `node --test --import tsx test/messageState.test.ts`: pass, 1/1
+  - `npm run typecheck`: pass
+  - `npm run build`: pass
+- Files modified:
+  - `7.9/realtime-voice-demo/server/qwenProvider.ts`
+  - `7.9/realtime-voice-demo/server/qwenProvider.test.ts`
+  - `7.9/realtime-voice-demo/dist/` updated by `npm run build`
+
 ---
 *Update after completing each phase or encountering errors.*

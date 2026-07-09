@@ -4,7 +4,7 @@
 基于 `7.7` 昨日产出和 `7.8/产品设计书初稿写作框架.docx`，为我负责的产品设计书 7、8、9 模块形成可交付内容，并持续维护规划记录。
 
 ## Current Phase
-Phase 16: Realtime Voice Demo React Null Ref Crash Fix
+Phase 17: Realtime Voice Demo AI Reply Event Mapping Fix
 
 ## Phases
 
@@ -143,6 +143,15 @@ Phase 16: Realtime Voice Demo React Null Ref Crash Fix
 - [x] 运行消息测试、供应商错误测试、类型检查和生产构建
 - **Status:** complete
 
+### Phase 17: Realtime Voice Demo AI Reply Event Mapping Fix
+- [x] 根据用户反馈确认现象：用户语音可转写并显示，但 AI 不显示回复
+- [x] 对照阿里云 Qwen-Omni-Realtime 官方文档确认 text+audio 输出模式的文本事件为 `response.audio_transcript.delta/done`
+- [x] 检查 `server/qwenProvider.ts`，确认当前只映射 `response.text.delta/done`
+- [x] 新增 provider 事件映射回归测试，先观察 RED
+- [x] 在 `server/qwenProvider.ts` 增加 `response.audio_transcript.delta/done` 到 `server.ai_text_delta/done` 的映射
+- [x] 运行 provider 测试、消息测试、类型检查和生产构建
+- **Status:** complete
+
 ## Key Questions
 1. `7.8/产品设计书初稿写作框架.docx` 中第 7、8、9 模块的标题和要求分别是什么？
 2. 昨日 `7.7` 的哪些调研、用户画像、产品分析、产品图谱内容应被复用到 7/8/9 模块？
@@ -170,6 +179,7 @@ Phase 16: Realtime Voice Demo React Null Ref Crash Fix
 | Phase 14 修复策略 | 不掩盖供应商配置/端点问题；先让应用准确显示 `provider_ws_connect_failed` 和供应商 400 响应体，并关闭 fatal 错误会话，避免 UI 误导为正常结束 |
 | 点击后黑屏的当前根因方向 | 后端到 Qwen 链路已通，点击后前端卡在 `requesting_mic`；黑屏更可能是浏览器或系统麦克风授权/采集层未完成，而不是供应商配置问题 |
 | React null ref 崩溃根因 | React state updater 可能延迟执行，不能在 updater 内读取稍后会被置空的 `currentAiMessageRef.current` 或 `tempUserMessageRef.current`；应先捕获局部 `updated` 消息再传入 updater |
+| AI 不显示回复的根因 | Qwen 在 text+audio 输出模式下返回 `response.audio_transcript.delta/done`，原代码只监听 `response.text.delta/done`，导致 AI 回复文本被当作未处理事件丢掉 |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
