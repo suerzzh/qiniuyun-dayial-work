@@ -71,7 +71,7 @@ export class RealtimeSession {
     // 1. 校验供应商配置
     const missing = missingProviderVars(this.config)
     if (missing.length > 0) {
-      this.sendError('provider_config_missing', `Missing env: ${missing.join(', ')}`, true)
+      this.failSession('provider_config_missing', `Missing env: ${missing.join(', ')}`)
       return
     }
 
@@ -135,7 +135,7 @@ export class RealtimeSession {
       onError: (code, message) => {
         this.providerErrorCode = code
         this.lastError = code
-        this.sendError('provider_session_error', message, true)
+        this.failSession('provider_session_error', message)
       },
       onClose: (_code, _reason) => {
         this.handleProviderClosed()
@@ -153,11 +153,11 @@ export class RealtimeSession {
       })
     } catch (e) {
       if (e instanceof ProviderAuthError) {
-        this.sendError('provider_auth_failed', this.safeMsg(e), true)
+        this.failSession('provider_auth_failed', this.safeMsg(e))
       } else if (e instanceof ProviderConnectError) {
-        this.sendError('provider_ws_connect_failed', this.safeMsg(e), true)
+        this.failSession('provider_ws_connect_failed', this.safeMsg(e))
       } else {
-        this.sendError('provider_ws_connect_failed', this.safeMsg(e), true)
+        this.failSession('provider_ws_connect_failed', this.safeMsg(e))
       }
     }
   }
@@ -292,6 +292,26 @@ export class RealtimeSession {
       fatal,
     })
     this.recordEvent('server.error')
+  }
+
+  private failSession(code: RealtimeErrorCode, debugMessage: string): void {
+    if (this.ended) return
+    this.ended = true
+    this.disconnectReason = code
+    this.sendError(code, debugMessage, true)
+    if (this.timeoutTimer) {
+      clearTimeout(this.timeoutTimer)
+      this.timeoutTimer = null
+    }
+    this.provider?.close()
+    this.logDebugSummary()
+    setTimeout(() => {
+      try {
+        this.ws.close()
+      } catch {
+        /* ignore */
+      }
+    }, 50)
   }
 
   // 调试事件：不包含完整音频 Base64 或用户录音

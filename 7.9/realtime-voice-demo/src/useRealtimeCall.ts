@@ -13,6 +13,7 @@ import type {
 import { RealtimeClient, buildBackendWsUrl } from './realtimeClient'
 import { startAudioCapture, type AudioCaptureHandle } from './audioCapture'
 import { AudioPlayer } from './audioPlayer'
+import { replaceMessageById } from './messageState'
 
 export interface ChatMessage {
   id: string
@@ -157,15 +158,12 @@ export function useRealtimeCall(): RealtimeCallApi {
           updateState('user_speaking')
           // 更新或创建临时用户消息
           if (tempUserMessageRef.current) {
-            tempUserMessageRef.current = {
+            const updated = {
               ...tempUserMessageRef.current,
               text: p.text,
             }
-            setMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === tempUserMessageRef.current!.id ? tempUserMessageRef.current! : m,
-              ),
-            )
+            tempUserMessageRef.current = updated
+            setMessages((msgs) => replaceMessageById(msgs, updated))
           } else {
             const msg: ChatMessage = {
               id: `u_${Date.now()}`,
@@ -181,16 +179,13 @@ export function useRealtimeCall(): RealtimeCallApi {
         case 'server.user_transcript_final': {
           const p = evt.payload as { text: string }
           if (tempUserMessageRef.current) {
-            tempUserMessageRef.current = {
+            const updated = {
               ...tempUserMessageRef.current,
               text: p.text,
               final: true,
             }
-            setMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === tempUserMessageRef.current!.id ? tempUserMessageRef.current! : m,
-              ),
-            )
+            tempUserMessageRef.current = updated
+            setMessages((msgs) => replaceMessageById(msgs, updated))
           } else {
             const msg: ChatMessage = {
               id: `u_${Date.now()}`,
@@ -207,15 +202,12 @@ export function useRealtimeCall(): RealtimeCallApi {
           const p = evt.payload as { text: string }
           updateState('ai_generating')
           if (currentAiMessageRef.current) {
-            currentAiMessageRef.current = {
+            const updated = {
               ...currentAiMessageRef.current,
               text: currentAiMessageRef.current.text + p.text,
             }
-            setMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === currentAiMessageRef.current!.id ? currentAiMessageRef.current! : m,
-              ),
-            )
+            currentAiMessageRef.current = updated
+            setMessages((msgs) => replaceMessageById(msgs, updated))
           } else {
             const msg: ChatMessage = {
               id: `a_${Date.now()}`,
@@ -230,15 +222,12 @@ export function useRealtimeCall(): RealtimeCallApi {
         }
         case 'server.ai_text_done': {
           if (currentAiMessageRef.current) {
-            currentAiMessageRef.current = {
+            const updated = {
               ...currentAiMessageRef.current,
               final: true,
             }
-            setMessages((msgs) =>
-              msgs.map((m) =>
-                m.id === currentAiMessageRef.current!.id ? currentAiMessageRef.current! : m,
-              ),
-            )
+            currentAiMessageRef.current = updated
+            setMessages((msgs) => replaceMessageById(msgs, updated))
             currentAiMessageRef.current = null
           }
           break
@@ -275,6 +264,9 @@ export function useRealtimeCall(): RealtimeCallApi {
           setErrorUserMessage(p.user_message)
           setDebug((d) => ({ ...d, lastError: p.code }))
           pushLog(`server.error code=${p.code} fatal=${p.fatal}`)
+          if (p.debug_message) {
+            pushLog(`server.error debug=${p.debug_message}`)
+          }
           if (p.fatal) {
             cleanup()
             updateState('failed')

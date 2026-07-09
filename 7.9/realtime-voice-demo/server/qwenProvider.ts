@@ -49,6 +49,15 @@ export class QwenProviderClient {
 
     return new Promise<void>((resolve, reject) => {
       let opened = false
+      let settled = false
+
+      const rejectConnect = (error: Error) => {
+        if (settled) return
+        settled = true
+        this.closed = true
+        reject(error)
+      }
+
       try {
         this.ws = new WebSocket(url, {
           headers: {
@@ -56,24 +65,46 @@ export class QwenProviderClient {
           },
         })
       } catch (e) {
-        reject(e)
+        rejectConnect(e instanceof Error ? e : new ProviderConnectError(String(e)))
         return
       }
 
       const openTimeout = setTimeout(() => {
         if (!opened) {
           this.cb.onDebug('provider_connect_timeout')
-          reject(new ProviderConnectError('timeout'))
+          rejectConnect(new ProviderConnectError('timeout'))
         }
       }, 15000)
 
       this.ws.on('open', () => {
         opened = true
+        settled = true
         clearTimeout(openTimeout)
         this.cb.onDebug('provider_ws_open')
         // 发送 session.update 完成会话初始化
         this.sendSessionUpdate()
         resolve()
+      })
+
+      this.ws.on('unexpected-response', (_req, res) => {
+        clearTimeout(openTimeout)
+        const chunks: Buffer[] = []
+        res.on('data', (chunk: Buffer) => {
+          chunks.push(chunk)
+        })
+        res.on('end', () => {
+          const body = Buffer.concat(chunks).toString('utf8')
+          const message = formatUnexpectedResponseError(
+            res.statusCode || 0,
+            res.statusMessage || '',
+            body,
+          )
+          this.cb.onDebug('provider_ws_unexpected_response', {
+            status_code: res.statusCode || 0,
+            body: truncateForDebug(body),
+          })
+          rejectConnect(new ProviderConnectError(message))
+        })
       })
 
       this.ws.on('message', (data: WebSocket.RawData) => {
@@ -88,9 +119,9 @@ export class QwenProviderClient {
           const msg = String(err.message || '')
           // 401/403 类鉴权失败
           if (msg.includes('401') || msg.includes('403') || /unauthor/i.test(msg)) {
-            reject(new ProviderAuthError(msg))
+            rejectConnect(new ProviderAuthError(msg))
           } else {
-            reject(new ProviderConnectError(msg))
+            rejectConnect(new ProviderConnectError(msg))
           }
         } else {
           this.cb.onError('provider_session_error', this.safeError(err))
@@ -285,6 +316,20 @@ export class QwenProviderClient {
   private safeError(err: Error): string {
     return String(err.message || '').slice(0, 300)
   }
+}
+
+export function formatUnexpectedResponseError(
+  statusCode: number,
+  statusMessage: string,
+  body: string,
+): string {
+  const status = `${statusCode || 'unknown'}${statusMessage ? ` ${statusMessage}` : ''}`
+  const trimmedBody = truncateForDebug(body.trim())
+  return trimmedBody ? `Unexpected server response: ${status}; body: ${trimmedBody}` : `Unexpected server response: ${status}`
+}
+
+function truncateForDebug(value: string): string {
+  return value.length > 1000 ? `${value.slice(0, 1000)}...` : value
 }
 
 export class ProviderAuthError extends Error {

@@ -4,7 +4,7 @@
 基于 `7.7` 昨日产出和 `7.8/产品设计书初稿写作框架.docx`，为我负责的产品设计书 7、8、9 模块形成可交付内容，并持续维护规划记录。
 
 ## Current Phase
-Phase 13: OpenSpec Realtime Voice Demo Development Specification
+Phase 16: Realtime Voice Demo React Null Ref Crash Fix
 
 ## Phases
 
@@ -110,6 +110,39 @@ Phase 13: OpenSpec Realtime Voice Demo Development Specification
 - [x] 静态检查规约文件，确认无待定/自行选择/TODO，三个 spec 合计 23 个 Requirement、45 个 Scenario
 - **Status:** complete
 
+### Phase 14: Realtime Voice Demo Start-Then-Ends Debugging
+- [x] 使用 systematic-debugging、test-driven-development、verification-before-completion 和 planning-with-files
+- [x] 检查 `7.9/realtime-voice-demo` 项目结构、脚本和关键源码
+- [x] 运行 `npm run typecheck` 与 `npm run build`
+- [x] 确认 `.env` 必填项均已设置但不读取真实 Key
+- [x] 启动/检查本地服务，确认 8787 与 5173 已有当前 Demo 进程
+- [x] 通过最小 WebSocket 客户端复现 `client.start` 后收到 `session.closed reason=provider_closed`
+- [x] 直连 Qwen WebSocket 捕获握手 400 响应体：`BadRequest.IllegalEndpoint` / `Workspace endpoint is invalid.`
+- [x] 添加失败测试，覆盖供应商握手错误消息保留响应体
+- [x] 修复供应商握手失败被误显示为通话结束的问题
+- [x] 验证错误路径和构建
+- **Status:** complete
+
+### Phase 15: Realtime Voice Demo Click-Then-Black-Screen Debugging
+- [x] 使用 systematic-debugging、planning-with-files 和浏览器调试能力
+- [x] 打开当前本地前端页面，确认初始 UI 正常渲染且无控制台错误
+- [x] 点击“开始对话”，观察页面进入 `requesting_mic`，按钮状态变为开始禁用、结束可用
+- [x] 截图确认页面不是 React 崩溃黑屏，而是深色背景下停在“正在请求麦克风权限”
+- [x] 检查后端 `/api/health`，确认配置就绪
+- [x] 通过最小 WebSocket 客户端绕过浏览器麦克风，确认后端已成功连接 Qwen 并收到 `session.ready` 与 AI 开场文本
+- [x] 给用户说明当前根因方向和浏览器/系统麦克风授权检查步骤
+- **Status:** complete
+
+### Phase 16: Realtime Voice Demo React Null Ref Crash Fix
+- [x] 读取用户提供的 React 错误堆栈，定位 `useRealtimeCall.ts` 中 `currentAiMessageRef.current!.id` 崩溃
+- [x] 扫描 `useRealtimeCall.ts` 中所有在 React state updater 内读取 mutable ref 的类似写法
+- [x] 按 TDD 增加消息替换 helper 的回归测试，并先观察 RED
+- [x] 新增 `src/messageState.ts`，封装 `replaceMessageById`
+- [x] 将用户临时转写、用户最终转写、AI 文本增量、AI 文本完成四处更新改为先捕获 `updated` 局部变量
+- [x] 将测试移出 `src/`，避免前端 tsconfig 纳入 Node 测试类型
+- [x] 运行消息测试、供应商错误测试、类型检查和生产构建
+- **Status:** complete
+
 ## Key Questions
 1. `7.8/产品设计书初稿写作框架.docx` 中第 7、8、9 模块的标题和要求分别是什么？
 2. 昨日 `7.7` 的哪些调研、用户画像、产品分析、产品图谱内容应被复用到 7/8/9 模块？
@@ -133,6 +166,10 @@ Phase 13: OpenSpec Realtime Voice Demo Development Specification
 | OpenSpec 规约采用单 change 多 spec 结构 | 本次目标是让后续 AI 可直接执行开发，因此将 proposal、design、tasks 与链路/事件/验收三个 spec 放在一个自包含 change 中 |
 | Realtime Demo 实现路径锁定为 WebSocket 代理链路 | 用户要求后续 AI 不再判断抉择，因此不把 WebRTC 和豆包作为实现选项，只保留为本期明确不做 |
 | Realtime Demo 技术栈锁定为 Vite + React + TypeScript、Express + ws + TypeScript | 避免后续实现阶段在前后端框架上继续选择，保持链路开发最小且可运行 |
+| 点击开始立即结束的根因方向 | Qwen WebSocket 握手返回 400，响应体为 `BadRequest.IllegalEndpoint: Workspace endpoint is invalid.`；同时当前代码将 provider close 显示为 ended，导致用户看不到真实错误 |
+| Phase 14 修复策略 | 不掩盖供应商配置/端点问题；先让应用准确显示 `provider_ws_connect_failed` 和供应商 400 响应体，并关闭 fatal 错误会话，避免 UI 误导为正常结束 |
+| 点击后黑屏的当前根因方向 | 后端到 Qwen 链路已通，点击后前端卡在 `requesting_mic`；黑屏更可能是浏览器或系统麦克风授权/采集层未完成，而不是供应商配置问题 |
+| React null ref 崩溃根因 | React state updater 可能延迟执行，不能在 updater 内读取稍后会被置空的 `currentAiMessageRef.current` 或 `tempUserMessageRef.current`；应先捕获局部 `updated` 消息再传入 updater |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |

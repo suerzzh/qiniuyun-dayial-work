@@ -133,8 +133,8 @@
 ## 5-Question Reboot Check
 | Question | Answer |
 |----------|--------|
-| Where am I? | Phase 13 complete |
-| Where am I going? | 后续继续以项目根目录 planning 文件作为全局工作记忆 |
+| Where am I? | Phase 14 complete |
+| Where am I going? | 等待用户检查阿里云 Workspace/地域/API Key 后重新运行 Demo |
 | What's the goal? | 为 AI 英语口语陪练产品形成产品/技术设计交付，并维护全局规划文件 |
 | What have I learned? | 见 `findings.md` |
 | What have I done? | 已创建 7.8 产品设计交付、个人主页原型、7.8 日报、7.9 Realtime 语音 Demo 开发设计文档，并完成 OpenSpec 开发规约 |
@@ -218,6 +218,85 @@
   - `task_plan.md` updated with Phase 13
   - `findings.md` updated with OpenSpec decisions
   - `progress.md` updated with Phase 13 log
+
+### Phase 14: Realtime Voice Demo Start-Then-Ends Debugging
+- **Status:** complete
+- Actions taken:
+  - 读取并遵循 systematic-debugging、test-driven-development、verification-before-completion、planning-with-files。
+  - 运行 planning-with-files session catchup，发现上一轮 OpenSpec 交付和本轮用户 bug 反馈上下文。
+  - 检查 `7.9/realtime-voice-demo` 文件结构，确认源码位于 `src/`、`server/`、`shared/`。
+  - 阅读 `package.json`、README、前端 hook、WebSocket client、音频采集/播放、后端 session、Qwen provider、server、共享事件类型。
+  - 运行 `npm run typecheck`，通过。
+  - 运行 `npm run build`，通过。
+  - 检查 `.env` 必填项均为 SET，未输出真实 Key。
+  - 尝试在沙箱内启动 `npm run dev`，因监听 IPC/端口被 EPERM 拦截；提升权限后发现当前已有 Demo 进程占用 5173 和 8787。
+  - 查询后端 `/api/health`，返回 `config_ready: true`。
+  - 用最小 WebSocket 客户端发送 `client.start` 复现：供应商 400 后后端发送 `session.closed reason=provider_closed`。
+  - 直连 Qwen WebSocket 捕获 400 响应体：`BadRequest.IllegalEndpoint` / `Workspace endpoint is invalid.`
+- Evidence:
+  - `npm run typecheck`: exit 0
+  - `npm run build`: exit 0
+  - `/api/health`: provider qwen, model qwen3.5-omni-plus-realtime, region cn-beijing, config_ready true
+  - Qwen response body: `Workspace endpoint is invalid.`
+- Next:
+  - 用户需要检查阿里云百炼 Workspace endpoint：当前供应商返回 `Workspace endpoint is invalid.`。
+- Fixes:
+  - 新增 `server/qwenProvider.test.ts`，先观察到 RED：缺少 `formatUnexpectedResponseError` 导致测试失败。
+  - 在 `server/qwenProvider.ts` 增加 `unexpected-response` 处理，读取供应商 400 响应体，并避免连接阶段 close 被误转为 `provider_closed`。
+  - 在 `server/realtimeSession.ts` 增加 `failSession`，fatal 错误发送 `server.error` 后清理并关闭连接，不发送 `session.closed` 覆盖前端失败状态。
+  - 在 `src/useRealtimeCall.ts` 将 `server.error.debug_message` 追加到调试面板日志。
+- Verification:
+  - `node --test --import tsx server/qwenProvider.test.ts`: pass, 1/1
+  - `npm run typecheck`: pass
+  - `npm run build`: pass
+  - 备用端口 8877 手动 WebSocket 复现：返回 `server.error provider_ws_connect_failed`，debug message 包含 `BadRequest.IllegalEndpoint` / `Workspace endpoint is invalid.`，随后连接关闭。
+- Files modified:
+  - `7.9/realtime-voice-demo/server/qwenProvider.ts`
+  - `7.9/realtime-voice-demo/server/realtimeSession.ts`
+  - `7.9/realtime-voice-demo/src/useRealtimeCall.ts`
+  - `7.9/realtime-voice-demo/server/qwenProvider.test.ts`
+  - `7.9/realtime-voice-demo/dist/` updated by `npm run build`
+
+### Phase 15: Realtime Voice Demo Click-Then-Black-Screen Debugging
+- **Status:** in_progress
+- Actions taken:
+  - 读取 systematic-debugging、planning-with-files、browser 控制技能说明。
+  - 运行 planning-with-files session catchup，并阅读根目录 `task_plan.md`、`findings.md`、`progress.md`。
+  - 阅读当前 Demo 前端关键代码：`App.tsx`、`useRealtimeCall.ts`、`audioPlayer.ts`、`audioCapture.ts`、`realtimeClient.ts`、`index.css`。
+  - 使用浏览器打开 `http://localhost:5173/`，确认初始页面正常渲染，按钮、调试面板存在，控制台无错误。
+  - 点击“开始对话”，页面进入 `requesting_mic`，显示“正在请求麦克风权限”；未观察到 React 崩溃或页面 root 清空。
+  - 截图确认页面仍正常渲染在深色背景中，非前端白屏/黑屏崩溃。
+  - 通过 `/api/health` 确认后端配置就绪：provider `qwen`、model `qwen3.5-omni-plus-realtime`、region `cn-beijing`、`config_ready: true`。
+  - 通过最小 WebSocket 客户端绕过浏览器麦克风发送 `client.start`，确认后端已成功连接 Qwen 并收到 `session.ready` 和 AI 开场文本。
+- Evidence:
+  - Browser state after click: `state=requesting_mic`，日志为空，说明未进入后端 WebSocket 连接阶段。
+  - WebSocket direct start: `provider_ws_open` -> `session_update_sent` -> `provider_ws_connected` -> `provider_session_created` -> `session.ready` -> AI text delta。
+  - `node --test --import tsx server/qwenProvider.test.ts`: pass
+  - `npm run typecheck`: pass
+- Current conclusion:
+  - 供应商配置和后端 Realtime 链路已打通；当前用户看到的黑屏/卡住更可能来自浏览器或系统麦克风授权/设备层。
+
+### Phase 16: Realtime Voice Demo React Null Ref Crash Fix
+- **Status:** complete
+- Actions taken:
+  - 读取用户提供的错误堆栈：`TypeError: Cannot read properties of null (reading 'id')`，定位到 `src/useRealtimeCall.ts` 的消息更新逻辑。
+  - 阅读 `useRealtimeCall.ts` 相关代码，确认 `server.ai_text_done` 会在注册 React state updater 后立刻将 `currentAiMessageRef.current` 置为 `null`。
+  - 扫描所有类似模式，发现用户转写和 AI 文本更新共有四处在 updater 内依赖 `tempUserMessageRef.current!.id` 或 `currentAiMessageRef.current!.id`。
+  - 新增 `test/messageState.test.ts`，先运行 RED，失败原因为缺少 `src/messageState.ts`。
+  - 新增 `src/messageState.ts`，提供 `replaceMessageById(messages, updated)` 纯函数。
+  - 修改 `src/useRealtimeCall.ts`，四处消息更新均先创建局部 `updated`，再用 `replaceMessageById` 更新列表；updater 内不再读取 mutable ref。
+  - 最初将测试放入 `src/` 后 `npm run typecheck` 失败，因为前端 tsconfig 不包含 Node 测试类型；随后将测试移至 `test/` 目录。
+- Verification:
+  - `node --test --import tsx test/messageState.test.ts`: pass, 1/1
+  - `node --test --import tsx server/qwenProvider.test.ts`: pass, 1/1
+  - `npm run typecheck`: pass
+  - `npm run build`: pass
+  - `rg "current!\\.id|tempUserMessageRef\\.current!\\.id|currentAiMessageRef\\.current!\\.id" src/useRealtimeCall.ts`: no matches
+- Files modified:
+  - `7.9/realtime-voice-demo/src/useRealtimeCall.ts`
+  - `7.9/realtime-voice-demo/src/messageState.ts`
+  - `7.9/realtime-voice-demo/test/messageState.test.ts`
+  - `7.9/realtime-voice-demo/dist/` updated by `npm run build`
 
 ---
 *Update after completing each phase or encountering errors.*

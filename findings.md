@@ -84,6 +84,28 @@
 - 本次 OpenSpec 规约将技术栈锁定为 Node.js 20+、npm、Vite + React + TypeScript、Express + `ws` + TypeScript，固定 `npm run dev`，前端端口 5173，后端端口 8787。
 - 本次 OpenSpec 规约包含三个 delta spec：`realtime-voice-chain`、`realtime-event-contract`、`realtime-debug-acceptance`，合计 23 个 Requirement、45 个 Scenario。
 - 尝试运行本地 OpenSpec CLI 验证失败，因为 `/Users/mac/.codex/skills/OpenSpec/dist/cli/index.js` 不存在；已改用静态文本检查确认结构、约束和待定词。
+- 2026-07-09 调试 `7.9/realtime-voice-demo`：用户反馈点击“开始对话”后立即结束，不能聊天。
+- `7.9/realtime-voice-demo` 已按规约实现 Vite + React + TypeScript 前端、Express + ws + TypeScript 后端，并已有 `node_modules`、`dist`、`.env`。
+- `npm run typecheck` 通过，`npm run build` 通过；`.env` 中所有必填项均为 SET（未读取真实值）。
+- 本地已有 Demo 进程监听：前端 5173，后端 8787；健康检查返回 `config_ready: true`。
+- 最小 WebSocket 客户端发送 `client.start` 后，事件顺序为：`session.created` -> `provider_connect_start` -> `provider_ws_error Unexpected server response: 400` -> `provider_ws_close 1006` -> `session.closed reason=provider_closed`。
+- 直连 Qwen WebSocket 并监听 `unexpected-response` 得到响应体：`{"code":"BadRequest.IllegalEndpoint","message":"Workspace endpoint is invalid."}`。
+- 当前代码的问题分两层：真实外部配置/端点问题导致 Qwen 返回 400；应用错误处理问题导致握手失败被 UI 表示为“通话已结束”而不是“连接失败/端点无效”。
+- 已修复供应商握手失败错误路径：`qwenProvider.ts` 监听 `unexpected-response`，读取 HTTP 状态与响应体，构造 `ProviderConnectError`；连接阶段失败会标记 provider closed，避免 close 事件再触发 `session.closed provider_closed`。
+- 已修复后端 fatal 会话清理：`realtimeSession.ts` 增加 `failSession`，发送 `server.error` 后清理 provider/timeout 并短延迟关闭浏览器 WebSocket，不再发送 `session.closed` 覆盖前端 `failed` 状态。
+- 已增强前端调试日志：`useRealtimeCall.ts` 收到 `server.error` 时追加 `debug_message` 到调试日志。
+- 新增回归测试 `server/qwenProvider.test.ts`，覆盖 `formatUnexpectedResponseError` 必须保留 `400 Bad Request`、供应商错误码和响应体消息。
+- 验证备用端口 8877 的更新后端：发送 `client.start` 后返回 `server.error code=provider_ws_connect_failed`，debug message 包含 `BadRequest.IllegalEndpoint` 和 `Workspace endpoint is invalid.`，随后 WebSocket 关闭；未再返回 `session.closed provider_closed`。
+- 注意：应用错误呈现已修复，但真实聊天仍依赖阿里云侧 Workspace endpoint 有效。当前供应商返回 `Workspace endpoint is invalid.`，需要检查 `DASHSCOPE_WORKSPACE_ID`、`DASHSCOPE_REGION`、API Key 所属地域/业务空间以及模型权限。
+- 2026-07-09 用户反馈配置完成后点击开始出现黑屏。本轮浏览器复现显示：页面初始 UI 正常，无控制台错误；点击“开始对话”后 UI 进入 `requesting_mic`，显示“正在请求麦克风权限”和“请求麦克风中…”，未观察到 React 崩溃或 root 被清空。
+- 点击后截图显示页面本身仍在深色背景中正常渲染，调试面板 state 为 `requesting_mic`，没有后端事件日志，说明尚未进入浏览器到后端 WebSocket 阶段。
+- 后端 `/api/health` 返回 `config_ready: true`，provider `qwen`，model `qwen3.5-omni-plus-realtime`，region `cn-beijing`。
+- 使用最小 WebSocket 客户端绕过浏览器麦克风直接发送 `client.start`，事件显示后端已成功连接 Qwen：`provider_ws_open`、`session_update_sent`、`provider_ws_connected`、`provider_session_created`、`session.ready`，并收到 AI 开场文本 `Hi! Let's have a simple English chat. How was your day today?`。
+- 当前“点击后黑屏”根因方向：不是阿里云 Workspace/API Key/供应商 WebSocket；更可能是浏览器麦克风权限弹窗、系统隐私权限、浏览器未允许 localhost 使用麦克风、无可用输入设备，或页面被权限提示层压暗但用户没有完成授权。
+- 用户提供 React 崩溃堆栈：`TypeError: Cannot read properties of null (reading 'id')`，定位到 `src/useRealtimeCall.ts` 的消息 `setMessages((msgs) => msgs.map(... currentAiMessageRef.current!.id ...))`。
+- 根因：React state updater 不是立即同步执行；代码在 `server.ai_text_done` 中先注册 updater，随后把 `currentAiMessageRef.current = null`。当 updater 稍后执行时再读取 `currentAiMessageRef.current!.id`，就会读到 `null.id` 并导致 App 崩溃黑屏。
+- 同类风险还存在于 `tempUserMessageRef.current!.id` 和 `server.ai_text_delta` 的 updater 中。正确修法是先构造局部常量 `updated`，再 `setMessages((msgs) => replaceMessageById(msgs, updated))`，updater 不再依赖 mutable ref。
+- 已新增 `src/messageState.ts` 的 `replaceMessageById` 纯函数，并新增 `test/messageState.test.ts` 回归测试。测试最初 RED：缺少 `messageState.ts`；实现后 GREEN。
 
 ## Technical Decisions
 | Decision | Rationale |
@@ -94,6 +116,9 @@
 | 后续 planning-with-files 统一写入项目根目录 | 用户已明确要求全局记录位于 `/Users/mac/Documents/七牛云`，子目录 planning 只能作为临时或局部补充，最终必须同步根目录 |
 | OpenSpec change 名称使用 `realtime-voice-demo-chain` | 该名称准确表达本次规约只服务自由对话 Realtime 语音主链路跑通 |
 | 本期 OpenSpec 规约不让实现者二次选择协议/供应商/技术栈 | 用户明确要求规约能让 AI 完全照着开发，不需要判断抉择 |
+| Realtime Demo 调试先修错误呈现路径 | 供应商端点无效可能需要用户在阿里云侧调整 Workspace/地域/API Key，但应用应先准确显示 `provider_ws_connect_failed` 和响应体，不能误导为正常结束 |
+| 黑屏排查应优先检查麦克风权限链路 | 供应商握手已成功；前端点击停在 `requesting_mic`，说明连接后端前的 `getUserMedia`/系统权限步骤没有完成 |
+| React 消息更新不能在 updater 中读取会被清空的 ref | 这会在 AI 快速返回 `server.ai_text_delta` 和 `server.ai_text_done` 时触发竞态；后续类似逻辑应捕获局部快照 |
 
 ## Issues Encountered
 | Issue | Resolution |
