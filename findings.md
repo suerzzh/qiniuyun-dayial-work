@@ -8,8 +8,67 @@
 - 用户明确要求调用 `superpowers:brainstorming` 进行头脑风暴。
 - 用户明确要求使用 `$planning-with-files` 制定开发/写作计划，并维护 `task_plan.md`、`findings.md`、`progress.md`。
 - 用户在 2026-07-09 明确纠正：`planning-with-files` 的输出应是整个项目全局记录，位置是 `/Users/mac/Documents/七牛云` 根目录；后续不要只写入具体 Demo 或日期子目录。
+- 用户在 2026-07-10 要求开展非正式的大模型性能与能力边界测试，重点验证某项产品能力能否由 Realtime 模型直接实现、能否通过修改提示词实现，或必须由工程能力实现；测试想法和用例最终写入 `7.10`。
 
 ## Research Findings
+- 7.9 Demo 已具备浏览器麦克风输入、Qwen-Omni-Realtime WebSocket 连接、用户转写、AI 文本与音频回复、结束通话及调试日志，可作为 7.10 模型能力测试载体。
+- 本轮测试需要严格区分三类结论：模型原生可实现、提示词可稳定实现、提示词无法稳定保证且需要工程实现。否则容易把音频链路、事件处理或前端状态问题误判为模型能力不足。
+- 当前工作树已有用户改动（`.DS_Store`、Obsidian workspace、`7.9/UniSpeaking产品计划书_v2.md`），与本轮文档设计无关，应保留不动。
+- 当前 Demo 基线系统提示词已约束：简单自然英语、每次 1-3 句、多追问、少讲课、不评分、不逐错纠错、用户卡住时给轻提示、用户用中文时帮助回到英语。
+- 当前会话配置为 `text + audio`、输入转写开启、`server_vad`、静音阈值 800ms；这些参数会影响轮次切分、首包延迟和对话连续性，测试时应固定并记录。
+- OpenSpec 明确本期不要求实现用户打断 AI 播放，因此“打断是否成功”不能直接归因为模型能力；需要单独标记为模型协议能力、后端转发和前端播放控制共同决定的链路能力。
+- `7.10` 目录已存在 `测试用例初稿.md`，后续应先读取并保留已有内容，再决定扩写或新建文档。
+- 用户已确认 7.10 首轮只覆盖当前 Demo 的自由对话核心能力，不把评分、完整场景训练、学习报告等未来功能纳入首轮。
+- `7.10/测试用例初稿.md` 当前为空，可以在方案确认后直接作为主测试文档使用。
+- 用户确认采用组合测试法：能力清单负责覆盖范围，受控 Prompt 对照负责能力归因，少量自由压力测试负责发现意外边界。
+- 用户确认测试分层：P0 最小提示词判断模型原生表现，P1 当前产品提示词判断现方案表现，P2 仅用于 P0/P1 不稳定项；每组重复 3 次，并将链路异常单独归因。
+- 用户确认首轮能力范围：对话策略、上下文记忆、话题控制、学习者支持、产品边界、角色稳定；语音适应和压力测试作为单独辅助组，计划形成约 18-22 条具体用例。
+- 用户确认结果记录采用 2/1/0/X 四档，三次有效执行按 3/3、2/3、0-1/3 判断稳定性，并按 ASR、VAD、模型/Prompt、音频链路、网络/供应商分别归因。
+- 当前运行代码从 `shared/constants.ts` 引入 `SYSTEM_PROMPT` 并通过 `session.update.instructions` 发送给 Qwen，后续实际执行 Prompt 对照测试时需要切换该变量或提供测试配置，但本轮只编写测试文档，不修改代码。
+- 已将确认后的测试设计写入 `7.10/测试用例初稿.md`，包含 16 条核心模型行为用例和 4 条语音/连续性辅助用例。
+- 文档中的 P1 提示词已与 `7.9/realtime-voice-demo/shared/constants.ts` 当前 `SYSTEM_PROMPT` 对齐；P2 采用五组单变量增强规则，不允许一次叠加多个规则组。
+- 文档静态自检通过：15 个连续编号章节、20 个唯一用例、16 个核心用例、4 个辅助用例、5 组 P2 规则、18 个成对代码围栏；未发现 TODO/TBD/含糊占位词或 `sk-` 形式值。
+- 用户要求将 7.10 测试文档扩写得更多、更详细，重点关注大模型本身的性能；每条用例需要写清每一步怎么做、测试者说什么，并提供空白表格供用户记录结果。
+- 第二版采用执行手册结构：先固定 P1 测当前产品表现，再对代表性用例做 P0/P2 对照；计划扩展为 36 条，其中 30 条模型行为用例、6 条模型性能与稳定性用例。
+- 大模型性能不能只写“延迟快慢”：还应记录指令遵循率、相关性、上下文记忆准确率、事实一致性、重复率、语言难度适配、跨轮稳定性和相同输入的一致性。
+- 第二版手册默认先用 P1 完成产品现状测试，P0 仅用于判断原生能力，P2 仅用于 P1 失败项；这比每条都跑三种 Prompt 更适合人工测试，也能保留能力归因。
+- 已新增 `7.10/大模型性能测试执行手册.md`，包含 36 条逐步用例；已新增 `7.10/大模型测试结果记录表.md`，包含 36 条空白总表和延迟、一致性、20 轮、六事实记忆专表。
+- 第二版静态校验通过：执行手册 15 个章节、36 个唯一用例，INS/DIA/SEM/CTX/ROB/PERF 各 6 条；每条均含操作步骤与判定信息；记录表 36 行与手册 ID 完全一致。
+- 7.10 测试 Demo 位于 `7.10/demo测试/UniSpeaking`，当前文件只有 `webrtc_demo.html`、README、`.env.example`、`.gitignore`、LICENSE，没有 `package.json`。
+- 该项目当前看起来是静态 WebRTC 页面，是否能安全读取 `.env`、是否需要本地后端交换 SDP，必须阅读源码后确认；真实 API Key 不得直接写入 HTML 或浏览器 JavaScript。
+- 当前 Git 工作树显示 7.9 `realtime-voice-demo` 大量删除，这是本轮开始前已有状态，本轮不恢复、不删除、不修改这些用户改动。
+- `7.10/demo测试/UniSpeaking/README.md` 说明预期架构为静态 WebRTC 前端 + Python 后端：后端读取凭据、创建会话并代理 SDP，前端调用 `http://127.0.0.1:8000`。
+- `.env.example` 实际变量名为 `DASHSCOPE_API_KEY`、`BAILIAN_WORKSPACE_ID`、`BAILIAN_MODEL`；用户给出的 workspace 值需要写入 `BAILIAN_WORKSPACE_ID`，不是该项目未使用的 `DASHSCOPE_WORKSPACE_ID`。
+- 项目 `.gitignore` 已包含 `.env` 和 `.vscode/.env`，适合保存本地真实凭据；HTML 不直接读取或暴露 Key。
+- 当前目录缺少 README 引用的 `backend/requirements.txt`、`backend/app.py`、`backend/business_logic.py` 等后端文件，因此当前快照无法按 README 直接启动，需先在仓库搜索可复用副本或恢复缺失文件。
+- 后续复查时 `backend/` 已完整出现（可能是项目文件同步尚未完成），包含 `app.py`、`business_logic.py`、`latency_report.py` 和 `requirements.txt`；之前“后端缺失”结论已失效。
+- 后端会依次读取项目根 `.env` 和 `.vscode/.env`，使用 `DASHSCOPE_API_KEY`、`BAILIAN_WORKSPACE_ID`、`BAILIAN_MODEL`；健康接口只返回是否已配置，不返回真实值。
+- Realtime 会话由后端生成，当前默认 `qwen3.5-omni-plus-realtime`、Tina、PCM、text+audio、server_vad、ASR `qwen3-asr-flash-realtime`；前端不接触凭据。
+- 项目是独立嵌套 Git 仓库，`git check-ignore` 已确认 `.env` 命中 `.gitignore:1`，写入真实凭据不会被该仓库跟踪。
+- 后端 WebRTC 上游端点固定为 `https://{BAILIAN_WORKSPACE_ID}.cn-beijing.maas.aliyuncs.com/api/v1/webrtc/realtime?model={BAILIAN_MODEL}`，与用户提供的 `cn-beijing` 一致；`DASHSCOPE_REGION` 可保留在 `.env` 作为说明，但当前代码不读取。
+- 本机当前 `python3` 为 3.14.6，未发现可用 `conda` 命令；8000、8080 端口均空闲。推荐在项目内创建 `.venv` 并安装 `backend/requirements.txt`，替代 README 的 Conda 依赖。
+- 已创建项目 `.venv`，但 `pip install -r backend/requirements.txt` 因当前环境无法解析 `pypi.org` 失败；错误是网络/DNS限制，不是依赖版本冲突。
+- 系统 Python 3.14、pyenv 3.11.9、项目 `.venv`、Codex bundled Python 均未安装 `aiohttp`；常用 pip 缓存未找到 aiohttp/certifi wheel。
+- 已写入项目根 `.env`：使用项目实际识别的 `BAILIAN_WORKSPACE_ID` 映射用户提供的 Workspace，保留北京地域并补齐模型、VAD、端口、CORS 和数据文件配置；文件权限为 600，真实值不写入 planning 或回复。
+- 国内镜像和 PyPI 域名在当前执行环境均无法 DNS 解析；本机没有 Conda、uv、poetry、pipx 或其他含 aiohttp 的 Python 环境，无法在本轮工具沙箱中完成依赖下载。
+- 前端 `python3 -m http.server 8080 --bind 127.0.0.1` 在当前 Codex 沙箱被系统以 `PermissionError: Operation not permitted` 拒绝；8000/8080 均无进程占用，属于执行环境限制。
+- 为提高依赖兼容性，已用本机 `/Users/mac/.pyenv/versions/3.11.9/bin/python3` 重新创建项目 `.venv`；用户在普通联网终端只需安装依赖一次。
+- 本周周会汇报范围按现有记录确定为 2026-07-07 至 2026-07-10：从产品定位与调研，推进到产品设计、商业化与原型，再到 Realtime Demo 技术验证和模型能力测试体系。
+- 7.7 核心产出：产品分析、AI 英语口语陪练调研与构思备忘录、产品图谱、用户画像/用户旅程/功能与技术架构可视化、简洁汇报稿；产品定位从泛聊天收敛为面向中国成人学习者的真实场景口语陪练。
+- 7.8 核心产出：产品设计书第 7/8/9 模块、商业化人民币定价思路、自由聊天与场景体系验收标准、桌面和移动端个人主页原型；明确自由聊天低压力、不默认评分纠错，专业场景独立承接。
+- 7.9-7.10 阶段记录显示技术工作已覆盖方案设计、OpenSpec、Demo 开发调试、模型能力边界测试和第二个 WebRTC 测试 Demo 配置；需进一步提取可汇报数字和未完成风险。
+- 7.9 技术方案结论：Qwen-Omni-Realtime 作为主方案，先用 WebSocket 跑通和调试，WebRTC 用于后续低延迟体验；豆包保留为需权限与实测的备选。
+- OpenSpec change 包含 proposal/design/tasks 和 3 个 spec，经复核合计 23 个 Requirement、45 个 Scenario。
+- Demo 调试解决三类关键问题：供应商 Workspace 400 错误被误显示为正常结束、React state updater 读取已清空 ref 导致黑屏、Qwen text+audio 模式遗漏 `response.audio_transcript.*` 导致 AI 回复不展示。
+- 7.10 建立 P0/P1/P2 Prompt 分层和能力归因方法，扩展为 36 条唯一模型测试用例，覆盖 6 类能力并配套空白记录表。
+- 第二个 WebRTC Demo 已完成本地凭据安全配置、Python 3.11 `.venv` 和启动说明；由于 Codex 执行环境无法联网安装 aiohttp/监听端口，不能把服务运行验证描述为已完成。
+- 7.13 新任务输入已定位：根目录 `UniSpeaking产品计划书_v2.md` 和 `码上好戏 AI 短剧全流程自动化创作系统架构设计基线文档.docx`；`7.13` 目录存在但当前为空。
+- 用户要求基于 UniSpeaking 产品计划书设计“总体框架”，参考“码上好戏”DOCX 的格式和内容组织；需要先判断交付应是架构基线文档、产品总体框架，还是兼具产品与技术的总蓝图。
+- `UniSpeaking产品计划书_v2.md` 共 665 行，内容覆盖：用户问题、竞品差异化、四层产品能力、自由对话/场景广场/个人主页、核心体验、学习者对话策略、MVP 六项假设、四阶段路线图、S2S 与客户端方案、系统全景、核心数据流、专业场景、商业模式和指标体系。
+- 计划书已明确关键基线：成人四级左右用户、10 秒内进入对话、自由对话不评分纠错、AI 回复 1-3 句、第一阶段验证 S2S 实时链路、目标 P50 首音频 <=1.5s、打断 <=300ms、连续 3-10 分钟。
+- 计划书的现有“架构设计”只有系统全景、自由对话数据流和三项技术选型，尚不足以作为总体架构基线；需要补齐架构原则、能力边界、组件职责、接口/事件、数据与安全、可观测性、部署、演进路线和验收追踪。
+- 参考 DOCX SHA-256 为 `c9d70818717449ee4daf8e0364439f34477ff76413ef0b46d32a9a316d69dc7a`，大小约 39 KB，需保持原件不变并蒸馏模板。
+- 原测试初稿中的 P1 仍与 Demo `shared/constants.ts` 的 `SYSTEM_PROMPT` 完全一致；第二版文件未发现 TODO/TBD/敏感 Key 形式内容。
 - 项目根目录当前不是 git 仓库，`git status --short` 返回 `fatal: not a git repository`。
 - 目录中存在 `7.8/产品设计书初稿写作框架.docx`，应作为今天任务的主框架。
 - `7.7` 目录中发现多份可复用材料：`汇报.md`、`AI英语口语陪练产品调研与构思备忘录.md`、`简洁汇报稿.md`、`产品图谱.md`、`占付龙—7.7日报.md`、`产品分析.md`，以及 `user-persona-design` 设计产出。
@@ -123,6 +182,21 @@
 | 黑屏排查应优先检查麦克风权限链路 | 供应商握手已成功；前端点击停在 `requesting_mic`，说明连接后端前的 `getUserMedia`/系统权限步骤没有完成 |
 | React 消息更新不能在 updater 中读取会被清空的 ref | 这会在 AI 快速返回 `server.ai_text_delta` 和 `server.ai_text_done` 时触发竞态；后续类似逻辑应捕获局部快照 |
 | Qwen text+audio 模式必须监听 `response.audio_transcript.*` | Demo 配置 `modalities: ['text','audio']`，不能只监听 `response.text.*`，否则 AI 回复文本不会显示 |
+| 7.13 参考模板取舍 | 继承工程基线式章节、表格驱动表达和阶段验收闭环；不继承全篇直接格式化、缺少 Heading 样式和表格跨页缺少上下文的问题 |
+
+## Phase 22 Reference DOCX Findings
+- 参考文档共 9 页、70 个正文段落、17 张表格，页面为 Letter 纵向、四边 1 英寸边距、单节，无图片和目录域。
+- 内容结构依次覆盖：文档定位、产品约束、技术决策、总体架构、核心模块、核心数据、业务流程、接口边界、异步任务与状态机、存储边界、模型适配、异常处理、安全/成本/可观测性、部署、阶段演进、不做事项、验收标准。
+- 写作模式以“结论段 + 约束说明 + 对照表”为主，表格经常同时回答职责、输入输出、责任边界、放弃项和阶段边界，适合直接支持开发拆分。
+- 视觉上使用深蓝标题、浅蓝灰表头、细边框和页脚；无架构图片，链路以单行文本框表达。最终 UniSpeaking 文档可保留克制配色与表格密度，同时补充可读的架构图和时序图。
+- 原文所有段落均为 `Normal`，存在 469 个直接字符格式和 488 个直接段落格式，标题没有使用 Heading 样式。最终文档不复制这一可维护性缺陷，应使用 Heading 1/2/3、自动目录和统一表格样式。
+- 当前待确认的首要问题是文档受众：产品+AI+技术联合评审、纯技术开发基线或立项汇报版。推荐联合评审基线。
+- 用户已确认采用“产品、AI、技术联合评审基线”。后续内容应兼顾决策可读性和开发可拆分性，并明确产品目标、模型原生能力、Prompt/策略能力、工程保障能力之间的责任边界。
+- 用户从三种组织方式中选择方案 3“产品-AI-技术一体化基线型”。文档不以单一端到端语音 Demo 为全部系统，而是把 Demo 作为实时语音基础层的首个验证切片。
+- 最终文档将系统组织为实时媒体、会话控制、学习策略、业务数据四个平面，明确 WebRTC 是产品目标通道、WebSocket 是 MVP 诊断通道，S2S 为主且保留管线式降级。
+- 最终输出 25 页 DOCX、同源 Markdown 和 7 张 PNG 架构图，覆盖能力全景、总体分层、自由对话时序、状态机、数据关系、部署拓扑和 MVP 演进。
+- DOCX 最终审计结果：21 个 Heading 1、42 个 Heading 2、7 张带替代文本图片、页码字段正常、可访问性 high/medium/low 均为 0。
+- 参考 DOCX SHA-256 复核仍为 `c9d70818717449ee4daf8e0364439f34477ff76413ef0b46d32a9a316d69dc7a`，确认未修改参考文档。
 
 ## Issues Encountered
 | Issue | Resolution |

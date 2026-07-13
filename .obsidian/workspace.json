@@ -13,12 +13,32 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "7.9/Realtime语音Demo方案与核心流程.md",
+                "file": "7.10/大模型性能测试执行手册.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "Realtime语音Demo方案与核心流程"
+              "title": "大模型性能测试执行手册"
+            }
+          }
+        ]
+      },
+      {
+        "id": "827c2c64f8f23ff6",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "8c92aadf82fb4af3",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "UniSpeaking产品计划书_v2.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "UniSpeaking产品计划书_v2"
             }
           }
         ]
@@ -184,48 +204,49 @@
       "workspaces:管理工作区布局": false
     }
   },
-  "active": "125c260ec3bee907",
+  "active": "8c92aadf82fb4af3",
   "lastOpenFiles": [
-    "7.9/国内端到端Realtime语音Demo开发设计文档.md",
+    "7.10/大模型测试结果记录表.md",
+    "7.10/提示词.md",
+    "7.10/大模型性能测试执行手册.md",
+    "表格.md",
+    "未命名.md",
+    "7.10/demo测试/UniSpeaking/data/latency_report.json",
+    "7.10/demo测试/UniSpeaking/data/conversations.json",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__/__init__.cpython-311.pyc",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__/latency_report.cpython-311.pyc",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__/business_logic.cpython-311.pyc",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__/app.cpython-311.pyc",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__/latency_report.cpython-314.pyc",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__/business_logic.cpython-314.pyc",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__/app.cpython-314.pyc",
+    "7.10/demo测试/UniSpeaking/backend/__pycache__",
+    "7.10/demo测试/UniSpeaking/data/latency_report.md",
+    "7.10/demo测试/UniSpeaking/README.md",
+    "7.10/测试用例初稿.md",
     "7.9/Realtime语音Demo方案与核心流程.md",
-    "7.9/UniSpeaking产品计划书_v2.md",
-    "openspec/project.md",
-    "7.9/realtime-voice-demo/dist/assets/index-O-6zWvb9.css",
-    "7.9/realtime-voice-demo/dist/assets/index--sfGb8Bi.js",
-    "7.9/realtime-voice-demo/dist/assets",
-    "7.9/realtime-voice-demo/dist/server/shared/types.js",
-    "7.9/realtime-voice-demo/dist/server/shared/constants.js",
-    "7.9/realtime-voice-demo/dist/server/server/server.js",
-    "7.9/realtime-voice-demo/dist/server/server/realtimeSession.js",
-    "7.9/realtime-voice-demo/dist/server/server/qwenProvider.test.js",
-    "7.9/realtime-voice-demo/dist/server/server/qwenProvider.js",
-    "7.9/realtime-voice-demo/dist/server/server/config.js",
-    "7.9/realtime-voice-demo/node_modules/rxjs/README.md",
-    "7.9/realtime-voice-demo/node_modules/rxjs/CODE_OF_CONDUCT.md",
-    "7.9/realtime-voice-demo/node_modules/rxjs/CHANGELOG.md",
-    "7.9/realtime-voice-demo/node_modules/caniuse-lite/README.md",
-    "7.9/realtime-voice-demo/node_modules/typescript/SECURITY.md",
-    "7.9/realtime-voice-demo/node_modules/typescript/README.md",
-    "7.9/realtime-voice-demo/node_modules/vite/node_modules/@esbuild/darwin-x64/README.md",
-    "7.9/realtime-voice-demo/node_modules/react-dom/README.md",
-    "7.9/realtime-voice-demo/node_modules/vite/README.md",
-    "7.9/realtime-voice-demo/node_modules/vite/LICENSE.md",
-    "7.9/realtime-voice-demo/node_modules/concurrently/README.md",
-    "7.9/realtime-voice-demo/node_modules/vite/node_modules/esbuild/README.md",
-    "7.9/realtime-voice-demo/node_modules/vite/node_modules/esbuild/LICENSE.md",
-    "7.9/realtime-voice-demo/node_modules/express/node_modules/debug/CHANGELOG.md",
-    "7.9/realtime-voice-demo/node_modules/@types/serve-static/node_modules/@types/send/README.md",
-    "7.9/realtime-voice-demo/node_modules/express/node_modules/debug/README.md",
-    "7.9/realtime-voice-demo/node_modules/body-parser/node_modules/debug/CHANGELOG.md",
-    "7.9/realtime-voice-demo/node_modules/chalk/node_modules/supports-color/readme.md",
-    "7.9/realtime-voice-demo/node_modules/body-parser/node_modules/debug/README.md",
-    "7.9/realtime-voice-demo/node_modules/express/node_modules/ms/readme.md",
-    "7.9/realtime-voice-demo/node_modules/react/README.md",
-    "7.9/realtime-voice-demo/node_modules/express/node_modules/ms/license.md",
-    "7.9/realtime-voice-demo/node_modules/concurrently/docs/demo.gif",
-    "7.8/个人主页原型图.png",
+    "7.9/国内端到端Realtime语音Demo开发设计文档.md",
+    "7.9/demo/realtime-voice-demo/node_modules/send/node_modules/debug/node_modules/ms/readme.md",
+    "7.9/demo/realtime-voice-demo/node_modules/send/node_modules/debug/node_modules/ms/license.md",
+    "7.9/demo/realtime-voice-demo/node_modules/@types/serve-static/node_modules/@types/send/README.md",
+    "7.9/demo/realtime-voice-demo/node_modules/vite/node_modules/@esbuild/darwin-x64/README.md",
+    "7.9/demo/realtime-voice-demo/node_modules/vite/node_modules/esbuild/README.md",
+    "7.9/demo/realtime-voice-demo/node_modules/vite/node_modules/esbuild/LICENSE.md",
+    "7.9/demo/realtime-voice-demo/node_modules/send/node_modules/debug/README.md",
+    "7.9/demo/realtime-voice-demo/node_modules/send/node_modules/debug/CHANGELOG.md",
+    "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/ms/readme.md",
+    "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/ms/license.md",
+    "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/debug/README.md",
+    "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/debug/CHANGELOG.md",
+    "7.9/demo/realtime-voice-demo/node_modules/express/node_modules/ms/readme.md",
+    "7.9/demo/realtime-voice-demo/node_modules/express/node_modules/ms/license.md",
+    "7.9/demo/realtime-voice-demo/node_modules/express/node_modules/debug/README.md",
+    "7.9/demo/realtime-voice-demo/node_modules/express/node_modules/debug/CHANGELOG.md",
+    "7.9/demo/realtime-voice-demo/node_modules/concurrently/docs/demo.gif",
     "7.8/个人主页原型图.svg",
+    "7.8/个人主页客户端原型图.png",
     "7.8/个人主页客户端原型图.svg",
-    "7.8/个人主页客户端原型图.png"
+    "7.9/realtime-voice-demo/node_modules/concurrently/docs/demo.gif",
+    "7.8/个人主页原型图.png"
   ]
 }

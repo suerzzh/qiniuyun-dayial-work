@@ -4,7 +4,7 @@
 基于 `7.7` 昨日产出和 `7.8/产品设计书初稿写作框架.docx`，为我负责的产品设计书 7、8、9 模块形成可交付内容，并持续维护规划记录。
 
 ## Current Phase
-Phase 17: Realtime Voice Demo AI Reply Event Mapping Fix
+Phase 22: UniSpeaking Overall Architecture Baseline Design
 
 ## Phases
 
@@ -152,6 +152,59 @@ Phase 17: Realtime Voice Demo AI Reply Event Mapping Fix
 - [x] 运行 provider 测试、消息测试、类型检查和生产构建
 - **Status:** complete
 
+### Phase 18: Realtime Model Capability Boundary Test Design
+- [x] 恢复全局 planning-with-files 上下文并核对未同步会话
+- [x] 检查现有 7.9 Demo 方案、项目文件和最近提交
+- [x] 明确本轮测试对象、优先能力和成功标准
+- [x] 比较测试用例的组织方式并确定推荐方案
+- [x] 设计基线 Prompt、变量控制、用例、记录表和能力归因规则
+- [x] 经用户确认后将测试文档写入 `7.10`
+- [x] 自检文档的完整性、歧义和可执行性
+- **Status:** complete
+
+### Phase 19: Expanded Realtime Model Performance Test Manual
+- [x] 恢复会话并检查现有测试文档、Demo Prompt、配置和全局记录
+- [x] 确定扩写结构：执行手册 + 36 条详细用例 + 空白结果表
+- [x] 重写测试准备、Prompt 切换、单次执行和评分步骤
+- [x] 扩充 30 条模型行为用例和 6 条模型性能/稳定性用例
+- [x] 为每条用例补充逐轮话术、操作步骤、观察点、通过标准和归因方式
+- [x] 增加可直接填写的空白测试结果总表和单次记录模板
+- [x] 自检用例数量、编号、Prompt 一致性、表格完整性和敏感信息
+- **Status:** complete
+
+### Phase 20: 7.10 UniSpeaking Demo Configuration and Startup
+- [x] 恢复 planning-with-files 会话并定位 7.10 Demo 项目
+- [x] 确认项目为 `7.10/demo测试/UniSpeaking`，当前无 `package.json`
+- [x] 阅读 README、HTML、`.env.example` 和 `.gitignore`，确认实际启动与鉴权方式
+- [x] 将用户提供的凭据仅写入本地 `.env`，确保 Git 忽略
+- [x] 按项目实际架构补齐必要的本地启动配置
+- [ ] 启动服务并验证页面、鉴权/会话入口和错误日志（Codex 沙箱阻止联网安装与监听端口，需用户在普通终端执行）
+- [x] 向用户给出后续自行启动和开始测试的命令
+- **Status:** blocked_by_execution_environment
+
+### Phase 21: Weekly Meeting Report Summary
+- [x] 恢复本周会话记录并确定汇报范围为 7.7-7.10
+- [x] 阅读 7.7、7.8 日报和全局阶段记录
+- [x] 提取 7.9 技术方案、OpenSpec、Demo 调试与修复结论
+- [x] 提取 7.10 模型测试体系、Prompt 分层和 WebRTC Demo 配置结论
+- [x] 整理为周会口述版：本周目标、每日推进、成果、问题、结论、下周计划
+- [x] 检查数字、文件名和未完成事项，避免把环境阻塞描述成已完成
+- **Status:** complete
+
+### Phase 22: UniSpeaking Overall Architecture Baseline Design
+- [x] 使用 brainstorming、planning-with-files 与 documents 技能并恢复会话
+- [x] 定位根目录产品计划书、参考 DOCX 和 `7.13` 输出目录
+- [x] 完整提取 `UniSpeaking产品计划书_v2.md` 的产品、功能、商业、数据与技术约束
+- [x] 提炼参考 DOCX 的目录层级、表格、图示、写作方式和视觉模板
+- [x] 提出 2-3 种总体架构文档方案并请用户确认（已选择产品-AI-技术一体化基线型）
+- [x] 确认详细目录、图表范围、技术深度和交付格式
+- [x] 在 `7.13` 写入确认后的架构基线文档
+- [x] 生成 7 张架构图并同时交付 Markdown 与 DOCX
+- [x] 对 25 页 DOCX 执行渲染、逐页检查和迭代修复
+- [x] 完成标题、图片、字段、可访问性和参考文档哈希审计
+- [x] 更新全局 planning 记录并交付
+- **Status:** complete
+
 ## Key Questions
 1. `7.8/产品设计书初稿写作框架.docx` 中第 7、8、9 模块的标题和要求分别是什么？
 2. 昨日 `7.7` 的哪些调研、用户画像、产品分析、产品图谱内容应被复用到 7/8/9 模块？
@@ -180,11 +233,26 @@ Phase 17: Realtime Voice Demo AI Reply Event Mapping Fix
 | 点击后黑屏的当前根因方向 | 后端到 Qwen 链路已通，点击后前端卡在 `requesting_mic`；黑屏更可能是浏览器或系统麦克风授权/采集层未完成，而不是供应商配置问题 |
 | React null ref 崩溃根因 | React state updater 可能延迟执行，不能在 updater 内读取稍后会被置空的 `currentAiMessageRef.current` 或 `tempUserMessageRef.current`；应先捕获局部 `updated` 消息再传入 updater |
 | AI 不显示回复的根因 | Qwen 在 text+audio 输出模式下返回 `response.audio_transcript.delta/done`，原代码只监听 `response.text.delta/done`，导致 AI 回复文本被当作未处理事件丢掉 |
+| 7.10 模型能力测试组织方式 | 采用能力清单管理测试范围，以受控 Prompt 对照为主，每项重复执行并补充少量压力测试；结论区分模型直出、Prompt 改善、效果不稳定、必须工程实现和暂无法判断 |
+| 7.10 测试文档结构 | 使用一个综合 Markdown 文档承载方法、Prompt、20 条用例、记录模板和决策规则，便于直接执行和持续填充结果 |
+| 7.10 文档不执行 Git 提交 | 本轮用户要求的是写入测试想法和用例，且此前 Git 流程明确要求不要代为提交；仅保留工作区文件供用户复核 |
+| 7.10 测试手册第二版 | 将原 20 条摘要用例扩展为 36 条可照读用例，重点增加指令遵循、语义理解、上下文、稳定性、幻觉和响应性能测试，并保留链路归因 |
+| 第二版结果记录方式 | 将结果表从长手册中拆为独立 Markdown，提供 36 条总表及延迟、一致性、20 轮、六事实专表，方便测试人员直接填写 |
+| 7.10 Demo 配置安全边界 | 真实 DashScope Key 只能写入 `7.10/demo测试/UniSpeaking/.env`，不得回显、提交或写入浏览器静态源码；先核对项目是否具备后端代理 |
+| 周会汇报主线 | 按“产品方向收敛 -> 产品设计落地 -> Realtime 链路验证 -> 模型能力测试”叙述，突出可交付结果、问题修复和下周可验证动作 |
+| 7.13 总体架构文档方法 | 以 `UniSpeaking产品计划书_v2.md` 为内容事实源，以“码上好戏”架构基线 DOCX 为结构与视觉参考；先提炼模板并确认框架，再生成文档 |
+| 7.13 参考模板取舍 | 继承“工程基线、表格驱动、职责与非职责并列、阶段演进与验收闭环”的信息结构；不照搬其全部直接格式化和缺少标题样式的问题，最终文档使用规范标题层级与可维护样式 |
+| 7.13 文档受众 | 用户选择“产品、AI、技术联合评审基线”；文档需要同时解释产品拆分、AI 能力责任和工程验证链路，不下沉为接口字段或数据库表手册 |
+| 7.13 文档组织方式 | 用户选择方案 3“产品-AI-技术一体化基线型”，正文按决策基线、六类架构视图、三条核心流程、MVP 实施与验收四部分组织 |
+| 7.13 最终交付格式 | 同时交付 Markdown、DOCX 和 7 张可复用 PNG 架构图；DOCX 使用 A4、规范标题、静态目录、深蓝标题与浅蓝表头，并通过 25 页逐页渲染检查 |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
 |-------|---------|------------|
 | `git status --short` 报错：当前目录不是 git 仓库 | 1 | 记录为环境事实；后续不依赖 git 提交，直接在项目根目录维护规划文件 |
+| 7.10 Demo `.venv` 安装依赖失败：无法解析 `pypi.org` | 1 | 不重复安装；确认是当前执行环境网络/DNS受限，正在检查本机已有 Conda/uv/其他 Python 环境是否带 `aiohttp` |
+| 本机所有已发现 Python 环境均缺少 `aiohttp` | 1 | 已排查系统、pyenv、bundled Python、Conda/uv/cache；配置完成，后端启动需用户在普通联网终端完成一次 pip 安装 |
+| `python -m http.server 8080` 报 `PermissionError: Operation not permitted` | 1 | 端口空闲，根因是当前 Codex 沙箱禁止监听端口；不重复尝试，交由用户普通终端启动 |
 
 ## Notes
 - 根目录：`/Users/mac/Documents/七牛云`
