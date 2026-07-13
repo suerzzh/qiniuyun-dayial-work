@@ -9,6 +9,7 @@
 - 用户明确要求使用 `$planning-with-files` 制定开发/写作计划，并维护 `task_plan.md`、`findings.md`、`progress.md`。
 - 用户在 2026-07-09 明确纠正：`planning-with-files` 的输出应是整个项目全局记录，位置是 `/Users/mac/Documents/七牛云` 根目录；后续不要只写入具体 Demo 或日期子目录。
 - 用户在 2026-07-10 要求开展非正式的大模型性能与能力边界测试，重点验证某项产品能力能否由 Realtime 模型直接实现、能否通过修改提示词实现，或必须由工程能力实现；测试想法和用例最终写入 `7.10`。
+- 用户在 2026-07-13 要求为 UniSpeaking 设计可落地的空项目骨架，写清完整项目框架、目录、必备文件和扩展预留；正式交付写入 `7.13`，全局 planning 继续只维护在根目录。
 
 ## Research Findings
 - 7.9 Demo 已具备浏览器麦克风输入、Qwen-Omni-Realtime WebSocket 连接、用户转写、AI 文本与音频回复、结束通话及调试日志，可作为 7.10 模型能力测试载体。
@@ -197,6 +198,23 @@
 - 最终输出 25 页 DOCX、同源 Markdown 和 7 张 PNG 架构图，覆盖能力全景、总体分层、自由对话时序、状态机、数据关系、部署拓扑和 MVP 演进。
 - DOCX 最终审计结果：21 个 Heading 1、42 个 Heading 2、7 张带替代文本图片、页码字段正常、可访问性 high/medium/low 均为 0。
 - 参考 DOCX SHA-256 复核仍为 `c9d70818717449ee4daf8e0364439f34477ff76413ef0b46d32a9a316d69dc7a`，确认未修改参考文档。
+
+## Phase 23 Empty Skeleton Findings
+- `7.13` 已有总体架构基线 Markdown、DOCX 和 7 张架构图，覆盖四平面架构、业务领域、AI 能力、Realtime 链路、数据、部署、测试和阶段演进。
+- 本次骨架文档应承接总体架构基线，进一步回答“仓库如何组织、每个目录放什么、首批需要哪些空文件、哪些边界为未来功能预留”，不重复产品定位和总体架构论证。
+- 根目录当前不是 Git 仓库，因此本轮设计文档仍直接写入项目目录，不执行提交；正式创建代码仓库应作为后续实施任务单独进行。
+- 用户确认本次需要最终版、可直接照着开发的全栈骨架；客户端范围明确为 Web、iOS、Android，不是只做自由对话 MVP 或单一 Web 客户端。
+- 用户选择方案 1：TypeScript Monorepo；Web 使用 React 技术栈，iOS/Android 使用同一套 React Native + Expo Prebuild 工程；后端与 Realtime 使用 Node.js + TypeScript；移动端保留 `ios/`、`android/` 原生扩展目录。
+- 用户分段确认仓库边界、技术栈、领域优先目录、数据/事件/错误契约，以及测试、部署和扩展预留设计。
+- 已写入 `7.13/UniSpeaking全栈项目空骨架与目录规范.md`：752 行、23 个正文部分，覆盖根目录、Web、iOS/Android、Admin、API、Realtime、Worker、共享包、数据库、AI 资产、测试、环境变量、基础设施、CI/CD、文档、阶段启用和首批工作包。
+- 静态自检通过：34 个代码围栏成对；未发现 TODO/TBD/自行选择/敏感 Key 形式占位；关键目录全部命中。
+
+## Phase 24 Daily Report Findings
+- 7.13 当日成果不只包含总体架构基线和全栈空骨架，还包括核心业务组件层级、系统组件详细拆分、多个树状层级 DOCX 以及核心业务组件关系图。
+- `UniSpeaking_系统组件详细拆分.md` 已覆盖 Web/Mobile/Admin、接入层、11 个核心业务组件、AI 能力、外部 Provider、基础设施、服务端包结构和组件边界规则。
+- 网页版沟通进一步锁定最终客户端范围为 Web、iOS、Android，并确认 TypeScript Monorepo、React/Next.js、React Native + Expo Prebuild、Node.js TypeScript 后端、统一契约和 Provider Adapter。
+- 用户要求日报保持简洁，应突出“完成总体框架 -> 拆细业务组件 -> 锁定三端全栈骨架 -> 为后续开发建立基线”的主线，避免罗列全部目录细节。
+- 用户指定日报格式为“标题 + 今日完成 + 4 个带书名号标签的成果段落”，本次按该格式直接交付，不再执行 brainstorming 确认环节。
 
 ## Issues Encountered
 | Issue | Resolution |
