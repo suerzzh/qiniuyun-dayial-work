@@ -216,10 +216,96 @@
 - 用户要求日报保持简洁，应突出“完成总体框架 -> 拆细业务组件 -> 锁定三端全栈骨架 -> 为后续开发建立基线”的主线，避免罗列全部目录细节。
 - 用户指定日报格式为“标题 + 今日完成 + 4 个带书名号标签的成果段落”，本次按该格式直接交付，不再执行 brainstorming 确认环节。
 
+## Phase 25 UI-Demo Integration Findings
+- `7.14/UniSpeaking_Complete_UI` 是无构建工具的原生 HTML/CSS/ES Modules 完整 UI 原型，入口为 `index.html` 和 `src/app.mjs`，已包含自由对话、场景、复习、个人中心、会员等静态交互与 Node 原生测试。
+- UI 当前的自由对话按钮只修改本地 `voiceState`，尚未调用麦克风、WebRTC 或 Demo API。
+- `7.14/UniSpeaking` 是 Python `aiohttp` 后端 + 单文件 `webrtc_demo.html` 的可运行自由对话 Demo；后端保护 DashScope/百炼凭据，提供 session、SDP 交换、事件记录、学习者等级和延迟报告接口。
+- Demo 前端默认调用 `http://127.0.0.1:8000`，真实集成需要把其中 WebRTC、DataChannel、转写、AI 文本、音频播放、结束清理和性能记录逻辑抽成 UI 可调用模块。
+- `7.14/UniSpeaking` 是独立 Git 仓库，`data/latency_report.md` 在本轮开始前已有修改，必须保留；`UniSpeaking_Complete_UI` 当前不是独立 Git 仓库。
+- Supabase 更适合承接持久化数据/配置；Qwen Realtime 的 SDP 代理和长期 API Key 不能放到纯静态前端。Vercel 侧是否适合承载当前 Python `aiohttp` 长驻服务需在方案阶段结合运行限制确认。
+- Vercel 与 Supabase 插件均已安装并成功连接账号。Vercel 有一个可用 Team；Supabase 有一个位于 `ap-southeast-1`、状态为 `ACTIVE_HEALTHY` 的现有项目，可优先复用，避免未经确认新建付费项目。
+- 本轮在设计确认前仅执行账号与项目只读检查，尚未创建 Supabase 项目、迁移数据库或触发 Vercel 部署。
+- UI 现有 15 项 Node 测试中 14 项通过；唯一失败稳定复现为 `src/views/training.mjs` 不存在。`app.mjs` 顶层静态导入该文件，因此浏览器加载整个应用时也会失败。这是 UI 文件集不完整的既有问题，不是 Demo 接入造成。
+- 项目根目录、Git 历史和工作区其他位置均未找到 `training.mjs` 副本；若继续使用该 UI，必须依据既有路由、数据和验收截图恢复该视图，或临时移除训练路由。推荐恢复视图以保留完整 UI。
+- Demo 的核心浏览器链路已经明确：创建后端 session -> 获取麦克风 -> 建立 RTCPeerConnection/DataChannel -> 交换 SDP -> 发送 session.update -> 映射用户转写与 AI transcript -> 播放远端音频 -> 工具调用/延迟记录 -> 结束清理。
+- 官方平台资料表明 Supabase Edge Functions 可安全保存 Secret、向外部 API 发起 `fetch` 且按请求无状态运行；当前 Python aiohttp 的内存 session 和 JSON 文件存储不能原样部署到 serverless，需要改为数据库/请求级状态。
+- 当前 Vercel Team 下没有既有项目，首次部署会创建项目；现有 Supabase 项目的 `public` schema 无表，可在用户确认后复用。
+- 用户确认复用现有 Supabase 项目，并从三种方案中选择“Vercel 静态前端 + Supabase Edge Functions + Supabase 数据库”；不引入第三方 Python 托管平台。
+- 用户在执行中进一步明确本轮只考虑 Web 端；iOS、Android 不进入本轮代码、部署和验收范围。
+- 最终连接方式不是嵌入旧 Demo，而是把 WebRTC/DataChannel 抽成 `src/realtime` 模块，由 `src/app.mjs` 驱动现有自由对话 UI；活跃消息不再修改静态演示数据。
+- 已恢复缺失的 `src/views/training.mjs`，补齐“学、读、说、诊”四阶段；主应用中遗漏的 `learningAssets` import 也已修正。
+- Supabase migration `realtime_web` 已应用，创建 `learner_profiles`、`realtime_sessions`、`session_messages`、`realtime_metrics`、`request_rate_limits` 五张表；RLS 全部开启并撤销浏览器角色表权限。
+- 新版 Supabase Publishable Key 只应使用 `apikey` 请求头，不能作为 Bearer JWT。`realtime-gateway` 因此使用函数内 Key 匹配、Origin、限流和会话期限校验，平台 `verify_jwt` 关闭。
+- `realtime-gateway` Edge Function 版本 1 已为 `ACTIVE`，健康接口 200；线上 session 创建 201、关闭 200。健康结果 `model_configured:false` 说明尚缺百炼 Secret，不代表网关或数据库部署失败。
+- Supabase 插件没有 Secret 写入接口；尝试打开控制台时需要单独登录，因此不能在不索取用户登录凭据的前提下自动设置 `DASHSCOPE_API_KEY`、`BAILIAN_WORKSPACE_ID`。
+- Vercel 项目 `unispeaking-web` 已生产部署，最新 Deployment `dpl_FUKPRUpRhLyXop72QcfBsFaMmLp2` 状态 `READY`，正式域名为 `https://unispeaking-web.vercel.app`。
+- 本地和生产浏览器均确认页面有内容、主路由和麦克风入口正常，无控制台错误；真实百炼 SDP、转写和 AI 音频需在 Secret 设置后完成最后验收。
+- 用户已在 Supabase 写入百炼 Secrets，并确认生产 Realtime 全链路已经完全可用；Phase 25 可正式收口。
+
+## Phase 26 Deployment Guide Findings
+- 本轮交付目标是面向队友正在迁移的“前后端均可在本地运行”的完整 Web 项目，输出一份可直接照做的 Vercel + Supabase 生产上线手册，写入 `7.14`。
+- 文档必须把当前已跑通架构与未来完整迁移项目区分清楚：Vercel 负责 Web/适合 Serverless 的接口，Supabase 负责 Postgres、Auth、Storage 与 Edge Functions；长驻进程、长期 WebSocket 或依赖本地磁盘的后端不能未经改造直接部署到无状态平台。
+- 必须明确部署前契约：环境变量清单、客户端/服务端密钥边界、API Base URL、CORS/Origin、Auth 回调地址、数据库 migration、RLS、健康检查、日志、超时/幂等、回滚和自定义域名。
+- 网址可以更改：可修改 Vercel 项目名获得新的默认 `*.vercel.app` 地址，更推荐绑定自有域名；改域名后还要同步 Supabase Auth Site URL/Redirect URLs、Edge Function Origin 白名单、应用公开 URL 和第三方 OAuth 回调地址。
+- Supabase 官方当前流程仍以 `supabase login`、`supabase link --project-ref`、`supabase db push`、`supabase functions deploy` 为生产部署主路径；Edge Function Secrets 可通过 Dashboard 或 `supabase secrets set` 管理，平台预置的服务端 keys 不应进入浏览器。
+- Supabase 团队协作的黄金规则是 schema 变更全部进入 `supabase/migrations`，避免直接在生产 Table Editor/SQL Editor 修改结构；同一时刻协调一人执行生产 `db push`，并用 `supabase migration list` 检查本地/远端历史。
+- Supabase 2026-04-28 变更提示新表可能不会自动暴露给 Data/GraphQL API；是否暴露与 RLS 是两层控制，面向浏览器的数据表需要同时确认 Data API grant 与 RLS policy，服务端私有表应继续默认拒绝。
+- Vercel 官方当前定义 Local、Preview、Production 三类默认环境；推荐 Git 集成：非生产分支/PR 自动生成 Preview，生产分支合并后生成 Production，再通过环境变量隔离数据库和密钥。
+- Vercel 每个 deployment 都有生成 URL；生产使用项目域名或自定义域名。自定义域名在 Project Settings → Domains 添加，apex 通常配置 A 记录，子域名配置 Vercel 页面给出的唯一 CNAME，验证后自动启用 HTTPS。
+- Supabase Auth 生产 `Site URL` 必须指向正式站点；Redirect URLs 应加入正式回调路径、本地路径和受控的 Vercel Preview 模式。生产环境推荐精确路径，不要使用过宽通配符。
+- Supabase 自身也支持付费自定义 API 域名（如 `api.example.com`），但不是 Web 前端域名的必需项；Vercel 自定义站点域名与 Supabase API 自定义域名是两件事。
+- Vercel Functions 适合请求响应型接口，但存在无状态、时长、包大小和请求体限制；需要无限时长/常驻进程、传统本地磁盘或稳定长连接语义的后端应先拆分/改造，不能只因本地能运行就默认适合直接上线。
+- 最终手册已写入 `7.14/UniSpeaking_Vercel与Supabase部署上线完整流程.md`，共 987 行、20 个主章节、74 个成对代码围栏。
+- 文档覆盖平台职责、后端适配判断、仓库结构、部署前预留、接口/环境变量/密钥、数据库迁移、RLS/Auth、Supabase/Vercel 逐步部署、Preview/Production、网址修改、自定义域名、Git/CI、常见操作、回滚、故障排查和最终检查表。
+- 已同步修正 `7.14/UniSpeaking_Complete_UI/README.md` 与首次部署说明的旧状态：百炼 Secrets 和真实端到端链路均已完成，不再显示为等待人工配置。
+- 交付验证：当前项目 Node 测试 33/33 通过；文档敏感模式扫描干净；生产站点和 13 个官方参考链接全部 HTTP 200。
+
+## Phase 27 Domain and Deployment Guide Findings
+- 用户新购阿里云域名 `unispeaking.cn`，当前路演阶段继续采用 Vercel + Supabase，后期计划迁移到自有服务器；需要分别输出两份逐步行动指南。
+- 根目录 Git 仓库当前分支为 `codex/ui-demo-vercel-supabase`，remote 为 GitHub 仓库 `suerzzh/qiniuyun-dayial-work`；`7.14/UniSpeaking_Complete_UI` 当前仍在根仓库中显示为未跟踪目录，指南必须先要求确认完整项目已提交到 GitHub 生产分支，不能假设“上传过部分代码”等于 Vercel 可部署。
+- 原 Demo `7.14/UniSpeaking` 是独立 GitHub 仓库 `fj-sunny/UniSpeaking`；正式 UI/Edge Function 应以包含 `UniSpeaking_Complete_UI`、`supabase/`、migration 和函数源码的完整 GitHub 仓库为部署源，避免 Vercel 和 Supabase 分别指向不同版本。
+- `unispeaking.cn` 当前权威 DNS 为阿里云 DNS `dns31.hichina.com`、`dns32.hichina.com`；公共查询尚无 apex A、`www` CNAME 或 `app` CNAME，说明尚未开始指向 Vercel。
+- 推荐从现在就固定域名分工：`unispeaking.cn`/`www.unispeaking.cn` 用作品牌入口，`app.unispeaking.cn` 用作产品 Web，`api.unispeaking.cn` 预留给未来自有服务器 API；路演阶段前三者可由 Vercel 域名/重定向承接，Supabase API 继续使用项目域名。
+- Vercel GitHub 集成默认对每次 push/PR 创建 deployment；生产分支的新 deployment 自动更新已绑定的生产域名，PR 获得独立 Preview URL。个人 GitHub 仓库导入需要仓库 Owner 权限；组织仓库需要相应组织/仓库权限。
+- Supabase GitHub Integration 在 Project Settings → Integrations 授权；Working directory 必须指向包含 `supabase/` 的父目录。启用 Deploy to production 后，生产分支会自动应用新 migration、部署 `config.toml` 声明的 Edge Functions 和 Storage buckets；Auth/API/seed 默认不会自动部署。
+- Supabase 官方建议把集成检查设为 GitHub required status check，阻止 migration/function 失败的 PR 合并；Preview Branch 不复制生产数据，Secrets 也不会跨分支自动继承。
+- 阿里云 DNS 官方说明：根域主机记录使用 `@`，子域只填前缀（如 `app`，不要填完整域名）；CNAME 用于指向另一个域名；TTL 越小切换生效通常越快。Vercel 的 A/CNAME 目标应逐项复制其 Domains 页面实际显示值，不能使用他人项目示例。
+- 阿里云备案官方说明，在中华人民共和国境内提供非经营性互联网信息服务需要办理 ICP 备案。未来选择中国内地服务器时，应在切换正式 DNS 前完成域名实名、主体/服务器检查、ICP备案；上线后还需按要求办理公安联网备案并展示备案号。
+- 自有服务器推荐先只迁移 Web/API/Worker，继续使用托管 Supabase，降低路演后首次迁移风险；是否自托管 Supabase 作为独立第二阶段。官方当前自托管 Docker 建议最低 2 核/4GB/40GB SSD，推荐 4 核/8GB+/80GB+ SSD，生产还需自行承担密钥、HTTPS、备份、升级、监控、SMTP 和故障恢复。
+- 自有服务器部署基线选择 Ubuntu LTS + Docker Engine/Compose + Nginx/Caddy 反向代理 + 自动 TLS；GitHub Actions 构建不可变镜像并推送 GHCR，服务器只拉取经过测试的 commit SHA 镜像，避免在生产机临时编译。
+- GitHub 根仓库远端默认分支确认为 `main`；GitHub Contents API 未认证查询返回 404，无法据此判断私有仓库远端是否已包含完整 UI，因此指南会把“在 GitHub 网页确认 `package.json`、`supabase/config.toml`、migration、function 和 lockfile 都在 production branch”列为部署前强制门禁。
+- Vercel 当前官方说明：域名配置完成后自动指向最新 Production deployment；生产分支每次 push/merge 更新该域名；同项目的多个域名可在 Domains → Edit 中显式配置 redirect。官方偏好 `www` CNAME 作为普通网站主域，但 UniSpeaking 产品需要长期稳定的产品入口，因此选择 `app.unispeaking.cn` 为应用主域、root/www 重定向到 app。
+- 阿里云官方当前明确：是否需要 ICP 取决于服务器地域；中国内地节点必须在服务器所属接入商办理备案，中国香港/海外节点无需中国内地 ICP 备案。阿里云可备案 ECS/轻量服务器通常要求中国内地节点、包年包月 3 个月以上并具备公网带宽，最终以购买时控制台规则为准。
+- ICP 成功后网站应在相应位置展示备案编号并链接工信部备案系统；完成 ICP 后应在 30 日内提交公安联网备案申请，公安备案通过后也需在网站底部展示公安备案信息。
+- Phase 27 最终域名分工确定为：`app.unispeaking.cn` 作为稳定产品入口，`unispeaking.cn` 与 `www.unispeaking.cn` 重定向到 `app`，`api.unispeaking.cn` 留给未来自有服务器 API；路演阶段保留 `unispeaking-web.vercel.app` 作为紧急回退入口。
+- 2026-07-14 最终复查时，根域、`www`、`app`、`api` 均无公开 A/CNAME 记录；因此必须先在 Vercel Domains 添加域名，再把 Vercel 为当前项目显示的真实 A/CNAME 值录入阿里云 DNS，不能照抄示例目标。
+- 自有服务器迁移采用两阶段原则：第一阶段只迁移 Web/API/Worker 并继续使用托管 Supabase；第二阶段只有在团队已具备数据库备份、监控、安全升级和故障恢复能力后，才单独评估自托管 Supabase。
+- 两份行动指南中的官方参考链接完成可访问性检查：Vercel、Supabase、阿里云、Docker、GitHub、Nginx、Certbot 和公安备案入口均返回 HTTP 200；工信部备案入口对自动请求返回 HTTP 521，保留其官方入口供浏览器人工访问。
+
+## Phase 28 Local-Ready to Production-Ready Findings
+- “所有人克隆后都能在本地运行”只证明开发环境可复现，不证明代码适合云端运行；生产还必须满足运行时兼容、无状态化、环境隔离、安全、迁移、可观测、容量和回滚要求。
+- 最常需要改的不是页面 UI，而是后端启动方式、状态存储、文件存储、环境变量读取、API 地址、CORS/Auth 回调、数据库变更方式、错误处理和健康检查。
+- 如果项目只是静态前端，且后端能力已经全部通过 Supabase 等云服务提供，通常代码改动较少；如果包含传统 Express/FastAPI 常驻服务、内存 session、本地上传目录、SQLite、本地定时任务或长期 WebSocket，则不能原样放进无状态 Functions，需要拆分或选择常驻服务器。
+- 生产代码必须消除 `localhost`、开发代理、固定端口和开发账号假设；外部地址应由环境变量或运行时配置提供，并区分 Development、Preview/Staging、Production。
+- 浏览器只能持有 Supabase publishable key 等可公开配置；service role、百炼 Key、数据库密码等必须留在服务端或平台 Secrets。任何 `NEXT_PUBLIC_`/前端构建变量都会进入浏览器包。
+- 数据库结构不能依赖 README 中的人工点选步骤；表、索引、函数、grant、RLS policy、Storage policy 和必要 seed 应写成版本化 migration，并在 Staging 先验证。
+- Supabase 当前将对象级 grant 与行级 RLS 视为两层权限；新表可能不会自动暴露到 Data API，不能只检查 RLS，也不能仅因客户端报 42501 就放宽全部权限。
+- 生产发布的最低交付物应包括锁文件、可重复 production build、`.env.example`、migration、平台配置、健康检查、日志与监控入口、测试、回滚说明和 README 部署章节。
+
+## Phase 29 Developer Deployment Readiness Findings
+- UniSpeaking 当前路演生产基线属于“Vercel Web + 浏览器 Realtime/WebRTC + Supabase Edge Function/Postgres”的 Serverless/BaaS 混合架构，不属于传统单机常驻前后端。
+- 当前已验证参考实现的 Web 是静态 ES Modules 应用，由 Vercel 提供静态托管和安全响应头；实时密钥网关、会话元数据与最终消息由 Supabase Edge Function/Postgres 承担，浏览器直连 Realtime WebRTC 数据面。
+- 队友的“本地完整版本”如果包含 Express/FastAPI/Python 常驻后端，不能仅凭本地可运行判断能直接部署；必须按能力拆分为 Edge/Function、Supabase 数据服务、浏览器 WebRTC 或独立常驻服务。
+- 开发交付的核心不是替平台管理员点击部署，而是交付可重复 production build、环境/Secret 分层、无状态接口、migration/grant/RLS、Preview E2E、健康检查、日志和回滚信息。
+- 新指南不要求队友照抄当前仓库文件，而是通过架构盘点和代码搜索把其版本逐项标记为保留、环境变量化、迁移或架构例外。
+- Supabase 2026-07 changelog 提示 `@supabase/supabase-js` 后续将要求 TypeScript 5.0；2026-04 的 Data API 变更继续要求团队同时核对对象 grant 与行级 RLS，不能只检查其中一层。
+
 ## Issues Encountered
 | Issue | Resolution |
 |-------|------------|
 | 当前根目录不是 git 仓库，无法提交设计文档 | 将规划和交付文件直接维护在项目目录；最终说明不做 git 提交 |
+| Vercel 首次调用缺少真实必填字段 | 根据插件返回的校验信息改用 `target`、`name` 和 `files[{file,data}]`，仅上传 Web 项目所需文件，生产部署成功 |
+| Supabase 控制台未登录且插件无 Secret 写接口 | 不回显或搬运本地密钥；将两项 Secret 配置记录为操作说明中的唯一人工步骤，其余部署继续完成 |
 
 ## Resources
 - `/Users/mac/Documents/七牛云/7.7`
