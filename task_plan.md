@@ -4,7 +4,7 @@
 基于 `7.7` 昨日产出和 `7.8/产品设计书初稿写作框架.docx`，为我负责的产品设计书 7、8、9 模块形成可交付内容，并持续维护规划记录。
 
 ## Current Phase
-Phase 24: 7.13 Daily Report
+Phase 27: GitHub Deployment, Custom Domain, and Future Self-Hosted Guides
 
 ## Phases
 
@@ -224,6 +224,64 @@ Phase 24: 7.13 Daily Report
 - [x] 更新根目录全局 planning 文件
 - **Status:** complete
 
+### Phase 25: 7.14 UI-Demo Integration and Deployment
+- [x] 恢复全局 planning 上下文并检查未同步会话
+- [x] 初步扫描 `7.14/UniSpeaking_Complete_UI` 与 `7.14/UniSpeaking`
+- [x] 完整梳理 UI 自由对话交互与 Demo WebRTC/API 边界
+- [x] 检查 Vercel、Supabase 插件可用性和部署授权状态
+- [x] 提出 2-3 种集成/部署方案并获得用户确认
+- [x] 写入设计说明；用户明确授权跳过复核并直接执行
+- [x] 用户将本轮范围收敛为仅 Web 端，不包含 iOS/Android
+- [x] 制定实施计划并按 TDD 完成 UI-Demo 集成
+- [x] 恢复缺失训练页并完成 Realtime 状态、消息、API、WebRTC 与 UI 接入
+- [x] 应用 Supabase migration，部署 `realtime-gateway` 并验证健康、RLS、会话创建/关闭
+- [x] 部署 Vercel 生产站点并验证首页、模块、安全响应头和浏览器渲染
+- [x] 编写链接与部署操作文档
+- [x] 更新根目录全局 planning 文件并交付
+- [x] 在已登录的 Supabase 控制台写入百炼两项 Secret，并完成真实 SDP/语音/AI 音频端到端验证（用户确认链路已完全可用）
+- **Status:** complete
+
+### Phase 26: 7.14 Vercel + Supabase Production Deployment Guide
+- [x] 恢复全局 planning 上下文并确认真实 Realtime 链路已跑通
+- [x] 阅读 Supabase、Vercel 部署与环境变量相关 skills
+- [x] 复核 7.14 当前项目的配置、数据库 migration、Edge Function 和既有部署说明
+- [x] 核对 Supabase/Vercel 官方最新文档与常见操作
+- [x] 编写面向完整本地前后端项目迁移后的逐步上线手册
+- [x] 覆盖部署前预留、环境变量、接口、数据库、域名、CORS、验证、回滚和日常运维
+- [x] 写入 `7.14` 并完成 Markdown 静态检查
+- [x] 更新根目录全局 planning 文件并交付
+- **Status:** complete
+
+### Phase 27: GitHub Deployment, Custom Domain, and Future Self-Hosted Guides
+- [x] 恢复全局 planning 上下文并阅读相关 skills
+- [x] 检查当前 Git 仓库、GitHub remote、项目部署结构和 `unispeaking.cn` 公共 DNS 状态
+- [x] 核对 Vercel Git 集成、自定义域名、Supabase GitHub 集成和阿里云 DNS 官方流程
+- [x] 核对未来中国大陆自有服务器所需域名、HTTPS、备案、安全与部署要求
+- [x] 确定当前域名分工和未来平滑迁移策略
+- [x] 编写 GitHub → Vercel/Supabase → `unispeaking.cn` 精确行动指南
+- [x] 编写后续自有服务器部署与迁移精确行动指南
+- [x] 执行 Markdown、链接、敏感信息和覆盖范围检查
+- [x] 更新根目录全局 planning 文件并交付
+- **Status:** complete
+
+### Phase 28: Local-Ready to Production-Ready Engineering Gate
+- [x] 明确“本地可运行”和“生产可部署”的差异
+- [x] 核对 Vercel Functions、环境变量与部署生命周期要求
+- [x] 核对 Supabase 生产检查、migration、Data API grant 与 RLS 要求
+- [x] 整理开发团队需要改造的代码区域、配置文件和验收门禁
+- [x] 给出无需结合当前仓库即可复用的判断方法
+- **Status:** complete
+
+### Phase 29: Developer Deployment Readiness Action Guide
+- [x] 恢复全局 planning 上下文并读取相关 skills
+- [x] 检查当前 Web、Realtime、Supabase、Vercel 代码边界
+- [x] 判断 UniSpeaking 当前目标生产架构类型
+- [x] 核对当前 Vercel/Supabase 生产要求与近期变更
+- [x] 编写面向队友本地完整版本的部署前置与改造行动指南
+- [x] 检查文档结构、敏感信息、链接和可执行性
+- [x] 更新根目录全局记录并交付
+- **Status:** complete
+
 ## Key Questions
 1. `7.8/产品设计书初稿写作框架.docx` 中第 7、8、9 模块的标题和要求分别是什么？
 2. 昨日 `7.7` 的哪些调研、用户画像、产品分析、产品图谱内容应被复用到 7/8/9 模块？
@@ -264,6 +322,11 @@ Phase 24: 7.13 Daily Report
 | 7.13 文档受众 | 用户选择“产品、AI、技术联合评审基线”；文档需要同时解释产品拆分、AI 能力责任和工程验证链路，不下沉为接口字段或数据库表手册 |
 | 7.13 文档组织方式 | 用户选择方案 3“产品-AI-技术一体化基线型”，正文按决策基线、六类架构视图、三条核心流程、MVP 实施与验收四部分组织 |
 | 7.13 最终交付格式 | 同时交付 Markdown、DOCX 和 7 张可复用 PNG 架构图；DOCX 使用 A4、规范标题、静态目录、深蓝标题与浅蓝表头，并通过 25 页逐页渲染检查 |
+| 7.14 集成部署方案 | 使用 `UniSpeaking_Complete_UI` 作为 Vercel 前端，将 Demo 浏览器 Realtime 逻辑模块化；Python 后端能力迁移为 Supabase Edge Functions，状态与记录迁移至现有空 Supabase 项目 |
+| 7.14 本轮范围 | 用户在实施中明确只考虑 Web 端；iOS、Android 不进入本轮代码、部署和验收 |
+| 7.14 Supabase 鉴权 | 新版 Publishable Key 只使用 `apikey` 头；Edge Function 关闭旧式 `verify_jwt` 并在函数内匹配 Supabase 注入的公开 Key，同时校验 Origin、限流和会话期限 |
+| 7.14 生产部署 | Vercel 项目 `unispeaking-web` 最新 Deployment `dpl_FUKPRUpRhLyXop72QcfBsFaMmLp2` 已 READY，正式域名 `https://unispeaking-web.vercel.app`；Supabase `realtime-gateway` 版本 1 已 ACTIVE |
+| 7.14 完整迁移上线手册 | 以当前已跑通的 Vercel Web + Supabase Edge Function/Postgres 为参考基线，同时增加后端形态判断；完整本地后端只有满足无状态、短请求、无本地持久化依赖时才直接迁入 Functions |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
@@ -272,6 +335,11 @@ Phase 24: 7.13 Daily Report
 | 7.10 Demo `.venv` 安装依赖失败：无法解析 `pypi.org` | 1 | 不重复安装；确认是当前执行环境网络/DNS受限，正在检查本机已有 Conda/uv/其他 Python 环境是否带 `aiohttp` |
 | 本机所有已发现 Python 环境均缺少 `aiohttp` | 1 | 已排查系统、pyenv、bundled Python、Conda/uv/cache；配置完成，后端启动需用户在普通联网终端完成一次 pip 安装 |
 | `python -m http.server 8080` 报 `PermissionError: Operation not permitted` | 1 | 端口空闲，根因是当前 Codex 沙箱禁止监听端口；不重复尝试，交由用户普通终端启动 |
+| Vercel 首次部署参数校验失败 | 1 | 根据插件返回的必填字段改用 `target`、`name`、`files[{file,data}]`，限定上传 Web 项目 21 个文件后生产部署成功 |
+| Supabase 健康接口 `model_configured:false` | 1 | 网关和数据库均正常；新项目缺少百炼 Secret，插件不支持 Secret 写入且控制台需要登录，已记录为唯一人工操作 |
+| 本机未安装 `supabase`、`vercel` CLI，无法直接运行本地 `--help` | 1 | 不安装或猜测版本；以已读取的 2026-07 官方文档命令为手册依据，并在文档要求执行者安装后先运行 `--version`/`--help` |
+| Vercel 域名重定向旧路径 `/docs/domains/deploying-and-redirecting` 返回 Page Not Found | 1 | 根据页面提示改用当前路径 `/docs/domains/working-with-domains/deploying-and-redirecting`，不重复请求旧路径 |
+| zsh 循环使用变量名 `path` 覆盖特殊 `PATH` 数组，导致循环内 `curl/sed/rg` command not found | 1 | 保留已成功的 `git ls-remote` 结果；后续改用普通变量名 `item` 并重新执行未完成的只读检查 |
 
 ## Notes
 - 根目录：`/Users/mac/Documents/七牛云`

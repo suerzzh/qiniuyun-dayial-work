@@ -473,3 +473,122 @@
   - `task_plan.md` updated
   - `findings.md` updated
   - `progress.md` updated
+
+## Session: 2026-07-14
+
+### Phase 25: UI-Demo Integration and Deployment
+- **Status:** deployed_awaiting_supabase_secrets
+- Actions taken:
+  - 读取并遵循 `using-superpowers`、`brainstorming` 和 `planning-with-files`，运行 session catchup 并恢复全局记录。
+  - 扫描 `7.14`，确认 UI 原型与自由对话 Demo 的文件结构、Git 状态和启动方式。
+  - 初步确认 UI 为原生 ES Modules 静态应用；Demo 为 Python aiohttp 后端 + WebRTC 单页实现。
+  - 确认集成重点是把 Demo 的 Realtime 运行时抽取并接到 UI 自由对话状态，而不是把两张页面简单嵌套。
+  - 检查插件能力：Vercel 和 Supabase 插件均可用且已登录；Supabase 已有一个健康项目可复用。
+  - 运行 UI 现有测试：15 项中 14 项通过，唯一失败由缺少 `src/views/training.mjs` 引起；全局未找到可恢复副本。
+  - 梳理 Demo WebRTC 数据流和 UI 自由对话的本地模拟交互，确认需要抽取独立 Realtime runtime 并建立状态/消息映射。
+  - 查阅 Vercel/Supabase 官方平台资料，确认部署必须消除 Python 内存 session 与本地 JSON/Markdown 文件依赖。
+  - 用户确认复用现有空 Supabase 项目，并确认采用 Vercel 前端 + Supabase Edge Functions/数据库方案。
+  - 用户在执行中明确本轮只考虑 Web 端；iOS、Android 不进入本轮实现与验收。
+  - 新增 `src/views/training.mjs`，恢复完整 UI 顶层加载与“学、读、说、诊”四阶段页面。
+  - 新增 Realtime 状态、WebRTC 客户端和 Supabase API 模块，将麦克风、静音、字幕、文字发送、AI 回复和结束清理接入正式自由对话 UI。
+  - 新增 Supabase migration、`realtime-gateway` Edge Function、Vercel 配置、安全响应头、本地脚本和自动测试。
+  - Supabase migration `realtime_web` 应用成功；五张表均确认 RLS 为 true。
+  - Edge Function 版本 1 状态 ACTIVE，`/health` HTTP 200；线上会话创建 201、关闭 200。
+  - Vercel 项目 `unispeaking-web` 的最新生产 Deployment `dpl_FUKPRUpRhLyXop72QcfBsFaMmLp2` 状态 READY。
+  - 正式域名 `https://unispeaking-web.vercel.app`；首页与 Realtime 模块 HTTP 200，生产浏览器渲染无控制台错误。
+  - 完整操作文档已写入 `7.14/UniSpeaking_Complete_UI/UniSpeaking_UI与Demo链接及部署操作说明.md`。
+- Existing user changes preserved:
+  - `7.14/UniSpeaking/data/latency_report.md`
+- Next:
+  - 用户在已登录的 Supabase 控制台设置 `DASHSCOPE_API_KEY` 与 `BAILIAN_WORKSPACE_ID`。
+  - 健康接口确认 `model_configured:true` 后，在生产站点完成真实语音、转写、AI 文本/音频、静音和结束清理验收。
+
+### Phase 26: Vercel + Supabase Production Deployment Guide
+- **Status:** complete
+- Actions taken:
+  - 用户确认 Supabase Secrets 已配置完成，生产 Realtime 链路已经完全可用；Phase 25 收口。
+  - 运行 planning-with-files 会话恢复并复核根目录三份全局记录和 `7.14` 文件结构。
+  - 阅读 `planning-with-files`、`using-superpowers`、Supabase、Vercel deployments/CI/CD 与 Vercel env-vars 技能。
+  - 确定文档范围：完整本地前后端项目迁移上线、部署前预留、接口与密钥边界、数据库、域名、验证、回滚、运维和常见操作。
+  - 复核当前 Web 项目的 runtime config、API client、Edge Function、migration、Vercel 配置和既有部署说明。
+  - 获取 Supabase Changelog、Secrets、数据库迁移、Edge Function 部署、Auth Redirect、Production Checklist 与 Vercel 环境、Git 部署、生成 URL、自定义域名、Functions 限制等官方资料。
+  - 尝试按 skill 要求运行 Supabase/Vercel CLI `--help`；本机尚未安装两套 CLI，因此改以官方当前文档命令为依据，并会要求执行者安装后先检查版本与帮助。
+  - 新建 `7.14/UniSpeaking_Vercel与Supabase部署上线完整流程.md`，形成完整本地前后端迁移后的逐步上线、域名、运维和回滚手册。
+  - 同步更新当前 Web README 和首次部署说明，将 Secrets/真实链路状态改为已完成。
+- Verification:
+  - `npm test`: 33 tests, 33 pass, 0 fail。
+  - Markdown: 987 行，74 个代码围栏且数量为偶数。
+  - Secret scan: 未发现真实 DashScope/Supabase Secret 形式。
+  - URL check: 生产站点和 13 个 Vercel/Supabase 官方参考链接均返回 HTTP 200。
+- Files created/modified:
+  - `7.14/UniSpeaking_Vercel与Supabase部署上线完整流程.md` created
+  - `7.14/UniSpeaking_Complete_UI/README.md` updated
+  - `7.14/UniSpeaking_Complete_UI/UniSpeaking_UI与Demo链接及部署操作说明.md` updated
+  - `task_plan.md` updated
+  - `findings.md` updated
+  - `progress.md` updated
+
+### Phase 27: GitHub Deployment, Custom Domain, and Future Self-Hosted Guides
+- **Status:** complete
+- Actions taken:
+  - 读取 `planning-with-files`、`using-superpowers`、`writing-plans`、Supabase、Vercel deployments/CI/CD 与 env-vars skills。
+  - 运行 session catchup，恢复 Phase 26 交付和用户新增域名/自有服务器需求。
+  - 检查根目录与 Demo 独立仓库的分支、GitHub remote 和工作区状态。
+  - 查询 `unispeaking.cn` 公共 DNS：阿里云 DNS 已生效，但尚无网站 A/CNAME 解析记录。
+  - 核对 Vercel GitHub 自动 Preview/Production、自定义域名与 DNS 规则。
+  - 核对 Supabase GitHub Integration 的 working directory、自动 migration/function 部署、required check 和 Preview Branch 行为。
+  - 核对阿里云 DNS、ICP备案路径、公安联网备案入口，以及 Supabase 自托管 Docker 的资源与运维要求。
+  - 只读检查 GitHub remote：根仓库默认生产分支为 `main`；首次检查远端目录时因 zsh 特殊变量名覆盖 PATH 失败，已记录并改用不同变量重试。
+  - GitHub Contents API 对根仓库返回 404（私有仓库未认证场景），因此将远端关键文件人工核对作为部署前门禁。
+  - 复核 Vercel 多域名 redirect、阿里云中国内地/境外服务器备案差异、备案服务器条件和公安备案 30 日要求。
+- Next:
+  - 已新建 `7.14/01_GitHub到Vercel与Supabase并绑定unispeaking.cn行动指南.md`，覆盖 GitHub 生产门禁、Supabase/Vercel 自动部署、阿里云 DNS、自定义域名、环境变量、Origin/Auth/OAuth 联动、验收和回滚。
+  - 已新建 `7.14/02_UniSpeaking迁移到自有服务器行动指南.md`，覆盖地域与备案决策、服务器初始化、Docker/Compose、GHCR、GitHub Actions、Nginx/HTTPS、灰度切换、回滚、运维和可选 Supabase 自托管。
+  - 已在原部署总说明顶部加入两份专项指南入口，便于团队按阶段执行。
+  - 最终静态检查通过：两份专项文档分别为 781 行和 1061 行，代码围栏 78/86 且均为偶数，未发现 TODO/TBD/FIXME 或真实 DashScope/百炼凭据。
+  - `npm test`：33 tests，33 pass，0 fail。
+  - 官方参考链接检查：21 个入口返回 HTTP 200；工信部入口对自动请求返回 521，需要在普通浏览器中人工打开。
+  - DNS 复查：`unispeaking.cn`、`www`、`app`、`api` 当前均未配置公开 A/CNAME，指南未把配置动作误记为已完成。
+- Files created/modified:
+  - `7.14/01_GitHub到Vercel与Supabase并绑定unispeaking.cn行动指南.md` created
+  - `7.14/02_UniSpeaking迁移到自有服务器行动指南.md` created
+  - `7.14/UniSpeaking_Vercel与Supabase部署上线完整流程.md` updated
+  - `task_plan.md` updated
+  - `findings.md` updated
+  - `progress.md` updated
+
+### Phase 28: Local-Ready to Production-Ready Engineering Gate
+- **Status:** complete
+- Actions taken:
+  - 使用 Supabase、Vercel deployments/CI/CD、env-vars、Vercel Functions 和 planning-with-files skills。
+  - 核对 Supabase 2026-07 changelog、Production Checklist、Data API 安全说明与本地 migration 流程。
+  - 核对 Vercel deployment、Functions 和环境变量官方说明。
+  - 将问题抽象为通用工程门禁，不依赖当前 UniSpeaking 仓库实现。
+  - 整理必须改代码、通常只改配置和需要更换部署平台的三类情况。
+- Conclusion:
+  - 本地可复现是上线前提之一，但不能替代 production build、运行时适配、无状态化、环境与 Secret 分层、migration/RLS、安全、监控和回滚验收。
+- Files modified:
+  - `task_plan.md` updated
+  - `findings.md` updated
+  - `progress.md` updated
+
+### Phase 29: Developer Deployment Readiness Action Guide
+- **Status:** complete
+- Actions taken:
+  - 读取并使用 planning-with-files、Superpowers、Supabase 与 Vercel 部署相关 skills。
+  - 检查当前参考实现的 Web 静态入口、runtime config、Realtime API、Edge Function、migration、Vercel 和 Supabase 配置。
+  - 将项目分类为 Vercel Web + 浏览器 Realtime/WebRTC + Supabase Serverless/BaaS 混合架构。
+  - 编写面向队友本地完整版本的生产化行动指南，覆盖架构盘点、仓库交付物、代码区域改造、clean clone、Preview、E2E、交接包和阻断门禁。
+  - 在原部署总说明顶部加入第三份专项指南入口。
+- Verification:
+  - 新文档 656 行，34 个代码围栏且成对闭合。
+  - TODO/TBD/FIXME 和真实 DashScope/百炼凭据模式扫描无结果。
+  - 10 个 Vercel/Supabase 官方参考入口均返回 HTTP 200。
+  - 当前 Web `npm test`：33 tests，33 pass，0 fail。
+  - `git diff --check`：通过。
+- Files created/modified:
+  - `7.14/03_UniSpeaking开发团队部署前置准备与生产化改造行动指南.md` created
+  - `7.14/UniSpeaking_Vercel与Supabase部署上线完整流程.md` updated
+  - `task_plan.md` updated
+  - `findings.md` updated
+  - `progress.md` updated
