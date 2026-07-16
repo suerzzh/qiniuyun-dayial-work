@@ -134,3 +134,20 @@ test("mobile controls use 44px hit areas without enlarging switch tracks", async
   assert.match(css, /\.switch\{width:48px;height:var\(--tap\);min-height:var\(--tap\);background:transparent\}/);
   assert.match(css, /\.switch:before\{/);
 });
+
+test("profile modules share one desktop vertical scroll container", async () => {
+  const css = await read("styles.css");
+
+  assert.match(
+    css,
+    /\.profile-content\{[^}]*min-height:0;[^}]*overflow-x:hidden;[^}]*overflow-y:auto;[^}]*overscroll-behavior:contain/
+  );
+  assert.match(
+    css,
+    /\.profile-dashboard,\.profile-list-page,\.settings-shell\{[^}]*height:auto;[^}]*min-height:calc\(100% - 24px\);[^}]*overflow:visible/
+  );
+  assert.match(
+    css,
+    /@media\(max-width:760px\)[\s\S]*?\.profile-content\{overflow:visible\}/
+  );
+});
