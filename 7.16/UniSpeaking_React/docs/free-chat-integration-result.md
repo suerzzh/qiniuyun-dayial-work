@@ -135,7 +135,7 @@ npm run dev
 ## 9. Remaining Issues
 
 - 尚未由真人对麦克风说一句英语验证实际设备的转写准确度；不影响已验证的 WebRTC 建连、AI 字幕、AI 音频和清理链路。
-- Vercel 历史 deployment 记录可清理，但不能删除当前 `unispeaking-web` 项目，否则会同时丢失复用的域名和环境变量。
+- Vercel 历史 deployment 已清理，只保留当前 READY Production；`unispeaking-web` 项目、复用域名和环境变量继续保留。
 - Python 后端的 aiohttp 弃用警告和 Vite 5 开发工具链审计问题仍属于后续维护项；没有执行破坏性依赖升级。
 
 ## 10. Deployment Readiness
