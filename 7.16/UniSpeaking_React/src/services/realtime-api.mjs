@@ -15,14 +15,21 @@ function normalizeBaseUrl(baseUrl) {
 }
 
 /**
- * @param {{ baseUrl: string, fetchImpl?: typeof fetch }} options
+ * @param {{ baseUrl: string, publicKey?: string, fetchImpl?: typeof fetch }} options
  */
-export function createRealtimeApi({ baseUrl, fetchImpl = fetch }) {
+export function createRealtimeApi({ baseUrl, publicKey = "", fetchImpl = fetch }) {
   const base = normalizeBaseUrl(baseUrl);
+  const apiKey = publicKey.trim();
 
   /** @param {string} path @param {RequestInit} [options] */
   async function request(path, options = {}) {
-    const response = await fetchImpl(`${base}${path}`, options);
+    const response = await fetchImpl(`${base}${path}`, {
+      ...options,
+      headers: {
+        ...(apiKey ? { apikey: apiKey } : {}),
+        ...(options.headers || {}),
+      },
+    });
     if (response.status === 204) return null;
     const contentType = response.headers.get("content-type") || "";
     const body = contentType.includes("application/json")

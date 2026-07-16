@@ -66,7 +66,8 @@ export function useRealtimeSession() {
 
   if (!clientRef.current) {
     const apiBase = import.meta.env.VITE_REALTIME_API_BASE || DEFAULT_API_BASE;
-    const api = createRealtimeApi({ baseUrl: apiBase });
+    const publicKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
+    const api = createRealtimeApi({ baseUrl: apiBase, publicKey });
     const mediaDevices = {
       /** @param {MediaStreamConstraints} constraints */
       getUserMedia: async (constraints) => {

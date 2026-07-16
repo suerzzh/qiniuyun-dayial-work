@@ -46,6 +46,34 @@ test("normalizes the Python backend URL and uses the current session endpoints",
   assert.equal(requests[2].options.body, "v=0\r\noffer");
 });
 
+test("sends the configured Supabase publishable key on JSON and SDP requests", async () => {
+  const requests = [];
+  const publicKey = "sb_publishable_test_key";
+  const api = createRealtimeApi({
+    baseUrl: "https://example.supabase.co/functions/v1/realtime-gateway",
+    publicKey,
+    fetchImpl: async (url, options = {}) => {
+      requests.push({ url, options });
+      if (String(url).includes("/api/realtime")) {
+        return new Response("v=0\r\nanswer", {
+          status: 200,
+          headers: { "Content-Type": "application/sdp" },
+        });
+      }
+      return jsonResponse({ ok: true, session_id: "session-1" }, 200);
+    },
+  });
+
+  await api.health();
+  await api.createSession({ prompt: "daily life" });
+  await api.exchangeSdp("session-1", "v=0\r\noffer");
+
+  assert.deepEqual(
+    requests.map(({ options }) => options.headers?.apikey),
+    [publicKey, publicKey, publicKey]
+  );
+});
+
 test("surfaces a safe backend error without leaking request configuration", async () => {
   const api = createRealtimeApi({
     baseUrl: "http://127.0.0.1:8000",
