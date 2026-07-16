@@ -55,7 +55,7 @@ export function createRealtimeApi({ baseUrl, publicKey = "", fetchImpl = fetch }
 
   return {
     health: () => request("/health"),
-    /** @param {{ prompt?: string, conversation_id?: string | null }} body */
+    /** @param {{ prompt?: string, conversation_id?: string | null, scenario_id?: string }} body */
     createSession: (body = {}) => postJson("/api/sessions", body),
     /** @param {string} sessionId @param {string} offerSdp */
     exchangeSdp: async (sessionId, offerSdp) => {

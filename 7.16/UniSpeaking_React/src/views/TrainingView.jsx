@@ -3,8 +3,10 @@ import Icon from "../components/Icon";
 import StageProgress from "../components/StageProgress";
 import VoiceOrb from "../components/VoiceOrb";
 import { learningAssets, sentences, diagnosticDimensions } from "../data";
+import RestaurantSimulationSession from "./RestaurantSimulationSession";
 
 export default function TrainingView({ stage, scene, state, updateState, showToast }) {
+  const isRestaurantDemo = scene === "restaurant" && stage === "simulation";
   const activeAssetIndex = Math.min(state.activeAsset || 0, learningAssets.length - 1);
   const activeWord = learningAssets[activeAssetIndex];
 
@@ -16,16 +18,18 @@ export default function TrainingView({ stage, scene, state, updateState, showToa
   const renderTrainingHead = () => (
     <header className="training-head">
       <div>
-        <h1>咖啡店点单</h1>
+        <h1>{isRestaurantDemo ? "餐厅特殊需求" : "咖啡店点单"}</h1>
         <p>
-          {state.isDirectSimulation
+          {isRestaurantDemo
+            ? "和 Clara 店员进行儿童餐厅点餐对话，练习食物、饮料与礼貌表达。"
+            : state.isDirectSimulation
             ? "直接开始真实场景模拟对话，练习地道表达与应答。"
             : "从词语到完整表达，最后进入真实场景模拟。"}
         </p>
       </div>
       <a
         className="exit-training-btn"
-        href={state.isDirectSimulation ? `#/review/${scene || "cafe"}` : "#/scenes"}
+        href={isRestaurantDemo ? "#/scenes" : state.isDirectSimulation ? `#/review/${scene || "cafe"}` : "#/scenes"}
       >
         退出训练
       </a>
@@ -436,7 +440,9 @@ export default function TrainingView({ stage, scene, state, updateState, showToa
   };
 
   const currentContent =
-    stage === "sentences"
+    isRestaurantDemo
+      ? <RestaurantSimulationSession />
+      : stage === "sentences"
       ? renderSentences()
       : stage === "simulation"
       ? renderSimulation()
@@ -445,7 +451,7 @@ export default function TrainingView({ stage, scene, state, updateState, showToa
   return (
     <section className="training-page view-enter">
       {renderTrainingHead()}
-      {!state.isDirectSimulation && (
+      {!state.isDirectSimulation && !isRestaurantDemo && (
         <StageProgress current={stage} maxStage={state.maxStage || "words"} />
       )}
       {currentContent}

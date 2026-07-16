@@ -9,6 +9,7 @@ function createHarness() {
   const events = [];
   const apiCalls = {
     create: 0,
+    createOptions: [],
     exchange: [],
     remember: [],
     bind: [],
@@ -19,6 +20,7 @@ function createHarness() {
   const api = {
     async createSession(options) {
       apiCalls.create += 1;
+      apiCalls.createOptions.push(options);
       return {
         session_id: `session-${apiCalls.create}`,
         conversation_id: options.conversation_id || "conversation-1",
@@ -118,6 +120,18 @@ function createHarness() {
     peers, channels, senders, track, stream,
   };
 }
+
+test("forwards the fixed restaurant scenario when creating a realtime session", async () => {
+  const h = createHarness();
+  await h.client.start({ scenarioId: "child-restaurant-ordering" });
+
+  assert.deepEqual(h.apiCalls.createOptions, [{
+    prompt: "",
+    conversation_id: null,
+    scenario_id: "child-restaurant-ordering",
+  }]);
+  await h.client.stop();
+});
 
 test("deduplicates start and keeps media gated until session.created", async () => {
   const h = createHarness();

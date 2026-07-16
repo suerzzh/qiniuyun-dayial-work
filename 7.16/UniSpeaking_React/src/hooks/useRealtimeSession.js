@@ -21,20 +21,21 @@ function realtimeReducer(state, event) {
   return applyRealtimeEvent(state, event);
 }
 
-function readConversationId() {
+/** @param {string} storageKey */
+function readConversationId(storageKey) {
   try {
-    const value = window.localStorage.getItem(CONVERSATION_STORAGE_KEY) || "";
+    const value = window.localStorage.getItem(storageKey) || "";
     return /^[A-Za-z0-9_-]{8,64}$/.test(value) ? value : undefined;
   } catch {
     return undefined;
   }
 }
 
-/** @param {string | null | undefined} conversationId */
-function persistConversationId(conversationId) {
+/** @param {string} storageKey @param {string | null | undefined} conversationId */
+function persistConversationId(storageKey, conversationId) {
   if (!conversationId) return;
   try {
-    window.localStorage.setItem(CONVERSATION_STORAGE_KEY, conversationId);
+    window.localStorage.setItem(storageKey, conversationId);
   } catch {
     // Private browsing or a restrictive browser policy can disable storage.
   }
@@ -58,7 +59,11 @@ function createBrowserAudioPlayback(onAudibleChange) {
   });
 }
 
-export function useRealtimeSession() {
+/** @param {{ scenarioId?: string, prompt?: string }} [options] */
+export function useRealtimeSession({ scenarioId = "", prompt = "" } = {}) {
+  const conversationStorageKey = scenarioId
+    ? `${CONVERSATION_STORAGE_KEY}:${scenarioId}`
+    : CONVERSATION_STORAGE_KEY;
   const [state, dispatch] = useReducer(realtimeReducer, undefined, createRealtimeState);
   const clientRef = useRef(
     /** @type {ReturnType<typeof createRealtimeClient> | null} */ (null),
@@ -94,24 +99,26 @@ export function useRealtimeSession() {
   const start = useCallback(async () => {
     try {
       const result = await clientRef.current?.start({
-        conversationId: readConversationId(),
+        conversationId: readConversationId(conversationStorageKey),
+        prompt,
+        scenarioId,
       });
-      persistConversationId(result?.conversationId);
+      persistConversationId(conversationStorageKey, result?.conversationId);
       return true;
     } catch {
       return false;
     }
-  }, []);
+  }, [conversationStorageKey, prompt, scenarioId]);
 
   const retry = useCallback(async () => {
     try {
       const result = await clientRef.current?.retry();
-      persistConversationId(result?.conversationId);
+      persistConversationId(conversationStorageKey, result?.conversationId);
       return true;
     } catch {
       return false;
     }
-  }, []);
+  }, [conversationStorageKey]);
 
   const togglePause = useCallback(async () => {
     if (state.paused) {

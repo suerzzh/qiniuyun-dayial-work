@@ -53,7 +53,7 @@ export function createRealtimeClient({
   let disconnectHandled = false;
   let sessionStartedAt = 0;
   const processedToolCalls = new Set();
-  /** @type {{ prompt?: string, conversationId?: string | null }} */
+  /** @type {{ prompt?: string, conversationId?: string | null, scenarioId?: string }} */
   let lastStartOptions = {};
 
   /** @param {any} event */
@@ -241,7 +241,7 @@ export function createRealtimeClient({
     return teardownPromise;
   }
 
-  /** @param {{ prompt?: string, conversationId?: string | null }} [options] */
+  /** @param {{ prompt?: string, conversationId?: string | null, scenarioId?: string }} [options] */
   function start(options = {}) {
     if (startPromise) return startPromise;
     if (peer && sessionId) {
@@ -256,6 +256,7 @@ export function createRealtimeClient({
         const backend = await api.createSession({
           prompt: options.prompt || "",
           conversation_id: options.conversationId || null,
+          scenario_id: options.scenarioId || "",
         });
         sessionId = backend.session_id;
         conversationId = backend.conversation_id;

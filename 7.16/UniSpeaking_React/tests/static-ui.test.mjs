@@ -1,5 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
+import { existsSync } from "node:fs";
 import { readFile } from "node:fs/promises";
 import { fileURLToPath } from "node:url";
 import { dirname, join } from "node:path";
@@ -92,6 +93,23 @@ test("daily recommendations use the scene page as the single vertical scroll con
   assert.match(css, /\.scene-page\{[^}]*overflow-x:hidden;[^}]*overflow-y:auto/);
   assert.match(css, /\.scene-directory-compact \.scene-grid-compact\s*\{[^}]*max-height:\s*none\s*!important;[^}]*overflow-y:\s*visible\s*!important/);
   assert.match(scenes, /allScenes\.slice\(0, 3\)\.map/);
+});
+
+test("the restaurant recommendation opens its dedicated realtime simulation only", async () => {
+  const scenes = await read("src/views/ScenesView.jsx");
+  const training = await read("src/views/TrainingView.jsx");
+  const restaurantViewPath = join(root, "src/views/RestaurantSimulationSession.jsx");
+
+  assert.match(scenes, /scene\.id === "restaurant"/);
+  assert.match(scenes, /#\/training\/restaurant\/simulation\?direct=true/);
+  assert.match(training, /RestaurantSimulationSession/);
+  assert.match(training, /scene === "restaurant"/);
+  assert.equal(existsSync(restaurantViewPath), true, "restaurant realtime view must exist");
+  const restaurantView = await read("src/views/RestaurantSimulationSession.jsx");
+  assert.match(restaurantView, /useRealtimeSession\(\{\s*scenarioId:\s*"child-restaurant-ordering"/);
+  assert.match(restaurantView, /void start\(\)/);
+  assert.match(restaurantView, /session\.messages\.map/);
+  assert.match(restaurantView, /Clara 店员/);
 });
 
 test("settings ranges use native keyboard-accessible inputs", async () => {

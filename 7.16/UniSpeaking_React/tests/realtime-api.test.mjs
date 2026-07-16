@@ -23,7 +23,11 @@ test("normalizes the Python backend URL and uses the current session endpoints",
   });
 
   await api.health();
-  await api.createSession({ prompt: "daily life", conversation_id: "conversation-1" });
+  await api.createSession({
+    prompt: "daily life",
+    conversation_id: "conversation-1",
+    scenario_id: "child-restaurant-ordering",
+  });
   const sdp = await api.exchangeSdp("session-1", "v=0\r\noffer");
   await api.rememberEvent("session-1", { type: "response.text.done", text: "Hi" });
   await api.bindProviderSession("session-1", "sess_0123456789abcdef");
@@ -44,6 +48,11 @@ test("normalizes the Python backend URL and uses the current session endpoints",
   ]);
   assert.equal(requests[2].options.headers["Content-Type"], "application/sdp");
   assert.equal(requests[2].options.body, "v=0\r\noffer");
+  assert.deepEqual(JSON.parse(requests[1].options.body), {
+    prompt: "daily life",
+    conversation_id: "conversation-1",
+    scenario_id: "child-restaurant-ordering",
+  });
 });
 
 test("sends the configured Supabase publishable key on JSON and SDP requests", async () => {

@@ -134,7 +134,12 @@ export default function ScenesView({ state, updateState, showToast }) {
                     <h3>{scene.title}</h3>
                     <p className="desc">{scene.desc}</p>
                   </div>
-                  <a className="action-link" href="#/training/cafe/words">
+                  <a
+                    className="action-link"
+                    href={scene.id === "restaurant"
+                      ? "#/training/restaurant/simulation?direct=true"
+                      : "#/training/cafe/words"}
+                  >
                     进入场景 <Icon name="arrow" />
                   </a>
                 </div>
