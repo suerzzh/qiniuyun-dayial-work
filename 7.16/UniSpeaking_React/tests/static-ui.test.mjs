@@ -85,6 +85,15 @@ test("desktop directory pages reserve enough space to avoid internal page drift"
   assert.match(css, /\.review-detail-layout\{height:calc\(100% - 275px\)/);
 });
 
+test("daily recommendations use the scene page as the single vertical scroll container", async () => {
+  const css = await read("styles.css");
+  const scenes = await read("src/views/ScenesView.jsx");
+
+  assert.match(css, /\.scene-page\{[^}]*overflow-x:hidden;[^}]*overflow-y:auto/);
+  assert.match(css, /\.scene-directory-compact \.scene-grid-compact\s*\{[^}]*max-height:\s*none\s*!important;[^}]*overflow-y:\s*visible\s*!important/);
+  assert.match(scenes, /allScenes\.slice\(0, 3\)\.map/);
+});
+
 test("settings ranges use native keyboard-accessible inputs", async () => {
   const profile = await read("src/views/ProfileView.jsx");
   assert.match(profile, /type="range"/);
