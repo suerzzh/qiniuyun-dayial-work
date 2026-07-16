@@ -96,14 +96,19 @@ test("daily recommendations use the scene page as the single vertical scroll con
 });
 
 test("the restaurant recommendation opens its dedicated realtime simulation only", async () => {
+  const data = await read("src/data.js");
   const scenes = await read("src/views/ScenesView.jsx");
   const training = await read("src/views/TrainingView.jsx");
   const restaurantViewPath = join(root, "src/views/RestaurantSimulationSession.jsx");
 
   assert.match(scenes, /scene\.id === "restaurant"/);
   assert.match(scenes, /#\/training\/restaurant\/simulation\?direct=true/);
+  assert.match(data, /title:"儿童点单"/);
+  assert.doesNotMatch(data, /title:"餐厅特殊需求"/);
   assert.match(training, /RestaurantSimulationSession/);
   assert.match(training, /scene === "restaurant"/);
+  assert.match(training, /isRestaurantDemo \? "儿童点单"/);
+  assert.doesNotMatch(training, /isRestaurantDemo \? "餐厅特殊需求"/);
   assert.equal(existsSync(restaurantViewPath), true, "restaurant realtime view must exist");
   const restaurantView = await read("src/views/RestaurantSimulationSession.jsx");
   assert.match(restaurantView, /useRealtimeSession\(\{\s*scenarioId:\s*"child-restaurant-ordering"/);

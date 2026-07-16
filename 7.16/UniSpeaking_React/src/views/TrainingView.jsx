@@ -18,7 +18,7 @@ export default function TrainingView({ stage, scene, state, updateState, showToa
   const renderTrainingHead = () => (
     <header className="training-head">
       <div>
-        <h1>{isRestaurantDemo ? "餐厅特殊需求" : "咖啡店点单"}</h1>
+        <h1>{isRestaurantDemo ? "儿童点单" : "咖啡店点单"}</h1>
         <p>
           {isRestaurantDemo
             ? "和 Clara 店员进行儿童餐厅点餐对话，练习食物、饮料与礼貌表达。"

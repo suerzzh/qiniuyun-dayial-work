@@ -44,7 +44,7 @@ export const conversations = [
 export const sceneCategories = [
   { id:"daily", label:"生活日常", scenes:[
     { id:"cafe", title:"咖啡店点单", desc:"说明饮品、杯型与奶类偏好，并听懂确认问题。", meta:"约 6 分钟 · 基础", art:"cafe" },
-    { id:"restaurant", title:"餐厅特殊需求", desc:"礼貌说明忌口、过敏或座位需求。", meta:"约 7 分钟 · 基础", art:"table" },
+    { id:"restaurant", title:"儿童点单", desc:"礼貌说明忌口、过敏或座位需求。", meta:"约 7 分钟 · 基础", art:"table" },
   ]},
   { id:"campus", label:"校园学习", scenes:[
     { id:"seminar", title:"课堂讨论", desc:"提出观点、回应同学并补充理由。", meta:"约 8 分钟 · 进阶", art:"book" },
