@@ -1,128 +1,118 @@
-# UniSpeaking 自由对话融合结果
+# UniSpeaking 自由对话融合与上线结果
 
 完成日期：2026-07-16  
 分支：`codex/integrate-free-chat-v2`  
-范围：仅本地融合与验收；未部署 Vercel Preview/Production，未修改生产 Supabase。
+正式入口：<https://app.unispeaking.cn/#/conversation>
 
 ## 1. 最终融合架构
 
-`UniSpeaking_React` 是唯一产品前端和 React 根应用。`UniSpeaking/webrtc_demo.html` 保留为诊断参考，但产品不再跳转、嵌入或依赖该页面。
+`UniSpeaking_React` 是唯一产品前端和 React 根应用。自由对话沿用完整产品 UI，通过单一实时客户端连接 Supabase Edge Function；旧 `webrtc_demo.html` 不再是产品入口。
 
 ```text
-App / #/conversation
-  -> ConversationView（现有产品视觉）
-    -> useRealtimeSession（React 生命周期与 actions）
-      -> realtime-state（纯 reducer、字幕和产品状态）
-      -> RealtimeClient（单一连接与 teardown）
-        -> microphone（单一 MediaStream）
-        -> audio-playback（单一 Audio / AudioContext / analyser）
-        -> realtime-api（HTTP/SDP 适配）
-          -> UniSpeaking/backend/app.py（服务端密钥）
-            -> 阿里云百炼 Qwen Realtime（WebRTC + DataChannel）
+Vercel / app.unispeaking.cn
+  -> App / #/conversation
+    -> ConversationView
+      -> useRealtimeSession
+        -> realtime-state reducer
+        -> RealtimeClient
+          -> microphone / audio-playback
+          -> realtime-api
+            -> Supabase Edge Function realtime-gateway
+              -> 阿里云百炼 Qwen Realtime
+              -> existing realtime_* tables
 ```
 
-显式状态覆盖：未开始、请求麦克风、连接中、已连接、用户说话、AI 思考、AI 播放、用户打断、暂停/恢复、网络断开、重试、正常结束和异常结束。
+生产沿用现有 Supabase project `ropgifqbblzktgxllupi` 和 Vercel project `unispeaking-web`。未新建 Supabase 项目，未修改数据库 schema，未清空历史数据。
 
 ## 2. 主要调用链
 
-1. 用户点击语音球，Hook 调用唯一 `RealtimeClient.start()`。
-2. 后端 `POST /api/sessions` 创建 session 并返回服务端生成的 realtime config。
-3. 浏览器请求一次麦克风，建立一个 `RTCPeerConnection` 和 `oai-events` DataChannel。
-4. 本地音轨先通过 `replaceTrack(null)` 门控；Offer SDP 由 `POST /api/realtime` 代理到百炼。
-5. 收到 `session.created` 后恢复 sender track、发送 `session.update` 并绑定 provider session。
-6. DataChannel 的用户转写、AI transcript、response 与 tool 事件进入 reducer，页面渲染实时气泡和状态。
-7. 远端 track 交给唯一播放器；Analyser RMS 映射 AI 正在播放与打断状态。
-8. 正常结束、断线、异常或页面卸载统一走幂等 teardown：关闭 channel/peer、停止 tracks、停止音频、取消 RAF、关闭 AudioContext，并关闭后端 session。
+1. 页面请求一次麦克风，创建唯一 `RTCPeerConnection`、音轨和 DataChannel。
+2. `POST /api/sessions` 创建数据库会话并返回 Clara 最新提示词生成的 realtime config。
+3. `POST /api/realtime` 由 Edge Function 使用服务端百炼密钥交换 SDP。
+4. `session.created` 后绑定 provider session、恢复麦克风 sender 并发送 `session.update`。
+5. 用户转写、AI transcript、状态和工具事件进入 reducer，产品页实时渲染字幕并自动滚动。
+6. 结束、异常或卸载统一关闭 channel/peer、停止麦克风和音频，并上报质量、关闭数据库会话。
 
-## 3. 修改文件
+## 3. 主要修改与新增文件
 
-### 主应用修改
+- `src/services/realtime-api.mjs`：为 Edge Function 请求统一附加公开 `apikey`，覆盖 JSON、SDP 和健康检查。
+- `src/hooks/useRealtimeSession.js`：读取 `VITE_SUPABASE_PUBLISHABLE_KEY` 并保持单一客户端生命周期。
+- `tests/realtime-api.test.mjs`：验证 publishable key 请求头与现有 API 契约。
+- `.env.example`：增加公开 Supabase publishable key 变量名，不包含真实值。
+- `.gitignore`：忽略 `.vercel/` 和本地 env 文件，同时保留 `.env.example`。
+- `../supabase/config.toml`：绑定现有 Supabase project ref。
+- `../supabase/functions/realtime-gateway/index.ts`：生产实时网关、CORS、会话、SDP、事件、质量与关闭接口。
+- `../supabase/functions/realtime-gateway/deno.json`：Edge Function 运行依赖配置。
+- `../supabase/functions/realtime-gateway/clara_current_en.txt`：Clara 最新英文提示词源文件。
+- `tests/realtime-gateway-contract.test.mjs`：验证网关路由、安全约束和嵌入提示词一致性。
+- `docs/superpowers/specs/2026-07-16-production-cutover-design.md`：生产切换设计。
+- `docs/superpowers/plans/2026-07-16-production-cutover.md`：生产切换执行计划。
 
-- `package.json`、`package-lock.json`：增加固定版本的 ESLint、TypeScript 与 React 类型工具，新增 lint/typecheck/test 脚本；未升级 React/Vite。
-- `src/App.jsx`：抽取路由函数，移除自由对话模拟 reset 接线，把产品页交给真实会话模块。
-- `src/views/ConversationView.jsx`：保留视觉类名与布局，接入实时字幕、状态、开始、重试、暂停、静音、文字和结束行为。
-- `styles.css`：只增加真实状态、错误/重试、partial subtitle、静音和 disabled 样式。
-- `vite.config.js`：本地开发和 preview 固定为 `127.0.0.1:8080`，匹配后端 CORS。
-- `src/views/ScenesView.jsx`、`src/views/MembershipView.jsx`：修复浏览器发现的 JSX `class` 控制台警告。
-- `README.md`：改为当前架构、前后端启动、安全、验证与部署关系说明。
-- `tests/state.test.mjs`、`tests/router.test.mjs`、`tests/review-policy.test.mjs`、`tests/training-flow.test.mjs`、`tests/static-ui.test.mjs`：迁移过时静态断言到当前 React/模块结构。
+未删除数据库表或现有 Vercel/Supabase 项目。旧 Demo 仅作为本地诊断参考，已从产品调用链废弃。
 
-### 后端文档与本地配置修改
+## 4. 本地启动
 
-- `../UniSpeaking/README.md`：路径从 `7.14` 更新为 `7.16`，产品入口改为 React `#/conversation`。
-- `../UniSpeaking/.env.example`：补齐 `LOG_LEVEL` 和旧兼容配置名说明；没有真实值。
-- `../UniSpeaking/.gitignore`：忽略本地 latency Markdown 和 session identity 输出。
-
-## 4. 新增文件
-
-- `.gitignore`：忽略前端 env、本地配置、依赖和构建产物。
-- `.env.example`：公开的 `VITE_REALTIME_API_BASE` 示例。
-- `eslint.config.js`、`tsconfig.json`：可信的 lint 与 checkJs typecheck 配置。
-- `vercel.json`：未来静态托管使用的安全头与 hash 资源缓存；本轮未部署。
-- `src/router.mjs`：可测试的 hash 路由解析与全局导航映射。
-- `src/hooks/useRealtimeSession.js`：React 生命周期、单一 client ref、操作封装和卸载清理。
-- `src/realtime/realtime-state.mjs`：产品会话 reducer、字幕合并、错误与状态文案。
-- `src/realtime/realtime-client.mjs`：WebRTC/DataChannel、media gate、provider 绑定、工具调用、质量指标与 teardown。
-- `src/realtime/microphone.mjs`：麦克风单一所有者、静音/暂停分离和停止。
-- `src/realtime/audio-playback.mjs`：远端音频、RMS、暂停/恢复和关闭 AudioContext。
-- `src/services/realtime-api.mjs`：Python API/SDP 客户端与安全错误映射。
-- `tests/realtime-state.test.mjs`、`tests/realtime-api.test.mjs`、`tests/microphone.test.mjs`、`tests/audio-playback.test.mjs`、`tests/realtime-client.test.mjs`、`tests/conversation-integration.test.mjs`：关键链路最小测试。
-- `docs/free-chat-integration-audit.md`：项目、部署和实时链路审计。
-- `docs/superpowers/specs/2026-07-16-free-chat-integration-design.md`：融合设计。
-- `docs/superpowers/plans/2026-07-16-free-chat-integration.md`：TDD 实施计划。
-- `docs/free-chat-integration-result.md`：本结果文档。
-
-## 5. 删除或废弃文件
-
-- 未删除任何现有可运行版本。
-- `UniSpeaking/webrtc_demo.html` 仍可作为底层诊断参考，但已废弃为产品入口。
-- `App.jsx` 与旧 `ConversationView.jsx` 中的模拟会话行为已删除；页面不再写入假 AI 消息。
-
-## 6. 本地启动命令
-
-后端：
+使用本地 Python 后端：
 
 ```bash
 cd /Users/mac/Documents/七牛云/7.16/UniSpeaking
-.venv/bin/python -m pip install -r backend/requirements.txt
 .venv/bin/python -m backend.app
 ```
-
-前端：
 
 ```bash
 cd /Users/mac/Documents/七牛云/7.16/UniSpeaking_React
 npm ci
+cp .env.example .env.local
 npm run dev
 ```
 
-产品入口：<http://127.0.0.1:8080/#/conversation>  
-后端健康检查：<http://127.0.0.1:8000/health>
+使用托管 Edge Function 时，将 `VITE_REALTIME_API_BASE` 配置为函数公开 URL，并设置 `VITE_SUPABASE_PUBLISHABLE_KEY`。不得在浏览器端配置 service role、secret key 或百炼 API Key。
 
-## 7. 测试与构建结果
+## 5. 测试与构建结果
 
-- 前端 Node tests：39/39 通过。
 - ESLint：通过。
 - TypeScript checkJs：通过。
+- 前端 Node tests：44/44 通过。
 - Vite production build：通过。
-- Python unittest：12/12 通过；存在 aiohttp `AppKey`/bare handler 弃用警告，不阻断本轮。
-- `npm audit --omit=dev`：0 漏洞；完整 `npm audit`：2 个 Vite 5/esbuild 开发服务器工具链问题（1 moderate、1 high），自动修复要求破坏性升级到 Vite 8，未执行 `--force`。
-- 客户端构建密钥扫描：PASS；`dist` 未命中服务端变量名、Supabase service role 词样或常见 `sk-`/`st-` 密钥格式。
-- 浏览器：移动/桌面产品 UI 可见；`#/scenes` 与 `#/conversation` 往返、自由对话刷新/直达通过。
-- 真实会话：麦克风授权通过；session 创建、临时 Key 代理、SDP 200、provider session 绑定和 DataChannel 成功。
-- 实时输出：AI 开场英文字幕显示；远端音频能量触发 AI 播放状态；文字输入产生用户气泡和第二轮 AI 字幕。
-- 控制：静音不改变连接状态；暂停/恢复保持静音独立状态；正常结束回到 ended，后端收到 quality POST 与 session DELETE。
-- 控制台：场景、会员、自由对话的干净标签页最终复测 warning/error 为 0。
+- Python/backend tests：14/14 通过。
+- Edge Function contract tests：包含在前端 44 项测试中并通过。
+- 生产构建脱敏扫描：包含预期 Supabase function URL 和 publishable key；未使用 localhost；没有提交服务端密钥。
+- GitHub：`codex/integrate-free-chat-v2` 已推送，远端与本地提交一致。
+
+## 6. 生产部署结果
+
+- Supabase Edge Function：`realtime-gateway` platform version 5，状态 ACTIVE。
+- Edge Function health：200，model configured。
+- Vercel deployment：`dpl_dtBRQ8xd6wgzQArrerv1RiB493SP`，READY，Production。
+- Vercel deployment URL：<https://unispeaking-ktm3dvhp6-dal815842-7599s-projects.vercel.app>
+- 正式域名：<https://app.unispeaking.cn>
+- 正式自由对话入口：<https://app.unispeaking.cn/#/conversation>
+
+## 7. 浏览器与真实链路验证
+
+- 正式域名和 hash 路由直达正常，加载最新资源包，控制台 warning/error 为 0。
+- 麦克风权限请求成功；会话创建 201；SDP 交换 200；provider session 绑定 201。
+- WebRTC/DataChannel 连接成功，AI Clara 开场英文字幕实时显示，AI 音频播放成功。
+- 结束通话后 UI 进入已结束状态；质量上报 201；session DELETE 200；数据库会话状态为 `closed`。
+- 本次自动验收没有向麦克风实际说出一段可识别的英语，因此“真人发声内容的转写准确度”仍建议用户首次使用时人工听说确认；传输、字幕事件、AI 音频与资源清理链路均已通过。
 
 ## 8. 环境变量
 
-只列名称，不记录值。
+只记录变量名，不记录值。
 
-### 浏览器
+### 浏览器 / Vercel Production + Preview
 
 - `VITE_REALTIME_API_BASE`
+- `VITE_SUPABASE_PUBLISHABLE_KEY`
 
-### Python 服务端
+### Supabase Edge Function / 服务端
+
+- `SUPABASE_URL`
+- `SUPABASE_SERVICE_ROLE_KEY`
+- `DASHSCOPE_API_KEY`
+- `BAILIAN_MODEL`
+
+### 本地 Python 服务端（可选）
 
 - `DASHSCOPE_API_KEY`
 - `DASHSCOPE_USE_TEMP_KEY`
@@ -136,29 +126,18 @@ npm run dev
 - `LATENCY_REPORT_FILE`
 - `BASE_SYSTEM_PROMPT`
 - `LEARNER_PROFILE_FILE`
-- `CONVERSATION_MEMORY_FILE`（旧兼容）
+- `CONVERSATION_MEMORY_FILE`
 - `BACKEND_HOST`
 - `BACKEND_PORT`
 - `ALLOWED_ORIGINS`
 - `LOG_LEVEL`
 
-## 9. 未解决问题
+## 9. Remaining Issues
 
-- 自动化浏览器没有向本机麦克风说出可转写的真人句子，因此“用户实际发声 → 实时转写气泡”仍需人工说一句英语完成最终设备验收。麦克风权限、audio sender 门控/恢复和真实 WebRTC 建连已通过，相关资源逻辑另有自动化测试。
-- Python 后端依赖进程内 session 和本地 JSON/Markdown 文件，不适合原样部署到 Vercel Serverless，也未配置公开 HTTPS Preview 地址。
-- 历史 Supabase `realtime-gateway` 缺少新版 Python 后端的部分能力；Preview 前必须选择同步 Edge Function 或部署 staging Python 服务。
-- 正式域名 `app.unispeaking.cn` 的 DNS/Vercel 绑定不在当前仓库，尚未验证。
-- Python 测试仍有 aiohttp 弃用警告，可在后续维护中迁移到 `web.AppKey` 和 async OPTIONS handler。
-- 完整依赖审计的 2 个开发服务器工具链问题只可通过 Vite 8 破坏性升级自动修复；production-only audit 为 0。Preview 前应单独规划升级和回归，禁止直接执行 `npm audit fix --force`。
+- 尚未由真人对麦克风说一句英语验证实际设备的转写准确度；不影响已验证的 WebRTC 建连、AI 字幕、AI 音频和清理链路。
+- Vercel 历史 deployment 记录可清理，但不能删除当前 `unispeaking-web` 项目，否则会同时丢失复用的域名和环境变量。
+- Python 后端的 aiohttp 弃用警告和 Vite 5 开发工具链审计问题仍属于后续维护项；没有执行破坏性依赖升级。
 
-## 10. 部署前注意事项
+## 10. Deployment Readiness
 
-当前本地融合可以进入人工麦克风补验，但暂不适合直接进入 Vercel Preview：前端 Preview 无法访问 `127.0.0.1:8000`，而新版实时后端没有公开 HTTPS staging 运行环境。
-
-进入 Preview 前必须：
-
-1. 选择并准备新版 staging 实时后端（常驻 Python 或同步后的 Supabase Edge Function）。
-2. 服务端 CORS 加入 Preview origin，前端 `VITE_REALTIME_API_BASE` 指向 HTTPS staging 地址。
-3. 在 staging 重新验证真人语音转写、AI 音频、断线重试和至少一次 3–10 分钟质量指标。
-4. 确认 Preview/Production 环境中所有服务端密钥只存在于后端。
-5. 验证 `app.unispeaking.cn` 绑定后再考虑 Production；本轮禁止且未执行任何部署。
+当前版本已经完成 Production 发布并通过线上关键链路验收。后续发布应继续复用现有 Vercel/Supabase 项目，先在 Preview 验证，再提升到 Production；禁止把服务端密钥加入任何 `VITE_` 变量。

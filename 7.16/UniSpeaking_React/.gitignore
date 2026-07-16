@@ -7,3 +7,7 @@
 dist/
 node_modules/
 npm-debug.log*
+.vercel/
+.env
+.env.local
+.env.*.local

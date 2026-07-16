@@ -12,7 +12,8 @@ ConversationView
       -> microphone（唯一 MediaStream）
       -> audio-playback（唯一 Audio / AudioContext）
       -> realtime-api
-        -> Python aiohttp backend :8000
+        -> Supabase Edge Function realtime-gateway（生产）
+          / Python aiohttp backend :8000（本地可选）
           -> 阿里云百炼 Qwen Realtime
 ```
 
@@ -32,11 +33,12 @@ npm ci
 cp .env.example .env.local
 ```
 
-前端唯一环境变量：
+前端环境变量：
 
 | 变量名 | 端 | 必需 | 说明 |
 |---|---|---:|---|
 | `VITE_REALTIME_API_BASE` | 浏览器 | 是 | 公开的实时后端基础 URL；本地为 `http://127.0.0.1:8000` |
+| `VITE_SUPABASE_PUBLISHABLE_KEY` | 浏览器 | 使用 Edge Function 时是 | Supabase publishable key；这是公开 key，不得替换为 service role 或 secret key |
 
 `VITE_` 变量会进入浏览器构建。不得把 `DASHSCOPE_API_KEY`、Supabase service role、secret key 或 token 放入前端环境文件。
 
@@ -103,11 +105,11 @@ cd /Users/mac/Documents/七牛云/7.16/UniSpeaking
 
 ## Vercel 与 Supabase
 
-- 当前 `7.16` 产品前端新增了 `vercel.json` 静态安全头，但没有执行 Preview 或 Production 部署。
-- `.vercel/project.json` 不存在，本目录没有绑定或修改 Vercel 项目。
-- 当前 `7.16` 不使用 Supabase SDK，也没有 `supabase/config.toml`、migration 或 Edge Function。
-- 历史版本曾使用 Vercel 项目 `unispeaking-web` 和 Supabase project ref `ropgifqbblzktgxllupi` 的 `realtime-gateway` Edge Function。
-- 新 Python 后端包含历史 Edge Function 尚未覆盖的临时 Key、provider session 绑定和本地诊断能力，且依赖进程内 session 与可写文件系统，不能原样部署到 Vercel Serverless。
-- 本轮没有修改 Supabase schema、RLS、远程数据或生产环境。
+- 生产前端使用现有 Vercel 项目 `unispeaking-web`，正式域名为 <https://app.unispeaking.cn>。
+- 生产实时后端使用现有 Supabase project ref `ropgifqbblzktgxllupi` 的 `realtime-gateway` Edge Function。
+- Edge Function 负责创建会话、代理 SDP、绑定 provider session、记录字幕事件与质量指标，并将百炼密钥保留在服务端。
+- 本次没有修改 Supabase schema，也没有创建新项目或清空历史数据；沿用已有表、RLS、项目密钥和域名。
+- Vercel 的 `VITE_REALTIME_API_BASE` 与 `VITE_SUPABASE_PUBLISHABLE_KEY` 配置在 Production/Preview。两者会进入浏览器，必须保持为公开 URL/publishable key。
+- `SUPABASE_SERVICE_ROLE_KEY`、`SUPABASE_SECRET_KEY`、`DASHSCOPE_API_KEY` 等仍只允许存在于服务端环境。
 
-部署前必须先确定一个支持常驻 Python 进程和 WebRTC SDP 代理的 HTTPS 后端运行环境，再把 `VITE_REALTIME_API_BASE` 配置为该 Preview 后端地址并更新服务端 CORS。正式域名为 `app.unispeaking.cn`，仓库内尚无可验证的域名绑定配置。
+生产发布前应依次运行 lint、typecheck、test、build，并检查构建产物不包含服务端密钥。Vercel CLI 的本地预构建需要先执行 `vercel pull --yes --environment=production`，确保 `.vercel/.env.production.local` 已刷新。
