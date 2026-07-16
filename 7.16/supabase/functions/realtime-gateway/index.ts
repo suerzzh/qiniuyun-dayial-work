@@ -43,6 +43,8 @@ The learner's current level is {level}: {label}. Use vocabulary and sentence str
 
 const allowedOrigins = new Set([
   "https://app.unispeaking.cn",
+  "https://www.unispeaking.cn",
+  "https://unispeaking.cn",
   ...(Deno.env.get("ALLOWED_WEB_ORIGINS") || "")
     .split(",")
     .map((value) => value.trim())

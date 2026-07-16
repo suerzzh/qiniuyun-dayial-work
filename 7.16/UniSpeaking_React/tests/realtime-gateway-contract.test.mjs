@@ -38,6 +38,21 @@ test("the production gateway implements the current frontend and legacy routes",
   assert.doesNotMatch(source, /VITE_DASHSCOPE|service_role\s*[:=]\s*["'][^"']+["']/i);
 });
 
+test("the production gateway allows every public UniSpeaking origin", () => {
+  const source = readFileSync(gatewaySourcePath, "utf8");
+  for (const origin of [
+    "https://app.unispeaking.cn",
+    "https://www.unispeaking.cn",
+    "https://unispeaking.cn",
+  ]) {
+    assert.equal(
+      source.includes(JSON.stringify(origin)),
+      true,
+      `${origin} must be included in the production CORS allowlist`
+    );
+  }
+});
+
 test("the production gateway deploys the exact reviewed Clara prompt", () => {
   assert.equal(existsSync(gatewayPromptPath), true, "gateway prompt asset must exist");
   const reviewedPrompt = readFileSync(reviewedPromptPath, "utf8");

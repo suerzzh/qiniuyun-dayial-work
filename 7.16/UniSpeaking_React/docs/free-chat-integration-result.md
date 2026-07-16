@@ -2,14 +2,16 @@
 
 完成日期：2026-07-16  
 分支：`codex/integrate-free-chat-v2`  
-正式入口：<https://app.unispeaking.cn/#/conversation>
+主正式入口：<https://app.unispeaking.cn/#/conversation>
+
+等价入口：<https://www.unispeaking.cn/#/conversation>、<https://unispeaking.cn/#/conversation>
 
 ## 1. 最终融合架构
 
 `UniSpeaking_React` 是唯一产品前端和 React 根应用。自由对话沿用完整产品 UI，通过单一实时客户端连接 Supabase Edge Function；旧 `webrtc_demo.html` 不再是产品入口。
 
 ```text
-Vercel / app.unispeaking.cn
+Vercel / app.unispeaking.cn / www.unispeaking.cn / unispeaking.cn
   -> App / #/conversation
     -> ConversationView
       -> useRealtimeSession
@@ -81,19 +83,20 @@ npm run dev
 
 ## 6. 生产部署结果
 
-- Supabase Edge Function：`realtime-gateway` platform version 5，状态 ACTIVE。
+- Supabase Edge Function：`realtime-gateway` platform version 6，状态 ACTIVE。
 - Edge Function health：200，model configured。
 - Vercel deployment：`dpl_dtBRQ8xd6wgzQArrerv1RiB493SP`，READY，Production。
 - Vercel deployment URL：<https://unispeaking-ktm3dvhp6-dal815842-7599s-projects.vercel.app>
-- 正式域名：<https://app.unispeaking.cn>
-- 正式自由对话入口：<https://app.unispeaking.cn/#/conversation>
+- 正式域名：<https://app.unispeaking.cn>、<https://www.unispeaking.cn>、<https://unispeaking.cn>
+- 主正式自由对话入口：<https://app.unispeaking.cn/#/conversation>
 
 ## 7. 浏览器与真实链路验证
 
-- 正式域名和 hash 路由直达正常，加载最新资源包，控制台 warning/error 为 0。
+- 三个正式域名和 hash 路由直达正常，均加载同一最新资源包。
 - 麦克风权限请求成功；会话创建 201；SDP 交换 200；provider session 绑定 201。
 - WebRTC/DataChannel 连接成功，AI Clara 开场英文字幕实时显示，AI 音频播放成功。
 - 结束通话后 UI 进入已结束状态；质量上报 201；session DELETE 200；数据库会话状态为 `closed`。
+- 2026-07-16 修复 `www` 与根域名调用网关时的 CORS 403：两域名加入精确来源白名单；三域名预检均为 204，`www` 与根域名的真实会话创建、SDP 交换和清理链路均通过。
 - 本次自动验收没有向麦克风实际说出一段可识别的英语，因此“真人发声内容的转写准确度”仍建议用户首次使用时人工听说确认；传输、字幕事件、AI 音频与资源清理链路均已通过。
 
 ## 8. 环境变量
