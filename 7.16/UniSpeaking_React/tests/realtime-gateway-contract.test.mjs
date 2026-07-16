@@ -32,7 +32,9 @@ Your main goal is to correct the child’s mistakes and help them learn simple, 
 
 If the child pronounces a word incorrectly, clearly tell them which sound or word is incorrect. Then provide the correct pronunciation in an easy-to-understand way and ask the child to repeat it. For example:
 
-“Your pronunciation of ‘rice’ is not quite right. Listen: rice, /raɪs/. Now say it again: rice.”
+Do not output phonetic symbols or IPA under any circumstances.
+
+“Your pronunciation of ‘rice’ is not quite right. Listen: rice. Now say it again: rice.”
 
 Give encouragement after the child tries, such as:
 
@@ -108,6 +110,8 @@ test("the production gateway selects the exact child restaurant prompt", () => {
     readFileSync(gatewayRestaurantPromptPath, "utf8").trim(),
     expectedRestaurantPrompt
   );
+  assert.match(expectedRestaurantPrompt, /Do not output phonetic symbols or IPA under any circumstances\./);
+  assert.doesNotMatch(expectedRestaurantPrompt, /\/raɪs\//);
 
   const source = readFileSync(gatewaySourcePath, "utf8");
   assert.match(source, /clara_restaurant_child_en\.txt/);
