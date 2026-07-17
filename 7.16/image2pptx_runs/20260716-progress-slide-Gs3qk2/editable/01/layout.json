@@ -1,0 +1,40 @@
+{
+  "slide_width_in": 13.333,
+  "slide_height_in": 7.5,
+  "units": "fraction",
+  "ref_width": 1672,
+  "ref_height": 941,
+  "background": "background.png",
+  "frame": "frame.png",
+  "shapes": [],
+  "icons": [
+    {"file": "icons/ic_r1c1.png", "source_bbox": [710, 632, 32, 47], "x": 0.424641, "y": 0.671626, "w": 0.019139, "h": 0.049947},
+    {"file": "icons/ic_r1c2.png", "source_bbox": [919, 638, 39, 31], "x": 0.549641, "y": 0.678002, "w": 0.023325, "h": 0.032944},
+    {"file": "icons/ic_r1c3.png", "source_bbox": [1072, 584, 109, 72], "x": 0.641148, "y": 0.620616, "w": 0.065191, "h": 0.076514},
+    {"file": "icons/ic_r2c1.png", "source_bbox": [1221, 603, 30, 65], "x": 0.730263, "y": 0.640808, "w": 0.017943, "h": 0.069075},
+    {"file": "icons/ic_r3c1.png", "source_bbox": [1057, 754, 28, 30], "x": 0.632177, "y": 0.801275, "w": 0.016746, "h": 0.031881},
+    {"file": "icons/ic_r3c2.png", "source_bbox": [1114, 752, 34, 35], "x": 0.666268, "y": 0.799150, "w": 0.020335, "h": 0.037194},
+    {"file": "icons/ic_r3c3.png", "source_bbox": [1170, 750, 38, 39], "x": 0.699761, "y": 0.797024, "w": 0.022727, "h": 0.041445},
+    {"file": "icons/ic_r4c1.png", "source_bbox": [1228, 754, 36, 30], "x": 0.734450, "y": 0.801275, "w": 0.021531, "h": 0.031881}
+  ],
+  "texts": [
+    {"text": "P R O G R E S S", "source_bbox": [55, 88, 155, 30], "x": 0.032895, "y": 0.093518, "w": 0.092703, "h": 0.031881, "size": 10.5, "color": "#F05233", "bold": true, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "两周内，", "source_bbox": [55, 130, 200, 62], "x": 0.032895, "y": 0.138151, "w": 0.119617, "h": 0.065887, "size": 30, "color": "#17191B", "bold": true, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "我们从市场判断走到可运行的 Web Realtime 链路", "source_bbox": [55, 198, 1200, 68], "x": 0.032895, "y": 0.210414, "w": 0.717703, "h": 0.072264, "size": 31, "color": "#17191B", "bold": true, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "Milestone 1 先用 Web 串起产品、实时语音、AI 编排与核心业务流程。", "source_bbox": [55, 278, 700, 38], "x": 0.032895, "y": 0.295430, "w": 0.418660, "h": 0.040383, "size": 12.5, "color": "#242424", "bold": false, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "01", "source_bbox": [145, 365, 58, 54], "x": 0.086722, "y": 0.387885, "w": 0.034689, "h": 0.057386, "size": 21.5, "color": "#EF5335", "bold": true, "align": "center", "valign": "middle", "font": "Arial", "line_spacing": 1.0},
+    {"text": "产品调研与竞品矩阵", "source_bbox": [70, 419, 210, 44], "x": 0.041866, "y": 0.445271, "w": 0.125598, "h": 0.046759, "size": 12.5, "color": "#17191B", "bold": true, "align": "center", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "02", "source_bbox": [474, 365, 58, 54], "x": 0.283493, "y": 0.387885, "w": 0.034689, "h": 0.057386, "size": 21.5, "color": "#EF5335", "bold": true, "align": "center", "valign": "middle", "font": "Arial", "line_spacing": 1.0},
+    {"text": "产品计划、交互原型与\nPrompt 测试", "source_bbox": [390, 417, 230, 72], "x": 0.233254, "y": 0.443146, "w": 0.137560, "h": 0.076514, "size": 12.5, "color": "#17191B", "bold": true, "align": "center", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.1},
+    {"text": "03", "source_bbox": [808, 365, 58, 54], "x": 0.483254, "y": 0.387885, "w": 0.034689, "h": 0.057386, "size": 21.5, "color": "#EF5335", "bold": true, "align": "center", "valign": "middle", "font": "Arial", "line_spacing": 1.0},
+    {"text": "WebRTC / Realtime POC", "source_bbox": [700, 422, 270, 44], "x": 0.418660, "y": 0.448459, "w": 0.161483, "h": 0.046759, "size": 12.5, "color": "#17191B", "bold": true, "align": "center", "valign": "middle", "font": "Arial", "line_spacing": 1.0},
+    {"text": "04", "source_bbox": [1125, 365, 58, 54], "x": 0.672847, "y": 0.387885, "w": 0.034689, "h": 0.057386, "size": 21.5, "color": "#EF5335", "bold": true, "align": "center", "valign": "middle", "font": "Arial", "line_spacing": 1.0},
+    {"text": "响应式 React Web\n与新系统架构", "source_bbox": [1040, 417, 225, 72], "x": 0.622010, "y": 0.443146, "w": 0.134569, "h": 0.076514, "size": 12.5, "color": "#17191B", "bold": true, "align": "center", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.1},
+    {"text": "低延迟双向传输", "source_bbox": [752, 738, 160, 40], "x": 0.449761, "y": 0.784272, "w": 0.095694, "h": 0.042508, "size": 10, "color": "#222222", "bold": false, "align": "center", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "性能日志", "source_bbox": [1470, 483, 120, 38], "x": 0.879187, "y": 0.513284, "w": 0.071770, "h": 0.040383, "size": 10.5, "color": "#222222", "bold": false, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "Demo 路径", "source_bbox": [1470, 560, 125, 38], "x": 0.879187, "y": 0.595112, "w": 0.074761, "h": 0.040383, "size": 10.5, "color": "#222222", "bold": false, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "可演示主流程", "source_bbox": [1470, 638, 145, 38], "x": 0.879187, "y": 0.678002, "w": 0.086722, "h": 0.040383, "size": 10.5, "color": "#222222", "bold": false, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "从判断到可运行", "source_bbox": [1338, 758, 295, 58], "x": 0.800239, "y": 0.805526, "w": 0.176435, "h": 0.061637, "size": 22, "color": "#EF5335", "bold": true, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0},
+    {"text": "验证这条路线值得继续开发", "source_bbox": [1338, 816, 290, 43], "x": 0.800239, "y": 0.867163, "w": 0.173445, "h": 0.045696, "size": 12.5, "color": "#222222", "bold": false, "align": "left", "valign": "middle", "font": "PingFang SC", "line_spacing": 1.0}
+  ]
+}

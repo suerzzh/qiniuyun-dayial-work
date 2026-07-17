@@ -1,0 +1,8 @@
+Use case: precise-object-edit
+Asset type: editable PowerPoint background layer
+Input images: Image 1 is the only edit target.
+Primary request: 以刚刚显示的这张图片作为唯一编辑目标 / edit target，在它的基础上复刻这张 PPT 幻灯片的背景。保持完全一致的米白色底色、轻微暖色渐变、光影和细腻纸感，但擦除所有文字、图标、框架、卡片、方框、时间轴、节点、分隔线和占位块，补全为一张完全空白且自然连续的背景。
+Composition/framing: 16:9 横版，保持与编辑目标完全相同的画布比例和背景明暗分布。
+Constraints: change only by removing all foreground content; preserve the background palette, gradient, lighting and texture; no text; no icons; no cards; no lines; no watermark.
+Avoid: any residual letters, symbols, panels, shapes, outlines, timeline marks, logos or decorative objects.
+

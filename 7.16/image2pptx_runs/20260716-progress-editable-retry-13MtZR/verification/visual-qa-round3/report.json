@@ -1,0 +1,20 @@
+{
+  "source": "/Users/mac/Library/Containers/com.tencent.WeWorkMac/Data/Documents/Profiles/64F9B470408B8140099AC82A2CFAA0E2/Caches/Images/2026-07/ddcb0fd44fb752d178c936d1d0950f59_HD/ChatGPT Image 2026年7月16日 13_49_01.png",
+  "preview": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-editable-retry-13MtZR/verification/rendered-round3/slide-1.png",
+  "preview_size": [
+    1672,
+    941
+  ],
+  "mean_abs_diff_0_255": 9.8718,
+  "rms_diff_0_255": 37.5962,
+  "changed_pixel_fraction_threshold_32": 0.060933,
+  "changed_pixel_fraction_threshold_64": 0.046229,
+  "artifacts": {
+    "source_resized": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-editable-retry-13MtZR/verification/visual-qa-round3/source_resized.png",
+    "preview": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-editable-retry-13MtZR/verification/visual-qa-round3/preview.png",
+    "side_by_side": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-editable-retry-13MtZR/verification/visual-qa-round3/side_by_side.png",
+    "blend": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-editable-retry-13MtZR/verification/visual-qa-round3/blend.png",
+    "diff_heatmap": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-editable-retry-13MtZR/verification/visual-qa-round3/diff_heatmap.png"
+  },
+  "note": "Metrics are diagnostic only. Final pass/fail requires visual review of source vs preview for text/icon position, size, and overlap."
+}

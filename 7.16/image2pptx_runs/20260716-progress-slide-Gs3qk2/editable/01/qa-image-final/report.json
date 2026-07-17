@@ -1,0 +1,20 @@
+{
+  "source": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/slide-01.png",
+  "preview": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/out/image_preview/slide_01.png",
+  "preview_size": [
+    1600,
+    900
+  ],
+  "mean_abs_diff_0_255": 0.0,
+  "rms_diff_0_255": 0.0,
+  "changed_pixel_fraction_threshold_32": 0.0,
+  "changed_pixel_fraction_threshold_64": 0.0,
+  "artifacts": {
+    "source_resized": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/qa-image-final/source_resized.png",
+    "preview": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/qa-image-final/preview.png",
+    "side_by_side": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/qa-image-final/side_by_side.png",
+    "blend": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/qa-image-final/blend.png",
+    "diff_heatmap": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/qa-image-final/diff_heatmap.png"
+  },
+  "note": "Metrics are diagnostic only. Final pass/fail requires visual review of source vs preview for text/icon position, size, and overlap."
+}

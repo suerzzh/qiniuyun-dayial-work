@@ -1,0 +1,13 @@
+{
+  "slides": [
+    {
+      "slide": 1,
+      "prompt_file": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/prompts/01-unispeaking-closing.md",
+      "generated_source": "/Users/mac/.codex/generated_images/019f6976-ec8f-79b1-adfa-096ec9fd983e/exec-b90da974-1a08-46ae-801d-a0b6942b7868.png",
+      "copied_to": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/slides/01-unispeaking-closing.png",
+      "preserved_copy": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/slides/01-unispeaking-closing-generated.png",
+      "backend": "Codex built-in GPT Image 2",
+      "postprocess": "whole-image resize only to 3840x2160; no text or local element edits"
+    }
+  ]
+}

@@ -1,0 +1,33 @@
+Canvas: 1672 x 941
+
+Header:
+- accent line: x=38 y=32 w=108 h=4
+- eyebrow: x=39 y=52 w=320 h=28
+- title: x=38 y=86 w=650 h=62
+
+Layer labels and bands:
+- client: label [38,164,160,81], band [216,164,1413,81]
+- access: label [38,264,160,73], band [216,264,1413,73]
+- business: label [38,359,160,89], band [216,359,1413,91]
+- ai: label [38,467,160,102], band [216,467,1413,102]
+- models: label [38,592,160,69], band [216,592,1413,69]
+- infrastructure: label [38,693,160,108], band [216,693,1413,108]
+- legend: [38,811,1592,63]
+
+Primary node rows:
+- clients y=176 h=54: x=353 w=232; x=777 w=274; x=1237 w=275
+- nginx x=605 y=275 w=570 h=53
+- business y=371 h=72: [228,111], [372,111], [512,134], [688,111], [840,123], [1008,158], [1206,118], [1360,100], [1493,117]
+- ai y=482 h=79: [230,202], [486,202], [740,220], [972,184], [1201,197], [1433,176]
+- models y=601 h=52: [249,228], [563,202], [811,226], [1086,226], [1361,226]
+- infrastructure y=712 h=79: [231,255], [523,229], [792,267], [1096,233], [1371,243]
+
+Connector guide y values:
+- client/access: 254
+- nginx/business bus: 347
+- business horizontal: 402
+- business/ai routing: 456
+- ai horizontal: 517
+- ai/model routing: 581
+- model/infrastructure routing: 678
+

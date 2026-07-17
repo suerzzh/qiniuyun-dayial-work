@@ -1,0 +1,17 @@
+{
+  "source_icon_inventory": [
+    {"source_label": "矩阵圆点/勾/叉", "status": "covered_by_frame"},
+    {"source_label": "流程图与聊天气泡", "status": "covered_by_frame"},
+    {"source_label": "Realtime 波形与虚线箭头", "status": "covered_by_frame"},
+    {"source_label": "右侧柱图/路径/清单", "status": "covered_by_frame"},
+    {"source_label": "Realtime 用户头像", "status": "placed_icon", "file": "icons/ic_r1c1.png", "source_bbox": [710, 632, 32, 47], "x": 0.424641, "y": 0.671626, "w": 0.019139, "h": 0.049947},
+    {"source_label": "Realtime 云朵", "status": "placed_icon", "file": "icons/ic_r1c2.png", "source_bbox": [919, 638, 39, 31], "x": 0.549641, "y": 0.678002, "w": 0.023325, "h": 0.032944},
+    {"source_label": "笔记本内网页界面", "status": "placed_icon", "file": "icons/ic_r1c3.png", "source_bbox": [1072, 584, 109, 72], "x": 0.641148, "y": 0.620616, "w": 0.065191, "h": 0.076514},
+    {"source_label": "手机内 UI", "status": "placed_icon", "file": "icons/ic_r2c1.png", "source_bbox": [1221, 603, 30, 65], "x": 0.730263, "y": 0.640808, "w": 0.017943, "h": 0.069075},
+    {"source_label": "立方体", "status": "placed_icon", "file": "icons/ic_r3c1.png", "source_bbox": [1057, 754, 28, 30], "x": 0.632177, "y": 0.801275, "w": 0.016746, "h": 0.031881},
+    {"source_label": "数据库", "status": "placed_icon", "file": "icons/ic_r3c2.png", "source_bbox": [1114, 752, 34, 35], "x": 0.666268, "y": 0.799150, "w": 0.020335, "h": 0.037194},
+    {"source_label": "齿轮", "status": "placed_icon", "file": "icons/ic_r3c3.png", "source_bbox": [1170, 750, 38, 39], "x": 0.699761, "y": 0.797024, "w": 0.022727, "h": 0.041445},
+    {"source_label": "系统云朵", "status": "placed_icon", "file": "icons/ic_r4c1.png", "source_bbox": [1228, 754, 36, 30], "x": 0.734450, "y": 0.801275, "w": 0.021531, "h": 0.031881}
+  ]
+}
+

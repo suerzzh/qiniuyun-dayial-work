@@ -1,0 +1,31 @@
+Canvas: 1672 x 941 px (16:9)
+
+Header
+- accent line: x52 y29 w92 h7; black center x93 y29 w12 h6
+- eyebrow: x52 y47 w500 h28
+- title: x52 y87 w1200 h70
+- subtitle: x52 y157 w1150 h40
+
+Primary cards
+- browser/mobile app: x85 y328 w265 h111
+- business backend: x598 y287 w327 h180
+- Aliyun Token: x1205 y188 w266 h103
+- Aliyun Realtime: x1204 y371 w267 h102
+- usage ledger/dashboard: x600 y527 w324 h99
+- official JSON: x1203 y527 w268 h116
+
+Lower information areas
+- browser visibility callout: x61 y658 through y776
+- bottom horizontal divider: x61 y796 through x1134
+- bottom vertical dashed divider: x1159 y796 through y915
+- conclusion: x1199 y819 through x1625 y891
+
+Palette
+- background #FBF8F2
+- dark #191A1B
+- orange #F24C2E
+- teal #138F8C
+- light border #B9B1A7
+- muted gray #5A5A5A
+
+All source coordinates are reproduced as native PowerPoint objects; no full-slide image is retained.

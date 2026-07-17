@@ -1,0 +1,31 @@
+{
+  "source_slide": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/slide-01.png",
+  "key_color": "#00ff00",
+  "assets": [
+    {
+      "layer": "background",
+      "backend": "Codex built-in GPT Image 2 edit",
+      "generated_source": "/Users/mac/.codex/generated_images/019f6976-ec8f-79b1-adfa-096ec9fd983e/exec-52698757-57e3-4fe0-b700-9da46d0d14ac.png",
+      "prompt_file": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/prompts/background.md",
+      "copied_to": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/background.png",
+      "key_color": null
+    },
+    {
+      "layer": "frame",
+      "backend": "Codex built-in GPT Image 2 edit",
+      "generated_source": "/Users/mac/.codex/generated_images/019f6976-ec8f-79b1-adfa-096ec9fd983e/exec-a0e2696b-0eed-4ce1-b179-04122459911b.png",
+      "prompt_file": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/prompts/frame.md",
+      "copied_to": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/frame.png",
+      "key_color": "#00ff00"
+    },
+    {
+      "layer": "icons",
+      "backend": "Codex built-in GPT Image 2 edit",
+      "generated_source": "/Users/mac/.codex/generated_images/019f6976-ec8f-79b1-adfa-096ec9fd983e/exec-c253128b-2cbd-4b98-bcb6-33c32fbe5d54.png",
+      "prompt_file": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/prompts/icons.md",
+      "copied_to": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/icons_t_1.png",
+      "key_color": "#00ff00",
+      "note": "Source page contains no standalone icons; generated icon sheet is intentionally empty and becomes fully transparent."
+    }
+  ]
+}

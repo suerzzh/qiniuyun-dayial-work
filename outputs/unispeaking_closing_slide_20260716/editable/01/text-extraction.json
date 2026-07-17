@@ -1,0 +1,33 @@
+{
+  "method": "GPT visual inspection of the source slide; no external OCR",
+  "ref_width": 3840,
+  "ref_height": 2160,
+  "texts": [
+    {"text":"初步证据与下一阶段","source_bbox":[160,250,1500,180],"size_pt":36,"color":"#20211F","bold":true,"align":"left"},
+    {"text":"146","source_bbox":[640,520,420,260],"size_pt":58,"color":"#F0442F","bold":true,"align":"center"},
+    {"text":"个记录轮次","source_bbox":[640,760,430,90],"size_pt":18,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"33","source_bbox":[1730,520,320,260],"size_pt":58,"color":"#F0442F","bold":true,"align":"center"},
+    {"text":"个会话","source_bbox":[1700,760,360,90],"size_pt":18,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"0.81 秒","source_bbox":[2670,520,760,260],"size_pt":58,"color":"#F0442F","bold":true,"align":"center"},
+    {"text":"首音频中位数约","source_bbox":[2720,760,650,90],"size_pt":18,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"在 113 个可测轮次中","source_bbox":[1580,920,680,100],"size_pt":17,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"端到端 Realtime 路线具有","source_bbox":[850,1110,1120,120],"size_pt":20,"color":"#20211F","bold":false,"align":"right"},
+    {"text":"可行性","source_bbox":[1970,1110,260,120],"size_pt":20,"color":"#F0442F","bold":true,"align":"center"},
+    {"text":"，但还","source_bbox":[2230,1110,250,120],"size_pt":20,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"不能当作生产 SLA","source_bbox":[2480,1110,760,120],"size_pt":20,"color":"#F0442F","bold":true,"align":"left"},
+    {"text":"下一步","source_bbox":[280,1330,450,130],"size_pt":23,"color":"#20211F","bold":true,"align":"left"},
+    {"text":"长会话","source_bbox":[420,1530,330,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"打断","source_bbox":[1170,1530,300,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"Redis","source_bbox":[1850,1530,300,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"移动端","source_bbox":[2580,1530,330,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"真实用户指标","source_bbox":[3260,1530,430,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"把实时语音模型变成真正的口语陪练产品","source_bbox":[830,1745,2200,170],"size_pt":31,"color":"#20211F","bold":true,"align":"center"},
+    {"text":"实时对话是底座，教学编排才是产品","source_bbox":[330,1980,1000,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"Web 先验证，移动端随后扩展","source_bbox":[1520,1980,950,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"},
+    {"text":"下一里程碑：可靠性与真实用户效果","source_bbox":[2600,1980,1000,100],"size_pt":16,"color":"#20211F","bold":false,"align":"center"}
+  ],
+  "notes": {
+    "art_text_candidates": [],
+    "uncertain": "none"
+  }
+}
