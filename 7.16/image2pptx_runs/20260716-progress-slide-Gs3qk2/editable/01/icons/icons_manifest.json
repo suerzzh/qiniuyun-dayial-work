@@ -1,0 +1,170 @@
+{
+  "source": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/icons_t_1.png",
+  "mode": "auto",
+  "size": [
+    2516,
+    2516
+  ],
+  "icons": [
+    {
+      "file": "ic_r1c1.png",
+      "row": 1,
+      "col": 1,
+      "width": 338,
+      "height": 376,
+      "aspect": 0.8989,
+      "bbox": [
+        296,
+        256,
+        634,
+        632
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    },
+    {
+      "file": "ic_r1c2.png",
+      "row": 1,
+      "col": 2,
+      "width": 385,
+      "height": 301,
+      "aspect": 1.2791,
+      "bbox": [
+        1065,
+        298,
+        1450,
+        599
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    },
+    {
+      "file": "ic_r1c3.png",
+      "row": 1,
+      "col": 3,
+      "width": 537,
+      "height": 391,
+      "aspect": 1.3734,
+      "bbox": [
+        1772,
+        255,
+        2309,
+        646
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    },
+    {
+      "file": "ic_r2c1.png",
+      "row": 2,
+      "col": 1,
+      "width": 262,
+      "height": 481,
+      "aspect": 0.5447,
+      "bbox": [
+        1895,
+        910,
+        2157,
+        1391
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    },
+    {
+      "file": "ic_r3c1.png",
+      "row": 3,
+      "col": 1,
+      "width": 325,
+      "height": 373,
+      "aspect": 0.8713,
+      "bbox": [
+        301,
+        1499,
+        626,
+        1872
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    },
+    {
+      "file": "ic_r3c2.png",
+      "row": 3,
+      "col": 2,
+      "width": 279,
+      "height": 360,
+      "aspect": 0.775,
+      "bbox": [
+        1118,
+        1518,
+        1397,
+        1878
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    },
+    {
+      "file": "ic_r3c3.png",
+      "row": 3,
+      "col": 3,
+      "width": 357,
+      "height": 355,
+      "aspect": 1.0056,
+      "bbox": [
+        1847,
+        1521,
+        2204,
+        1876
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    },
+    {
+      "file": "ic_r4c1.png",
+      "row": 4,
+      "col": 1,
+      "width": 388,
+      "height": 297,
+      "aspect": 1.3064,
+      "bbox": [
+        270,
+        1997,
+        658,
+        2294
+      ],
+      "edge_touch": {
+        "left": false,
+        "top": false,
+        "right": false,
+        "bottom": false
+      }
+    }
+  ]
+}

@@ -1,0 +1,10 @@
+{
+  "iteration": 2,
+  "status": "second preview reviewed; retained original title/KPI sizes because the enlarged pass wrapped narrow source boxes",
+  "frame_anchor_adjustments": [
+    {"text":"把实时语音模型变成真正的口语陪练产品","frame_anchor":"bottom_summary_band","old_source_bbox":[830,1745,2200,170],"new_source_bbox":[720,1745,2400,170],"dx_px":-110,"dy_px":0,"reason":"preview wrapped final character to a second line"},
+    {"text":"底部三条结论","frame_anchor":"bottom_three_columns","old_source_bbox":"three narrow boxes","new_source_bbox":"three wider boxes at x=150/1450/2520","dx_px":0,"dy_px":0,"reason":"preview wrapped and overlapped column separators"},
+    {"text":"端到端 Realtime 路线具有可行性，但还不能当作生产 SLA","frame_anchor":"evidence_divider","old_source_bbox":"four adjacent boxes","new_source_bbox":[850,1110,2390,120],"dx_px":0,"dy_px":0,"reason":"use one editable rich-text box to preserve continuous spacing and emphasis"},
+    {"text":"标题与三组 KPI","frame_anchor":"top_evidence_band","old_source_bbox":"unchanged","new_source_bbox":"unchanged","dx_px":0,"dy_px":0,"reason":"44pt/68pt caused character wrapping; restored verified 36pt/58pt sizes"}
+  ]
+}

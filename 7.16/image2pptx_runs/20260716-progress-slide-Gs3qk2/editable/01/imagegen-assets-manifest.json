@@ -1,0 +1,32 @@
+{
+  "source_image": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/slide-01.png",
+  "assets": [
+    {
+      "layer": "background",
+      "backend": "built-in imagegen",
+      "generated_source": "/Users/mac/.codex/generated_images/019f697c-2abc-7b03-8831-452466208a2d/exec-95b311a4-48fc-49ab-a444-9ef4d9cc30ce.png",
+      "copied_to": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/background.png",
+      "prompt_file": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/prompts/background.txt",
+      "key_color": null
+    },
+    {
+      "layer": "frame",
+      "backend": "built-in imagegen",
+      "generated_source": "/Users/mac/.codex/generated_images/019f697c-2abc-7b03-8831-452466208a2d/exec-d33f64a3-b4b6-4fae-b77b-6193dae350f8.png",
+      "copied_to": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/frame_raw.png",
+      "transparent_output": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/frame.png",
+      "prompt_file": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/prompts/frame.txt",
+      "key_color": "#00ff00"
+    },
+    {
+      "layer": "icons",
+      "backend": "built-in imagegen",
+      "generated_source": "/Users/mac/.codex/generated_images/019f697c-2abc-7b03-8831-452466208a2d/exec-dc1ab742-657e-4d8e-93cb-0d0a932bace9.png",
+      "copied_to": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/icons_raw_1.png",
+      "transparent_output": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/icons_t_1.png",
+      "prompt_file": "/Users/mac/Documents/七牛云/7.16/image2pptx_runs/20260716-progress-slide-Gs3qk2/editable/01/prompts/icons.txt",
+      "key_color": "#00ff00"
+    }
+  ]
+}
+

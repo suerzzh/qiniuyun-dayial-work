@@ -300,6 +300,66 @@
 - 新指南不要求队友照抄当前仓库文件，而是通过架构盘点和代码搜索把其版本逐项标记为保留、环境变量化、迁移或架构例外。
 - Supabase 2026-07 changelog 提示 `@supabase/supabase-js` 后续将要求 TypeScript 5.0；2026-04 的 Data API 变更继续要求团队同时核对对象 grant 与行级 RLS，不能只检查其中一层。
 
+## Phase 30 DashScope Temporary API Key Findings
+- 百炼临时 API Key 不是在控制台中手工新增的永久 Key，而是由服务端使用主 API Key 调用 token 接口生成；有效期可设为 1–1800 秒，10 分钟对应 `expire_in_seconds=600`。
+- 临时 Key 继承主 Key 的权限和访问限制，不能在到期前主动删除；主 Key 仍必须只保存在可信服务端。
+- 当前线上实现由 Supabase Edge Function 的 `Deno.env.get("DASHSCOPE_API_KEY")` 读取密钥，并在 WebRTC SDP 交换时作为 Bearer 使用；Vercel 浏览器端不持有主 Key。因此只修改本地 `.env` 不会影响已部署线上链路。
+- 旧本地 Python Demo 在进程启动时读取 `.env`，所以一次性本地兼容测试可以把临时 Key 注入本地环境并重启后端，无需修改前端代码。
+- 若要正式让线上链路每次使用 10 分钟临时 Key，应由 Edge Function 保留主 Key、先生成临时 Key，再用临时 Key 完成 SDP 交换；需要修改 Edge Function、增加错误处理和测试，不只是改配置。
+- 百炼账单支持按永久 API Key ID、工作空间、模型等维度拆分，但官方资料未明确临时 Key 会作为独立 Key ID 展示。预计调用量归属主 Key/工作空间，而不是生成一个可单独筛选的临时 Key；需要用带时间窗口的实测确认，不能预先承诺。
+- 模型监控数据通常按小时更新，因此 10 分钟测试结束后不应立即判定“控制台没有用量”；应至少等待一个小时再核对监控与账单明细。
+- Supabase 官方说明，生产 Edge Function Secret 可在 Dashboard 或 CLI 中更新，保存后立即可供函数读取，不需要重新部署函数代码；因此线上一次性替换测试需要改 Supabase Secret，而不是 Vercel 或本地 `.env`。
+- 当前 Edge Function 在每次 `/sdp` 请求中调用 `Deno.env.get`，不会像旧 Python Demo 那样只在进程启动时缓存密钥；但直接把生产主 Secret 换成 10 分钟临时 Key 会让到期后的新会话失败，且必须及时恢复，不适合作为长期实现。
+- WebRTC 鉴权发生在 SDP 交换阶段；临时 Key 到期可明确验证“到期后新建会话失败”，但不应假设它会强制断开已经完成鉴权并建立的现有 WebRTC 会话。
+- 代码定位：`realtime-gateway/index.ts` 第 155 行读取 Key，第 160–162 行发起 Realtime SDP 请求；旧 Python Demo `backend/app.py` 第 56 行在启动时读取 Key。
+
+## Phase 31 Local DashScope Temporary Key Implementation Findings
+- 本地实施目标锁定为 `7.14/UniSpeaking` Python Demo，不改 Vercel、线上 Supabase 或完整 UI；永久 Key 继续只存在于被 Git 忽略的项目根 `.env`。
+- 新增 `backend/temporary_key.py`，对 token 签发、TTL 1–1800 秒校验、响应结构校验和安全错误进行独立封装；Key 字段在 dataclass repr 中隐藏。
+- `backend/app.py` 新增 `DASHSCOPE_USE_TEMP_KEY` 和 `DASHSCOPE_TEMP_KEY_TTL_SECONDS`。本地 `.env` 已开启 temporary 模式并设为 600 秒；每次新的 SDP 交换都会生成新的临时 Key。
+- 临时 Key 签发失败时返回 502，不静默回退永久 Key，从而保证测试流量确实使用临时 Key；日志只记录会话 ID 和 `expires_at`。
+- `/health` 新增安全的 `credential_mode` 与 `temporary_key_ttl_seconds` 字段。实际启动验证返回 temporary/600，未输出密钥。
+- 新增 6 个 unittest，覆盖父 Key Bearer、600 秒 TTL、非法 TTL、上游非 2xx、缺失 token、临时/永久模式选择；完整测试、compileall 和 `git diff --check` 均通过。
+- 正常 UI 测试每次新会话都会获得新临时 Key，因此10分钟后 Demo不会永久失效；到期的是单个 Key。若要对照永久 Key 路径，需要将开关设为 false 后重启。
+
+## Phase 32 Local Temporary Key 401 Diagnosis Findings
+- 浏览器创建本地 session 成功，失败边界稳定在 Python 后端向 DashScope token 接口签发临时 Key，返回 `401 InvalidApiKey`，因此前端、CORS、session 创建和 SDP 读取均不是根因。
+- 本地 `.env` 的主 Key 已配置，属于新版 `sk-ws-` 工作空间 Key，长度 116，未包含空白字符；可排除空值、明显格式错误和复制换行。
+- 使用同一个主 Key 绕过临时签发模块，直接向当前工作空间的北京 Realtime WebRTC endpoint 发送最小鉴权探测，同样返回 `401 InvalidApiKey`。这证明问题不是临时 token endpoint 不接受该 Key，也不是600秒 TTL，而是当前主 Key 本身已被服务端判定无效。
+- 百炼官方说明新版 `sk-ws` Key 与旧 Key 具备相同模型调用能力；401 常见原因包括 Key错误、地域不匹配、Key被重置/禁用/删除等。当前 endpoint 与项目均为北京，结合此前链路曾可用，优先检查该 Key 是否已在控制台被重置、禁用或删除。
+- 关闭 temporary 模式不会恢复功能，因为永久 Key直连也已被实测拒绝；必须先在北京地域 API Key管理页启用现有 Key，或创建/重置一个有效 Key并更新本地 `.env`。
+- 用户更新本地凭据后于 2026-07-15 重启验证：token endpoint 返回 HTTP 200，响应包含临时 Key 和 `expires_at`，确认新的主 Key可以成功签发600秒临时 Key；未回显临时 Key内容。
+
+## Phase 33 Per-User Realtime Usage Attribution Findings
+- `7.15/json.png` 展示的一条百炼推理日志同时包含 `task_uuid: sess_...`、独立 `request_id` 和 `usage`；其中 `usage` 含 input/output/total token，以及 text/audio 分项。该截图支持“当前日志里的 `task_uuid` 与 Realtime `session.id` 相同”的实测结论，但官方事件文档没有把 `task_uuid` 字段定义为长期稳定的公开契约，正式实现必须保留契约测试与缺失告警。
+- 百炼官方 Realtime 服务端事件文档确认：`session.created` 是连接建立后的首个服务端事件，`session.id` 形如 `sess_...`；`response.done` 的 `response.usage` 包含 `total_tokens`、`input_tokens`、`output_tokens` 及文本/音频分项。
+- 百炼官方模型监控文档明确建议：如需通过 API 获取单次调用 Token 消耗，应在每次调用时从响应的 `usage` 字段提取；普通监控延迟小时级，高级监控/推理日志延迟分钟级，默认保留 30 天。
+- 当前 `UniSpeaking_Complete_UI` 在 Supabase 中先生成内部 `realtime_sessions.id` UUID；前端收到 `session.created` 后只发送 `session.update`，没有保存 `event.session.id`。因此当前数据库无法直接用内部 session UUID 查询百炼 `task_uuid`。
+- 当前数据库只有 `conversation_id` 和 `client_hash`，没有绑定 `auth.users.id` 或其他可信用户主键；当前静态登录页也没有真正的 Supabase Auth 调用。若目标是不同用户的可靠用量统计/配额/计费，必须先补服务端可验证的 `user_id` 绑定。
+- 当前 WebRTC 架构的 Realtime DataChannel 直接在浏览器与百炼之间传输；Supabase Edge Function 只负责会话元数据和 SDP 交换，无法在服务端直接看到 `session.created` 与 `response.done`。浏览器上报可实现实时统计，但可被篡改，只能作为 provisional 用量，不能单独作为扣费账本。
+- 推荐混合路径：浏览器收到 `session.created` 后立即把 provider session ID 绑定到内部 session；每次 `response.done` 以 `response.id` 为幂等键上报 usage，形成实时 provisional 统计；后台再用百炼推理日志/SLS 按 `task_uuid` 查询并对账，形成 authoritative/reconciled 统计。
+- 若只做产品分析和用量展示，可先使用浏览器事件采集；若用量用于硬额度或计费，必须启用日志对账，或将协议切换为服务端可见事件的 WebSocket/有状态 Realtime 网关。
+- 百炼模型监控的 Prometheus API可按 workspace、model、API Key ID、protocol、usage_type 聚合，但没有公开的 UniSpeaking 业务用户维度，不能直接解决单用户归因；“每用户一个 API Key”会放大密钥、配额和运维风险，不推荐。
+- 百炼推理日志写入 SLS 后，可使用 SLS GetLogsV2 API按 Project、Logstore、时间窗和 `task_uuid` 查询；应使用最小权限 RAM/STS 凭据，并把查询放在服务端定时任务中，不能在浏览器保存 AccessKey。
+- 参考资料：百炼服务端事件 `https://help.aliyun.com/zh/model-studio/server-events`；模型监控 `https://help.aliyun.com/zh/model-studio/model-telemetry/`；SLS GetLogsV2 `https://help.aliyun.com/zh/sls/developer-reference/api-sls-2020-12-30-getlogsv2`。
+
+## Phase 34 Local Session Identity Attribution Validation Findings
+- `7.14/UniSpeaking` 本地 Demo 已实现最小验证链路：创建后端会话时绑定固定测试用户；浏览器收到 `session.created` 后提取 `event.session.id`；通过独立接口绑定到本地会话；关闭时写出最新记录。
+- 固定测试用户由 `DEMO_USER_ID` 配置，默认 `demo-user-001`。这是本地验证占位，不是生产鉴权；未来多用户实现仍需由可信登录态在服务端确定用户 ID。
+- 最新记录文件固定为 `7.14/UniSpeaking/data/last_session_identity.txt`，包含 `user_id`、`local_session_id`、`provider_session_id`、开始/结束时间和云端比较字段 `task_uuid`。
+- provider session 绑定是幂等且不可改绑：同一 ID 重复提交成功，同一本地会话尝试绑定不同 provider ID 会返回 400，避免关联被后续事件覆盖。
+- 浏览器正常结束前会等待绑定请求完成；若事件未捕获或绑定失败，后端仍写文件并标记 `provider_session_id: NOT_CAPTURED` 和 `capture_status: missing`，便于定位验证失败。
+- 本轮只证明并暴露可人工核验的关联键，不查询云端日志、不保存 usage、不做累计统计。`session.id == task_uuid` 的最终实测仍需用户完成一次真实会话并等待千问云记录生成后比对。
+- TDD 与回归验证：先观察到缺模块、缺 `user_id`、缺浏览器捕获逻辑三次预期红灯；最终 unittest 12/12 通过，compileall、浏览器脚本 `node --check`、`git diff --check` 均通过。
+- 当前本地后端已用新代码重启在 `127.0.0.1:8000`，健康检查为 temporary 模式、TTL 600；8080 静态页面也已确认包含新绑定逻辑。
+- 用户完成真实会话验证：本地捕获的 `provider_session_id=sess_CQEnIAvxbwqto5CFOIoEh` 与千问云记录的 `task_uuid=sess_CQEnIAvxbwqto5CFOIoEh` 完全一致，Phase 34 的人工云端比对门禁已通过。
+
+## Phase 35 Session Identity to User Usage Flow Documentation Findings
+- 实际运行日志确认完整链路：`demo-user-001` 创建本地会话 `3a957e96064445babdf00d05cb418110`；百炼通过 `session.created.session.id` 返回 `sess_CQEnIAvxbwqto5CFOIoEh`；浏览器提交绑定；关闭时后端写出 identity record。
+- 用量归属的唯一匹配链为 `user_id -> local_session_id -> provider_session_id == task_uuid -> usage`。
+- 已创建 `7.15/用户会话标识与用量归属流程.md`，只说明标识来源、绑定、结束、日志匹配和用量归属，不扩展其他统计方案。
+- 用户要求结束项目运行后，已停止 8000 后端与 8080 静态前端，两个端口均确认无监听。
+
 ## Issues Encountered
 | Issue | Resolution |
 |-------|------------|

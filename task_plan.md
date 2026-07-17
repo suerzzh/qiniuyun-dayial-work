@@ -4,7 +4,7 @@
 基于 `7.7` 昨日产出和 `7.8/产品设计书初稿写作框架.docx`，为我负责的产品设计书 7、8、9 模块形成可交付内容，并持续维护规划记录。
 
 ## Current Phase
-Phase 27: GitHub Deployment, Custom Domain, and Future Self-Hosted Guides
+Phase 35: Session Identity to User Usage Flow Documentation
 
 ## Phases
 
@@ -282,6 +282,58 @@ Phase 27: GitHub Deployment, Custom Domain, and Future Self-Hosted Guides
 - [x] 更新根目录全局记录并交付
 - **Status:** complete
 
+### Phase 30: DashScope Temporary API Key Test Assessment
+- [x] 恢复全局规划上下文并定位当前 Realtime 密钥读取位置
+- [x] 核对百炼临时 API Key 的生成接口、有效期范围和权限继承规则
+- [x] 区分本地 `.env`、Supabase Edge Function Secrets 与 Vercel 前端配置
+- [x] 核对 Supabase Secret 更新生效方式并形成分级测试建议
+- [x] 更新全局记录并交付结论
+- **Status:** complete
+
+### Phase 31: Local DashScope Temporary Key Implementation
+- [x] 恢复上下文并确认本地 Python Demo 的 Realtime 代理入口
+- [x] 确定“后端动态签发 600 秒临时 Key、前端无感、可切回永久 Key”的本地方案
+- [x] 编写设计说明与测试先行实施计划
+- [x] 编写失败测试并实现临时 Key 签发模块
+- [x] 接入本地 SDP 代理并更新本地环境配置
+- [x] 更新 README、运行完整验证并交付启动步骤
+- **Status:** complete
+
+### Phase 32: Local Temporary Key 401 Diagnosis
+- [x] 读取运行中后端日志并稳定复现 502/401
+- [x] 安全检查本地主 Key 类型、长度与空白字符
+- [x] 绕过临时签发模块，使用同一主 Key 直接探测 Realtime 鉴权
+- [x] 对照百炼临时 Key、API Key 升级与 401 官方说明
+- [x] 确认根因位于当前主 Key 无效，而非 TTL、前端或临时签发代码
+- **Status:** complete
+
+### Phase 33: Per-User Realtime Usage Attribution Design
+- [x] 恢复全局 planning 上下文并依次读取三份根目录记录
+- [x] 概览 `7.15` 文件并检查 request ID / `task_uuid` 截图
+- [x] 复核当前 WebRTC、Supabase 会话表和 Realtime 事件处理边界
+- [x] 核对百炼 `session.created`、`response.done.usage`、模型监控与推理日志官方说明
+- [x] 评估 `session.id -> task_uuid` 事后归因路径及其一致性、安全和延迟风险
+- [x] 形成实时采集、日志对账和替代方案的分层建议
+- [x] 更新全局 planning 记录并交付方案
+- **Status:** complete
+
+### Phase 34: Local Session Identity Attribution Validation
+- [x] 恢复全局 planning 上下文并复核本地 Demo 会话生命周期
+- [x] 将范围锁定为固定测试用户、捕获 `session.created.session.id`、结束后输出文本
+- [x] 编写最小设计说明与测试先行实施计划
+- [x] 先写失败测试，再实现会话标识校验、绑定和文本输出
+- [x] 接入后端创建/绑定/关闭接口及浏览器 `session.created` 事件
+- [x] 更新本地运行说明并完成完整验证
+- **Status:** complete
+
+### Phase 35: Session Identity to User Usage Flow Documentation
+- [x] 停止本地 Demo 后端和静态前端
+- [x] 核对真实会话的用户、本地会话、provider session 和结束记录
+- [x] 确认 `provider_session_id` 与千问云 `task_uuid` 实测完全一致
+- [x] 在 `7.15` 写入从开启会话到用户用量归属的单一流程说明
+- [x] 更新根目录全局 planning 记录
+- **Status:** complete
+
 ## Key Questions
 1. `7.8/产品设计书初稿写作框架.docx` 中第 7、8、9 模块的标题和要求分别是什么？
 2. 昨日 `7.7` 的哪些调研、用户画像、产品分析、产品图谱内容应被复用到 7/8/9 模块？
@@ -327,6 +379,9 @@ Phase 27: GitHub Deployment, Custom Domain, and Future Self-Hosted Guides
 | 7.14 Supabase 鉴权 | 新版 Publishable Key 只使用 `apikey` 头；Edge Function 关闭旧式 `verify_jwt` 并在函数内匹配 Supabase 注入的公开 Key，同时校验 Origin、限流和会话期限 |
 | 7.14 生产部署 | Vercel 项目 `unispeaking-web` 最新 Deployment `dpl_FUKPRUpRhLyXop72QcfBsFaMmLp2` 已 READY，正式域名 `https://unispeaking-web.vercel.app`；Supabase `realtime-gateway` 版本 1 已 ACTIVE |
 | 7.14 完整迁移上线手册 | 以当前已跑通的 Vercel Web + Supabase Edge Function/Postgres 为参考基线，同时增加后端形态判断；完整本地后端只有满足无状态、短请求、无本地持久化依赖时才直接迁入 Functions |
+| 用户用量归因主路径 | 以 `response.done.response.usage` 的逐响应采集为主，保存 `session.created.session.id` 作为百炼会话 ID；`task_uuid` 推理日志只用于异步对账和审计 |
+| 用户用量身份边界 | 必须由服务端在创建内部会话时绑定可信 `user_id`，不能仅依赖当前 `conversation_id`、`client_hash` 或浏览器上报值作为付费/配额依据 |
+| 本地归因验证实现范围 | 固定 `DEMO_USER_ID`，浏览器捕获 `session.created.session.id` 后绑定到后端会话，结束时只写最新一份文本供人工与 `task_uuid` 比对；暂不查询日志或统计 usage |
 
 ## Errors Encountered
 | Error | Attempt | Resolution |
@@ -340,6 +395,7 @@ Phase 27: GitHub Deployment, Custom Domain, and Future Self-Hosted Guides
 | 本机未安装 `supabase`、`vercel` CLI，无法直接运行本地 `--help` | 1 | 不安装或猜测版本；以已读取的 2026-07 官方文档命令为手册依据，并在文档要求执行者安装后先运行 `--version`/`--help` |
 | Vercel 域名重定向旧路径 `/docs/domains/deploying-and-redirecting` 返回 Page Not Found | 1 | 根据页面提示改用当前路径 `/docs/domains/working-with-domains/deploying-and-redirecting`，不重复请求旧路径 |
 | zsh 循环使用变量名 `path` 覆盖特殊 `PATH` 数组，导致循环内 `curl/sed/rg` command not found | 1 | 保留已成功的 `git ls-remote` 结果；后续改用普通变量名 `item` 并重新执行未完成的只读检查 |
+| 组合 `rg` 检索因第一段标题模式未命中而提前停止，项目检索未执行 | 1 | 拆成两个相互独立的只读检索并成功获取架构参考和项目匹配结果 |
 
 ## Notes
 - 根目录：`/Users/mac/Documents/七牛云`

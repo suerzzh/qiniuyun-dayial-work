@@ -1,0 +1,12 @@
+.env
+.DS_Store
+.vscode/.env
+.venv/
+__pycache__/
+*.pyc
+data/conversations.json
+data/conversations.json.tmp
+data/latency_report.json
+data/latency_report.json.tmp
+data/latency_report.md
+data/last_session_identity.txt

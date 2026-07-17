@@ -1,0 +1,20 @@
+{
+  "source": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/slide-01.png",
+  "preview": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/preview/slide_01.png",
+  "preview_size": [
+    1600,
+    900
+  ],
+  "mean_abs_diff_0_255": 15.651,
+  "rms_diff_0_255": 51.1596,
+  "changed_pixel_fraction_threshold_32": 0.095702,
+  "changed_pixel_fraction_threshold_64": 0.083392,
+  "artifacts": {
+    "source_resized": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/qa-visual/source_resized.png",
+    "preview": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/qa-visual/preview.png",
+    "side_by_side": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/qa-visual/side_by_side.png",
+    "blend": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/qa-visual/blend.png",
+    "diff_heatmap": "/Users/mac/Documents/七牛云/outputs/unispeaking_closing_slide_20260716/editable/01/qa-visual/diff_heatmap.png"
+  },
+  "note": "Metrics are diagnostic only. Final pass/fail requires visual review of source vs preview for text/icon position, size, and overlap."
+}

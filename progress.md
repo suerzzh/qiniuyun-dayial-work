@@ -592,3 +592,134 @@
   - `task_plan.md` updated
   - `findings.md` updated
   - `progress.md` updated
+
+### Phase 30: DashScope Temporary API Key Test Assessment
+- **Status:** complete
+- Actions taken:
+  - 恢复根目录规划记录并只读检查当前 Web、Supabase Edge Function 与旧 Python Demo 的密钥读取方式。
+  - 核对百炼临时 API Key 生成接口、10 分钟 TTL、权限继承、账单维度与监控更新延迟。
+  - 初步结论：本地快速测试可替换本地进程环境并重启；线上测试不能只改本地 `.env`，正式实现需要在 Edge Function 服务端动态签发临时 Key。
+- Next:
+  - 已核对 Supabase Secrets 更新与函数运行时生效说明：线上 Secret 保存后立即可用，不需要重新部署函数。
+  - 已形成快速本地验证、线上一次性验证、正式动态签发和控制台用量核对四层建议。
+- Issues:
+  - 首次 `rg` 命令因 shell 引号未闭合失败；改为单引号模式后重试成功。
+  - `.env.example` 路径最初误写为 `supabase/functions/.env.example`；只读定位确认实际文件位于 Web 项目根目录，未修改业务文件。
+
+### Phase 31: Local DashScope Temporary Key Implementation
+- **Status:** complete
+- Actions taken:
+  - 写入本地临时 Key 设计说明与测试先行实施计划。
+  - 按 TDD 两轮红绿循环新增 DashScope 临时 Key 签发与凭据选择模块。
+  - 将 temporary 模式接入 Python `/api/realtime` SDP 代理，增加安全健康状态与不泄露 token 的日志。
+  - 在本地 `.env` 开启 `DASHSCOPE_USE_TEMP_KEY=true` 并设定 TTL 600 秒；同步更新 `.env.example` 和 README 启动说明。
+- Verification:
+  - 首轮红灯：`ModuleNotFoundError: backend.temporary_key`；实现后4项测试通过。
+  - 第二轮红灯：缺少 `resolve_realtime_api_key`；实现后6项测试通过。
+  - `python -m unittest discover -s tests -v`：6 tests，0 failures。
+  - `python -m compileall -q backend tests`：exit 0。
+  - `git diff --check`：exit 0。
+  - 本地后端启动成功，`GET /health` 返回 HTTP 200、`credential_mode=temporary`、TTL 600，并已正常停止。
+  - 变更文件扫描未发现真实 `sk-ws-` Key 或实际工作空间 ID；原有 `data/latency_report.md` 用户改动保持不变。
+- Files created/modified:
+  - `7.14/UniSpeaking/backend/temporary_key.py` created
+  - `7.14/UniSpeaking/tests/__init__.py` created
+  - `7.14/UniSpeaking/tests/test_temporary_key.py` created
+  - `7.14/UniSpeaking/backend/app.py` updated
+  - `7.14/UniSpeaking/.env` updated locally and remains ignored
+  - `7.14/UniSpeaking/.env.example` updated
+  - `7.14/UniSpeaking/README.md` updated
+  - `docs/superpowers/specs/2026-07-15-local-dashscope-temporary-key-design.md` created
+  - `docs/superpowers/plans/2026-07-15-local-dashscope-temporary-key.md` created
+
+### Phase 32: Local Temporary Key 401 Diagnosis
+- **Status:** complete
+- Actions taken:
+  - 从运行中后端读取两次完整失败链路，确认 session 创建正常、token 签发稳定返回401。
+  - 不回显密钥地检查本地 Key 类型、长度和空白字符。
+  - 使用同一 Key直接探测北京 Realtime endpoint，仍返回 `401 InvalidApiKey`。
+  - 核对百炼官方临时 Key文档、新版 `sk-ws` Key能力说明与401错误原因。
+- Conclusion:
+  - 当前 `.env` 主 Key已被百炼判定无效；临时 Key签发代码、TTL 600、浏览器和本地后端路由不是根因。
+  - 需要用户在北京地域百炼 API Key管理页启用、重置或新建有效 Key，然后只在本地 `.env` 更新；之后重启后端即可继续验证。
+- Runtime state:
+  - 用户更新本地凭据后已重启后端；`GET /health` 返回 temporary/600。
+  - 实际 token 签发探测返回 HTTP 200，临时 Key 与过期时间字段均存在且未被输出。
+  - 前端 `http://127.0.0.1:8080/webrtc_demo.html` 返回 HTTP 200，前后端继续保持运行。
+  - 用户完成测试后已按要求正常终止前后端；8000 与 8080 端口均确认释放。
+  - 用户再次要求启动后，后端 8000 与前端 8080 已恢复运行；健康检查为 temporary/600，Demo 页面返回 HTTP 200 并已打开。
+
+## Session: 2026-07-15
+
+### Phase 33: Per-User Realtime Usage Attribution Design
+- **Status:** complete
+- Actions taken:
+  - 读取并遵循 `planning-with-files`、Superpowers brainstorming 和 architecture-copilot；运行会话恢复检查。
+  - 严格依次完整读取根目录 `task_plan.md`、`findings.md`、`progress.md`。
+  - 仅概览 `7.15` 文件，查看 `json.png` 和直接相关的简短索引 Markdown。
+  - 从截图确认百炼记录包含 `task_uuid=sess_...`、`request_id` 和文本/音频分项 usage。
+  - 复核当前 Supabase migration、Realtime WebRTC client 和 Edge Function，确认内部 session UUID、百炼 session ID 和可信用户 ID 尚未建立完整关联。
+  - 核对百炼官方 `session.created` 与 `response.done.usage` 字段、模型监控延迟/保留期/API限制，以及 SLS GetLogsV2 查询能力。
+  - 对比三条路径：逐响应 usage 实时采集、`task_uuid` 推理日志事后归因、每用户 Key/服务端网关等替代方案。
+- Conclusion:
+  - 用户提出的 `session.id -> task_uuid` 路径可实现，但更适合作为权威对账链路；主统计链路应直接采集每个 `response.done.response.usage`。
+  - 对 UniSpeaking 当前 WebRTC 架构，推荐“浏览器实时 provisional 上报 + SLS 日志异步 authoritative 对账”的混合方案，并先补可信 `user_id`。
+- Issues:
+  - 一次组合 `rg` 因前段模式无匹配而提前停止；已拆分为独立命令后成功，不重复原失败方式。
+- Files modified:
+  - `task_plan.md`
+  - `findings.md`
+  - `progress.md`
+
+### Phase 34: Local Session Identity Attribution Validation
+- **Status:** complete
+- Actions taken:
+  - 恢复全局 planning 记录并复核 `7.14/UniSpeaking` 的创建、`session.created` 和关闭生命周期。
+  - 写入最小设计说明和实施计划，范围限定为固定测试用户、标识捕获、结束文本，不实现云端日志查询或 usage 统计。
+  - 按 TDD 新增 provider session ID 校验、幂等绑定、冲突拒绝和 UTF-8 文本输出模块。
+  - 扩展 `SessionState`，在后端创建会话时绑定 `DEMO_USER_ID`；新增 provider session 绑定接口；关闭接口写出并返回 identity record。
+  - 修改浏览器 DataChannel 处理：从 `session.created.session.id` 捕获 `sess_...`，结束前等待绑定完成，正常关闭后展示 ID 和文件路径。
+  - 更新 `.env.example` 与 README，说明如何用 `data/last_session_identity.txt` 和千问云 JSON 的 `task_uuid` 做人工比对。
+  - 重启已运行的旧后端进程；保留 8080 静态服务器，新后端健康检查成功。
+- Verification:
+  - 首轮 RED：`ModuleNotFoundError: backend.session_identity`；实现后领域测试通过。
+  - 第二轮 RED：生命周期测试因创建响应缺少 `user_id` 失败；接入后端路由后通过。
+  - 第三轮 RED：HTML 缺少 `session.created` 标识绑定逻辑；接入浏览器后通过。
+  - `.venv/bin/python -m unittest discover -s tests -v`：12 tests，12 pass。
+  - `.venv/bin/python -m compileall -q backend tests`：exit 0。
+  - 提取 HTML script 后运行 `node --check`：exit 0。
+  - `git diff --check`：exit 0。
+  - `/health`：HTTP 200，`credential_mode=temporary`，TTL 600。
+- Files created/modified:
+  - `7.14/UniSpeaking/backend/session_identity.py` created
+  - `7.14/UniSpeaking/tests/test_session_identity.py` created
+  - `7.14/UniSpeaking/backend/business_logic.py` updated
+  - `7.14/UniSpeaking/backend/app.py` updated
+  - `7.14/UniSpeaking/webrtc_demo.html` updated
+  - `7.14/UniSpeaking/.env.example` updated
+  - `7.14/UniSpeaking/README.md` updated
+  - `docs/superpowers/specs/2026-07-15-local-session-identity-validation-design.md` created
+  - `docs/superpowers/plans/2026-07-15-local-session-identity-validation.md` created
+- Next:
+  - 已完成：用户确认 `provider_session_id=sess_CQEnIAvxbwqto5CFOIoEh` 与千问云 `task_uuid=sess_CQEnIAvxbwqto5CFOIoEh` 完全一致。
+
+### Phase 35: Session Identity to User Usage Flow Documentation
+- **Status:** complete
+- Actions taken:
+  - 正常终止当前 aiohttp 后端进程和 Python 8080 静态服务器。
+  - 从真实运行日志与 `last_session_identity.txt` 核对用户、本地会话、provider session、绑定接口和关闭落盘全过程。
+  - 在 `7.15` 新建单一主题 Markdown，完整展示 `session.created.session.id` 的来源、绑定、结束、`task_uuid` 匹配和 usage 归入用户的流程。
+  - 按用户提供的代码风格补充 Java 式完整伪代码，覆盖开始、事件捕获、关系保存、结束等待、日志匹配和用户用量落库；随后为每一条语句添加中文行内注释并压缩嵌套层级。
+  - 在逐行注释版上方恢复用户要求加逐行注释之前的原始 Builder/多行调用风格伪代码；逐行注释版本保持不变。
+  - 新建 `7.15/会话用量归属伪代码关键词说明.md`，面向非开发人员逐项解释伪代码符号、四类标识、类名、变量名、Builder、set/get 方法、事件监听、日志匹配和用户用量保存。
+- Evidence:
+  - `user_id=demo-user-001`。
+  - `local_session_id=3a957e96064445babdf00d05cb418110`。
+  - `provider_session_id=sess_CQEnIAvxbwqto5CFOIoEh`。
+  - 千问云 `task_uuid=sess_CQEnIAvxbwqto5CFOIoEh`，等值比对通过。
+  - 端口 8000 与 8080 均无监听。
+- Files created/modified:
+  - `7.15/用户会话标识与用量归属流程.md` created
+  - `task_plan.md` updated
+  - `findings.md` updated
+  - `progress.md` updated

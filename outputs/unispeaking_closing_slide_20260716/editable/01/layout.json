@@ -1,0 +1,32 @@
+{
+  "slide_width_in": 13.333,
+  "slide_height_in": 7.5,
+  "units": "fraction",
+  "ref_width": 3840,
+  "ref_height": 2160,
+  "background": "background.png",
+  "frame": "frame.png",
+  "shapes": [],
+  "icons": [],
+  "texts": [
+    {"text":"初步证据与下一阶段","x":0.0416667,"y":0.1157407,"w":0.390625,"h":0.0833333,"source_bbox":[160,250,1500,180],"size":36,"color":"#20211F","bold":true,"align":"left","valign":"middle","font":"STHeiti","line_spacing":1.0},
+    {"text":"146","x":0.1666667,"y":0.2407407,"w":0.109375,"h":0.1203704,"source_bbox":[640,520,420,260],"size":58,"color":"#F0442F","bold":true,"align":"center","valign":"middle","font":"Helvetica Neue","line_spacing":1.0},
+    {"text":"个记录轮次","x":0.1666667,"y":0.3518519,"w":0.1119792,"h":0.0416667,"source_bbox":[640,760,430,90],"size":18,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0},
+    {"text":"33","x":0.4505208,"y":0.2407407,"w":0.0833333,"h":0.1203704,"source_bbox":[1730,520,320,260],"size":58,"color":"#F0442F","bold":true,"align":"center","valign":"middle","font":"Helvetica Neue","line_spacing":1.0},
+    {"text":"个会话","x":0.4427083,"y":0.3518519,"w":0.09375,"h":0.0416667,"source_bbox":[1700,760,360,90],"size":18,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0},
+    {"text":"0.81 秒","x":0.6953125,"y":0.2407407,"w":0.1979167,"h":0.1203704,"source_bbox":[2670,520,760,260],"size":58,"color":"#F0442F","bold":true,"align":"center","valign":"middle","font":"STHeiti","line_spacing":1.0},
+    {"text":"首音频中位数约","x":0.7083333,"y":0.3518519,"w":0.1692708,"h":0.0416667,"source_bbox":[2720,760,650,90],"size":18,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0},
+    {"text":"在 113 个可测轮次中","x":0.4114583,"y":0.4259259,"w":0.1770833,"h":0.0462963,"source_bbox":[1580,920,680,100],"size":17,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0},
+    {"text":"端到端 Realtime 路线具有可行性，但还不能当作生产 SLA","x":0.2213542,"y":0.5138889,"w":0.6223958,"h":0.0555556,"source_bbox":[850,1110,2390,120],"size":22,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0,"runs":[{"text":"端到端 Realtime 路线具有","size":22,"color":"#20211F","bold":false},{"text":"可行性","size":22,"color":"#F0442F","bold":true},{"text":"，但还","size":22,"color":"#20211F","bold":false},{"text":"不能当作生产 SLA","size":22,"color":"#F0442F","bold":true}]},
+    {"text":"下一步","x":0.0729167,"y":0.6157407,"w":0.1171875,"h":0.0601852,"source_bbox":[280,1330,450,130],"size":23,"color":"#20211F","bold":true,"align":"left","valign":"middle","font":"PingFang SC","line_spacing":1.0},
+    {"text":"长会话","x":0.109375,"y":0.7083333,"w":0.0859375,"h":0.0462963,"source_bbox":[420,1530,330,100],"size":16,"color":"#20211F","bold":true,"align":"center","valign":"middle","font":"STHeiti","line_spacing":1.0},
+    {"text":"打断","x":0.3046875,"y":0.7083333,"w":0.078125,"h":0.0462963,"source_bbox":[1170,1530,300,100],"size":16,"color":"#20211F","bold":true,"align":"center","valign":"middle","font":"STHeiti","line_spacing":1.0},
+    {"text":"Redis","x":0.4817708,"y":0.7083333,"w":0.078125,"h":0.0462963,"source_bbox":[1850,1530,300,100],"size":16,"color":"#20211F","bold":true,"align":"center","valign":"middle","font":"Helvetica Neue","line_spacing":1.0},
+    {"text":"移动端","x":0.671875,"y":0.7083333,"w":0.0859375,"h":0.0462963,"source_bbox":[2580,1530,330,100],"size":16,"color":"#20211F","bold":true,"align":"center","valign":"middle","font":"STHeiti","line_spacing":1.0},
+    {"text":"真实用户指标","x":0.8489583,"y":0.7083333,"w":0.1119792,"h":0.0462963,"source_bbox":[3260,1530,430,100],"size":16,"color":"#20211F","bold":true,"align":"center","valign":"middle","font":"STHeiti","line_spacing":1.0},
+    {"text":"把实时语音模型变成真正的口语陪练产品","x":0.1875,"y":0.8078704,"w":0.625,"h":0.0787037,"source_bbox":[720,1745,2400,170],"size":27,"color":"#20211F","bold":true,"align":"center","valign":"middle","font":"STHeiti","line_spacing":1.0},
+    {"text":"实时对话是底座，教学编排才是产品","x":0.0390625,"y":0.9166667,"w":0.3255208,"h":0.0462963,"source_bbox":[150,1980,1250,100],"size":14,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0},
+    {"text":"Web 先验证，移动端随后扩展","x":0.3776042,"y":0.9166667,"w":0.265625,"h":0.0462963,"source_bbox":[1450,1980,1020,100],"size":14,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0},
+    {"text":"下一里程碑：可靠性与真实用户效果","x":0.65625,"y":0.9166667,"w":0.3125,"h":0.0462963,"source_bbox":[2520,1980,1200,100],"size":14,"color":"#20211F","bold":false,"align":"center","valign":"middle","font":"PingFang SC","line_spacing":1.0}
+  ]
+}

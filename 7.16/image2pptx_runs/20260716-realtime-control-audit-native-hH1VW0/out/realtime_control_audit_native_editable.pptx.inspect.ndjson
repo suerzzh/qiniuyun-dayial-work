@@ -1,0 +1,93 @@
+{"kind":"deck","id":"pr/tgx373","name":"Deck"}
+{"kind":"layout","layoutId":"4c50fd74-a722-4a1a-a80f-c0e9613457a0","name":"Master","type":"master"}
+{"kind":"layout","layoutId":"58ae4454-f1d4-4bf7-a388-ac88deeffab3","name":"Title Slide","type":"title"}
+{"kind":"slide","id":"sl/bsewa9","slide":1,"title":"R E A L T I M E   C O N T R O L   &   A U D I T","textShapes":48}
+{"kind":"shape","id":"sh/9sf294nq","slide":1,"name":"header-accent-orange","bbox":[52,29,92,6]}
+{"kind":"shape","id":"sh/mp4jy9of","slide":1,"name":"header-accent-black","bbox":[93,29,12,6]}
+{"kind":"textbox","id":"sh/nqdk7e50","slide":1,"name":"eyebrow","text":"R E A L T I M E   C O N T R O L   &   A U D I T","textPreview":"R E A L T I M E   C O N T R O L   &   A U D I T","textChars":47,"textLines":1,"bbox":[52,45,560,31]}
+{"kind":"textbox","id":"sh/wf6l4j6h","slide":1,"name":"main-title","text":"后端统一控制 Key， 前端只保留 WebRTC 连接","textPreview":"后端统一控制 Key， 前端只保留 WebRTC 连接","textChars":27,"textLines":1,"bbox":[52,80,1290,76]}
+{"kind":"textbox","id":"sh/xgf2don2","slide":1,"name":"subtitle","text":"一次 Realtime 会话由业务后端完成身份校验、 额度控制、 临时 Key 申请、 SDP 鉴权与官方用量对账。","textPreview":"一次 Realtime 会话由业务后端完成身份校验、 额度控制、 临时 Key 申请、 SDP 鉴权与官方用量对账。","textChars":58,"textLines":1,"bbox":[52,153,1210,45]}
+{"kind":"shape","id":"sh/ado329ob","slide":1,"name":"browser-backend-line","bbox":[357,379,235,1]}
+{"kind":"shape","id":"sh/bexkbe5w","slide":1,"name":"browser-backend-left","bbox":[357,373.4,8,11.2]}
+{"kind":"shape","id":"sh/kjql836d","slide":1,"name":"browser-backend-right","bbox":[584,373.4,8,11.2]}
+{"kind":"textbox","id":"sh/lkz2hony","slide":1,"name":"browser-backend-label","text":"登录态 / SDP","textPreview":"登录态 / SDP","textChars":9,"textLines":1,"bbox":[409,341,160,35]}
+{"kind":"shape","id":"sh/d0vupgzu","slide":1,"name":"backend-token-line","bbox":[926,238,269,53]}
+{"kind":"shape","id":"sh/czmdwvy9","slide":1,"name":"backend-token-head","bbox":[1187,232.4,8,11.2]}
+{"kind":"textbox","id":"sh/rydcnqh4","slide":1,"name":"backend-token-label","text":"主 Key 申请","textPreview":"主 Key 申请","textChars":8,"textLines":1,"bbox":[979,213,150,40]}
+{"kind":"shape","id":"sh/qx4bulgj","slide":1,"name":"token-realtime-line","bbox":[1332,296,1,69]}
+{"kind":"shape","id":"sh/1ovut0z6","slide":1,"name":"token-realtime-head","bbox":[1326.4,357,11.2,8]}
+{"kind":"textbox","id":"sh/0nmd0vyl","slide":1,"name":"token-realtime-label","text":"短时 Key","textPreview":"短时 Key","textChars":6,"textLines":1,"bbox":[1350,307,120,35]}
+{"kind":"shape","id":"sh/zmdcrqh0","slide":1,"name":"backend-realtime-request-line","bbox":[929,383,267,30]}
+{"kind":"shape","id":"sh/el4vylgf","slide":1,"name":"backend-realtime-request-head","bbox":[1188,407.4,8,11.2]}
+{"kind":"shape","id":"sh/hsbuhwzm","slide":1,"name":"realtime-backend-answer-line","bbox":[930,396,266,30]}
+{"kind":"shape","id":"sh/gr2toryh","slide":1,"name":"realtime-backend-answer-head","bbox":[930,390.4,8,11.2]}
+{"kind":"textbox","id":"sh/8b6d4b6x","slide":1,"name":"sdp-label","text":"SDP 鉴权 / Answer","textPreview":"SDP 鉴权 / Answer","textChars":15,"textLines":1,"bbox":[981,359,205,37]}
+{"kind":"shape","id":"sh/tcfuxg7i","slide":1,"name":"backend-usage-line","bbox":[760,467,1,55]}
+{"kind":"shape","id":"sh/m94v21o7","slide":1,"name":"backend-usage-head","bbox":[754.4,514,11.2,8]}
+{"kind":"textbox","id":"sh/7adcv6ps","slide":1,"name":"backend-usage-label","text":"会话 / 额度","textPreview":"会话 / 额度","textChars":7,"textLines":1,"bbox":[779,475,130,38]}
+{"kind":"shape","id":"sh/gf6d8b69","slide":1,"name":"json-ledger-line","bbox":[930,582,268,1]}
+{"kind":"shape","id":"sh/h0fu1g7u","slide":1,"name":"json-ledger-head","bbox":[930,576.4,8,11.2]}
+{"kind":"textbox","id":"sh/udov61o3","slide":1,"name":"json-ledger-label","text":"官方延迟对账","textPreview":"官方延迟对账","textChars":6,"textLines":1,"bbox":[998,540,165,40]}
+{"kind":"shape","id":"sh/vexcz6po","slide":1,"name":"browser-card","bbox":[85,328,265,111]}
+{"kind":"textbox","id":"sh/43qdcv65","slide":1,"name":"browser-title","text":"浏览器 / 移动 App","textPreview":"浏览器 / 移动 App","textChars":12,"textLines":1,"bbox":[103,345,229,40]}
+{"kind":"textbox","id":"sh/54zu507q","slide":1,"name":"browser-subtitle","text":"不可信客户端","textPreview":"不可信客户端","textChars":6,"textLines":1,"bbox":[112,390,211,35]}
+{"kind":"shape","id":"sh/fy1gbu9s","slide":1,"name":"backend-card","bbox":[598,287,327,180]}
+{"kind":"shape","id":"sh/exsf2p8n","slide":1,"name":"backend-accent-orange","bbox":[738,321,45,4]}
+{"kind":"shape","id":"sh/10jyd4ry","slide":1,"name":"backend-accent-black","bbox":[755,321,12,4]}
+{"kind":"textbox","id":"sh/0zax4zqd","slide":1,"name":"backend-title","text":"业务后端","textPreview":"业务后端","textChars":4,"textLines":1,"bbox":[650,337,223,63]}
+{"kind":"textbox","id":"sh/ru1w7a9w","slide":1,"name":"backend-subtitle","text":"鉴权、额度、会话","textPreview":"鉴权、额度、会话","textChars":8,"textLines":1,"bbox":[643,400,238,42]}
+{"kind":"shape","id":"sh/q98fy58b","slide":1,"name":"token-card","bbox":[1205,188,266,103]}
+{"kind":"textbox","id":"sh/dwjy9kr2","slide":1,"name":"token-title","text":"阿里云 Token 接口","textPreview":"阿里云 Token 接口","textChars":12,"textLines":1,"bbox":[1223,201,229,40]}
+{"kind":"textbox","id":"sh/svax0fqh","slide":1,"name":"token-subtitle","text":"申请短时 Key","textPreview":"申请短时 Key","textChars":8,"textLines":1,"bbox":[1236,240,204,38]}
+{"kind":"shape","id":"sh/bqlgje90","slide":1,"name":"realtime-card","bbox":[1204,371,267,102]}
+{"kind":"textbox","id":"sh/a5cfa98v","slide":1,"name":"realtime-title","text":"阿里云 Realtime","textPreview":"阿里云 Realtime","textChars":12,"textLines":1,"bbox":[1223,384,229,40]}
+{"kind":"textbox","id":"sh/ydsjyt4z","slide":1,"name":"realtime-subtitle","text":"SDP / WebRTC","textPreview":"SDP / WebRTC","textChars":12,"textLines":1,"bbox":[1236,425,204,35]}
+{"kind":"shape","id":"sh/je107y5k","slide":1,"name":"ledger-card","bbox":[600,527,324,99]}
+{"kind":"textbox","id":"sh/kfa103m5","slide":1,"name":"ledger-title","text":"用量台账 / 看板","textPreview":"用量台账 / 看板","textChars":9,"textLines":1,"bbox":[631,540,262,40]}
+{"kind":"textbox","id":"sh/lg3298na","slide":1,"name":"ledger-subtitle","text":"会话、额度、指纹","textPreview":"会话、额度、指纹","textChars":8,"textLines":1,"bbox":[644,581,236,34]}
+{"kind":"shape","id":"sh/a9sjuton","slide":1,"name":"json-card","bbox":[1203,527,268,116]}
+{"kind":"textbox","id":"sh/ba103y58","slide":1,"name":"json-title","text":"官方 JSON","textPreview":"官方 JSON","textChars":7,"textLines":1,"bbox":[1235,537,204,39]}
+{"kind":"textbox","id":"sh/wba1w36t","slide":1,"name":"json-body","text":"Request ID /\nToken / 金额","textPreview":"Request ID / | Token / 金额","textChars":23,"textLines":2,"bbox":[1240,575,194,58]}
+{"kind":"shape","id":"sh/xcji58ne","slide":1,"name":"visibility-accent","bbox":[62,658,1,118]}
+{"kind":"textbox","id":"sh/u5cj6d47","slide":1,"name":"visible-label","text":"浏览器实际可见：","textPreview":"浏览器实际可见：","textChars":8,"textLines":1,"bbox":[89,662,195,38]}
+{"kind":"textbox","id":"sh/v6lkfi5s","slide":1,"name":"visible-body","text":"会话 ID、 SDP、 ICE/DTLS 会话凭据、 临时 Key 过期时间、 用量和剩余额度。","textPreview":"会话 ID、 SDP、 ICE/DTLS 会话凭据、 临时 Key 过期时间、 用量和剩余额度。","textChars":48,"textLines":1,"bbox":[292,662,850,38]}
+{"kind":"textbox","id":"sh/p07m5c7u","slide":1,"name":"invisible-label","text":"浏览器不可见：","textPreview":"浏览器不可见：","textChars":7,"textLines":1,"bbox":[89,707,195,37]}
+{"kind":"textbox","id":"sh/4zylwr69","slide":1,"name":"invisible-key-master","text":"永久主 Key","textPreview":"永久主 Key","textChars":7,"textLines":1,"bbox":[292,707,112,37]}
+{"kind":"textbox","id":"sh/3y543mpo","slide":1,"name":"invisible-comma-1","text":"，st-...","textPreview":"，st-...","textChars":7,"textLines":1,"bbox":[401,707,73,37]}
+{"kind":"textbox","id":"sh/2xw3uho3","slide":1,"name":"invisible-key-temp","text":"短时 Key","textPreview":"短时 Key","textChars":6,"textLines":1,"bbox":[472,707,95,37]}
+{"kind":"textbox","id":"sh/hwnm1c7i","slide":1,"name":"invisible-mid","text":"，以及后端发往阿里云的","textPreview":"，以及后端发往阿里云的","textChars":11,"textLines":1,"bbox":[564,707,242,37]}
+{"kind":"textbox","id":"sh/gbels76d","slide":1,"name":"invisible-auth","text":"Authorization:","textPreview":"Authorization:","textChars":14,"textLines":1,"bbox":[805,707,132,37]}
+{"kind":"textbox","id":"sh/va54z2ps","slide":1,"name":"invisible-end","text":"Bearer ... 请求头。","textPreview":"Bearer ... 请求头。","textChars":15,"textLines":1,"bbox":[936,707,190,37]}
+{"kind":"textbox","id":"sh/u9w3qx87","slide":1,"name":"credential-note","text":"WebRTC 会话凭据仅用于当前连接，不等同于可调用任意模型接口的 API Key。","textPreview":"WebRTC 会话凭据仅用于当前连接，不等同于可调用任意模型接口的 API Key。","textChars":42,"textLines":1,"bbox":[89,744,900,36]}
+{"kind":"shape","id":"sh/1srmdg72","slide":1,"name":"bottom-divider","bbox":[61,796,1073,1]}
+{"kind":"shape","id":"sh/07i54b6h","slide":1,"name":"bottom-vertical-divider","bbox":[1159,796,1,119]}
+{"kind":"textbox","id":"sh/knqxwzip","slide":1,"name":"user-title","text":"user_id","textPreview":"user_id","textChars":7,"textLines":1,"bbox":[62,804,133,35]}
+{"kind":"textbox","id":"sh/lojyp4ja","slide":1,"name":"user-sub","text":"套餐 / 日额度","textPreview":"套餐 / 日额度","textChars":8,"textLines":1,"bbox":[62,839,133,34]}
+{"kind":"textbox","id":"sh/yl8fu90z","slide":1,"name":"session-title","text":"session_id","textPreview":"session_id","textChars":10,"textLines":1,"bbox":[290,804,151,35]}
+{"kind":"textbox","id":"sh/jmhgne14","slide":1,"name":"session-sub","text":"本地唯一会话","textPreview":"本地唯一会话","textChars":6,"textLines":1,"bbox":[290,839,151,34]}
+{"kind":"textbox","id":"sh/wjqxszit","slide":1,"name":"key-title","text":"Key ID / 指纹","textPreview":"Key ID / 指纹","textChars":11,"textLines":1,"bbox":[533,804,161,35]}
+{"kind":"textbox","id":"sh/xkzel4je","slide":1,"name":"key-sub","text":"不保存明文","textPreview":"不保存明文","textChars":5,"textLines":1,"bbox":[533,839,161,34]}
+{"kind":"textbox","id":"sh/ah8fqp0n","slide":1,"name":"task-title","text":"task_uuid","textPreview":"task_uuid","textChars":9,"textLines":1,"bbox":[781,804,143,35]}
+{"kind":"textbox","id":"sh/bihwju18","slide":1,"name":"task-sub","text":"供应商会话","textPreview":"供应商会话","textChars":5,"textLines":1,"bbox":[781,839,143,34]}
+{"kind":"textbox","id":"sh/of6xofih","slide":1,"name":"request-title","text":"request_id","textPreview":"request_id","textChars":10,"textLines":1,"bbox":[990,804,143,35]}
+{"kind":"textbox","id":"sh/9gzehkj2","slide":1,"name":"request-sub","text":"官方最终记录","textPreview":"官方最终记录","textChars":6,"textLines":1,"bbox":[990,839,143,34]}
+{"kind":"shape","id":"sh/rqxg7al4","slide":1,"name":"lineage-user-session-dot","bbox":[206,836,12,12]}
+{"kind":"shape","id":"sh/qpofyp4j","slide":1,"name":"lineage-user-session-line","bbox":[222,842,53,1]}
+{"kind":"shape","id":"sh/dsfy9k3a","slide":1,"name":"lineage-user-session-head","bbox":[267,836.4,8,11.2]}
+{"kind":"shape","id":"sh/cr6x0fmp","slide":1,"name":"lineage-session-key-dot","bbox":[449,836,12,12]}
+{"kind":"shape","id":"sh/zexgbul0","slide":1,"name":"lineage-session-key-line","bbox":[465,842,53,1]}
+{"kind":"shape","id":"sh/edoz2pkf","slide":1,"name":"lineage-session-key-head","bbox":[510,836.4,8,11.2]}
+{"kind":"shape","id":"sh/1gfyd436","slide":1,"name":"lineage-key-task-dot","bbox":[698,836,12,12]}
+{"kind":"shape","id":"sh/0f6h4z2l","slide":1,"name":"lineage-key-task-line","bbox":[714,842,53,1]}
+{"kind":"shape","id":"sh/nihgfulc","slide":1,"name":"lineage-key-task-head","bbox":[759,836.4,8,11.2]}
+{"kind":"shape","id":"sh/mh8z69kr","slide":1,"name":"lineage-task-request-dot","bbox":[912,836,12,12]}
+{"kind":"shape","id":"sh/apojut0v","slide":1,"name":"lineage-task-request-line","bbox":[928,842,46,1]}
+{"kind":"shape","id":"sh/vqxk3yhg","slide":1,"name":"lineage-task-request-head","bbox":[966,836.4,8,11.2]}
+{"kind":"textbox","id":"sh/wr61w3i1","slide":1,"name":"lineage-note","text":"用户归属以 user_id 为主键， 会话以 session_id 为最小计量单元， 官方记录通过 task_uuid 匹配， 并以 request_id 去重。","textPreview":"用户归属以 user_id 为主键， 会话以 session_id 为最小计量单元， 官方记录通过 task_uuid 匹配， 并以 request_id 去重。","textChars":81,"textLines":1,"bbox":[61,878,1072,37]}
+{"kind":"textbox","id":"sh/xsf258zm","slide":1,"name":"conclusion-backend","text":"业务后端","textPreview":"业务后端","textChars":4,"textLines":1,"bbox":[1199,811,105,44]}
+{"kind":"textbox","id":"sh/itojyd07","slide":1,"name":"conclusion-line1-rest","text":"是控制中心，用量台账是","textPreview":"是控制中心，用量台账是","textChars":11,"textLines":1,"bbox":[1298,811,315,44]}
+{"kind":"textbox","id":"sh/juxk7yhc","slide":1,"name":"conclusion-realtime","text":"实时管理","textPreview":"实时管理","textChars":4,"textLines":1,"bbox":[1199,852,110,44]}
+{"kind":"textbox","id":"sh/kvq103ix","slide":1,"name":"conclusion-line2-mid","text":"依据，官方 JSON 是","textPreview":"依据，官方 JSON 是","textChars":12,"textLines":1,"bbox":[1298,852,222,44]}
+{"kind":"textbox","id":"sh/5wz298zi","slide":1,"name":"conclusion-audit","text":"最终审计","textPreview":"最终审计","textChars":4,"textLines":1,"bbox":[1508,852,102,44]}
+{"kind":"textbox","id":"sh/6x832d03","slide":1,"name":"conclusion-line2-end","text":"依据。","textPreview":"依据。","textChars":3,"textLines":1,"bbox":[1597,852,70,44]}
+{"kind":"notes","id":"nt/bsewa9","slide":1,"text":""}

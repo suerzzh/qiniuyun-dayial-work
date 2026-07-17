@@ -1,0 +1,9 @@
+Use case: background-extraction
+Asset type: editable PowerPoint icon and decoration cutout sheet
+Input images: Image 1 is the only edit target.
+Primary request: 以刚刚显示的这张图片作为唯一编辑目标 / edit target，在它的基础上，只提取 B3 框架层没有包含的 8 个图标/插画内部元素：1) Realtime 圆框里的橙红色用户头像线稿（只要头像，不要外圆）；2) Realtime 圆框里的青绿色云朵线稿（只要云朵，不要外圆）；3) React Web 笔记本屏幕内部的网页界面线稿（仅内部界面内容，不要电脑外框）；4) 手机屏幕内部的灰色与浅橙色 UI 内容（仅内部内容，不要手机外框）；5) 灰色线稿立方体；6) 灰色线稿数据库圆柱；7) 灰色线稿齿轮；8) 灰色线稿云朵。
+Scene/backdrop: 正方形画布，纯 #00ff00 绿色背景，无阴影、无渐变、无纹理。
+Composition/framing: 严格排成 3×3 等分网格，前 8 格按上述顺序各放一个元素，第 9 格留空；每个元素居中，四周留出大量均匀边距，任何笔画都不能接触格子边缘；网格之间不要画任何分割线、实线或虚线。
+Style/medium: 忠实复刻原图的极简细线信息图风格、线宽、颜色和比例。
+Constraints: only the eight listed missing elements; no ordinary text; no labels; no card background; no outer laptop, phone or medallion frames; no duplicate elements already present in the frame layer; no watermark; do not use #00ff00 inside any icon.
+Avoid: matrix symbols, chat bubbles, waveform, timeline, bar chart, route pin, checklist, cards, brackets, borders, extra icons, letters, numbers, labels, grid lines.

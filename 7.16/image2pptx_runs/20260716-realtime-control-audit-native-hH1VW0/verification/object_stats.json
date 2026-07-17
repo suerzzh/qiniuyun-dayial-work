@@ -1,0 +1,19 @@
+{
+  "slides": 1,
+  "shapes": 88,
+  "pictures": 0,
+  "text_shapes": 48,
+  "key_texts": {
+    "后端统一控制 Key": true,
+    "业务后端": true,
+    "阿里云 Token 接口": true,
+    "阿里云 Realtime": true,
+    "浏览器实际可见": true,
+    "request_id": true,
+    "最终审计": true
+  },
+  "slide_size": [
+    15925800,
+    8963025
+  ]
+}
