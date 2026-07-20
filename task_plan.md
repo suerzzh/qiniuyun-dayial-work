@@ -334,6 +334,43 @@ Phase 35: Session Identity to User Usage Flow Documentation
 - [x] 更新根目录全局 planning 记录
 - **Status:** complete
 
+### Phase 36: IELTS Speaking Special Training Design
+- [x] 恢复全局 planning 上下文并读取 `7.20/雅思口语特训场景方案调研与设计.md`
+- [x] 核对 IELTS Speaking 官方结构、时长和评分边界
+- [x] 检查现有场景训练、Realtime、会话身份与数据存储的可复用边界
+- [x] 在不考虑部署上线的前提下，对比后端 JSON、关系数据库和可迁移双层方案
+- [x] 梳理 2-3 种产品与技术实现方案并给出推荐
+- [x] 与用户确认 MVP 目标和关键产品取舍
+- [x] 写入完整方案、题库对比、组卷流程、状态流转、Realtime 接入和迭代计划
+- [x] 自检方案的一致性、可实施性、范围和验收口径
+- [x] 用户已确认进入实施阶段，并要求编写详细计划与实现 Demo
+- **Status:** complete
+- **Scope note:** 本阶段只做本地开发期的产品与技术方案；不讨论部署、上线、RLS、生产运维。题库确定由开发人员维护后端 JSON 文件。
+
+### Phase 37: IELTS Speaking Interactive Demo
+- [x] 将已确认设计转换为详细 TDD 实施计划
+- [x] 实现并校验后端 JSON 题库契约
+- [x] 实现随机组卷、Part 2/3 主题关联和快照
+- [x] 实现完整模考/专项练习状态机
+- [x] 实现 Demo 会话控制器、计时、记录和反馈
+- [x] 集成 IELTS 路由、入口、Part 2 全题卡和响应式 UI
+- [x] 运行完整自动化回归、语法检查和浏览器验收
+- [x] 补充 README 并更新全局 planning 记录
+- **Status:** complete
+- **Scope note:** Demo 集成到 `7.14/UniSpeaking_Complete_UI`，使用浏览器内编排和语音合成作为未来后端/Realtime 适配器的可替换 Demo；不改生产部署链路。
+
+### Phase 38: IELTS Microphone Answer Interaction
+- [x] 与用户确认“开始 → 暂停 → 继续 + 独立结束本轮”的交互
+- [x] 确认采用浏览器 Web Speech API 实时转写并保留文字降级
+- [x] 写入并复核麦克风交互设计规格和 TDD 实施计划
+- [x] 实现浏览器语音识别适配器、权限请求和资源释放
+- [x] 实现单轮回答状态、计时、转写追加、暂停/继续和降级
+- [x] 将 Part 1–3 与完整模考回答区替换为统一麦克风面板
+- [x] 保持 Part 2 准备阶段无麦克风、回答阶段完整题卡置顶
+- [x] 完成自动化回归、桌面/移动端和权限拒绝浏览器验收
+- **Status:** complete
+- **Scope note:** 原始音频不上传、不保存；浏览器转写不用于发音评估，不接入生产 Realtime 或部署链路。
+
 ## Key Questions
 1. `7.8/产品设计书初稿写作框架.docx` 中第 7、8、9 模块的标题和要求分别是什么？
 2. 昨日 `7.7` 的哪些调研、用户画像、产品分析、产品图谱内容应被复用到 7/8/9 模块？

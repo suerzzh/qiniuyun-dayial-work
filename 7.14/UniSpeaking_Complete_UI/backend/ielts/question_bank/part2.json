@@ -1,0 +1,56 @@
+{
+  "cards": [
+    {
+      "card_id": "p2_person_001",
+      "version": 1,
+      "status": "active",
+      "topic_cluster": "people_and_relationships",
+      "training_level": "standard",
+      "topic_sentence": "Describe a person who has influenced you.",
+      "you_should_say": [
+        "who this person is",
+        "how you know this person",
+        "what this person did"
+      ],
+      "explain": "and explain how this person influenced you.",
+      "rounding_off_questions": [
+        { "question_id": "p2_person_001_r1", "version": 1, "text": "Do you still keep in touch with this person?" },
+        { "question_id": "p2_person_001_r2", "version": 1, "text": "Would you like to influence other people in the same way?" }
+      ]
+    },
+    {
+      "card_id": "p2_place_001",
+      "version": 1,
+      "status": "active",
+      "topic_cluster": "places_and_cities",
+      "training_level": "foundation",
+      "topic_sentence": "Describe a place in your city that you enjoy visiting.",
+      "you_should_say": [
+        "where this place is",
+        "what you can do there",
+        "how often you visit it"
+      ],
+      "explain": "and explain why you enjoy visiting this place.",
+      "rounding_off_questions": [
+        { "question_id": "p2_place_001_r1", "version": 1, "text": "Would you recommend this place to visitors?" }
+      ]
+    },
+    {
+      "card_id": "p2_skill_001",
+      "version": 1,
+      "status": "active",
+      "topic_cluster": "learning_and_skills",
+      "training_level": "advanced",
+      "topic_sentence": "Describe a skill you would like to learn.",
+      "you_should_say": [
+        "what the skill is",
+        "why you want to learn it",
+        "how you would learn it"
+      ],
+      "explain": "and explain how this skill would be useful to you.",
+      "rounding_off_questions": [
+        { "question_id": "p2_skill_001_r1", "version": 1, "text": "Do you know anyone who already has this skill?" }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,5013 @@
+{
+  "schema_version": "1.0",
+  "source": {
+    "file_name": "2026年1-4月P1口语分类2.2.pdf",
+    "sha256": "5a49461b3df7ae2fb85a35a21c0951d401fe4eba01e6040fb978dbef7e8ca372",
+    "page_count": 20,
+    "extractor": "pymupdf_layout_p1_v1"
+  },
+  "part": 1,
+  "season": "2026-01_04",
+  "topics": [
+    {
+      "id": "p1_home_accommodation_2026_01_04_001",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "必考题",
+      "freshness": "unspecified",
+      "sequence": 1,
+      "source_topic_number": 1,
+      "topic": "Home&Accommodation",
+      "raw_topic_heading": "1.Home&Accommodation",
+      "questions": [
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q01",
+          "order": 1,
+          "text": "What kind of house or flat do you want to live in in the future?",
+          "raw_text": "What kind of house or flat do you want to live in in the future?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q02",
+          "order": 2,
+          "text": "Are the transport facilities to your home very good?",
+          "raw_text": "Are the transport facilities to your home very good?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q03",
+          "order": 3,
+          "text": "Do you prefer living in a house or a flat?",
+          "raw_text": "Do you prefer living in a house or a flat?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q04",
+          "order": 4,
+          "text": "Please describe the room you live in?",
+          "raw_text": "Please describe the room you live in?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q05",
+          "order": 5,
+          "text": "What part of your home do you like the most?",
+          "raw_text": "What part of your home do you like the most?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q06",
+          "order": 6,
+          "text": "How long have you lived there?",
+          "raw_text": "How long have you lived there?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q07",
+          "order": 7,
+          "text": "Do you plan to live there for a long time?",
+          "raw_text": "Do you plan to live there for a long time?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q08",
+          "order": 8,
+          "text": "What's the difference between where you are living now and where you have lived in the past?",
+          "raw_text": "What's the difference between where you are living now and where you have lived in the past?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q09",
+          "order": 9,
+          "text": "Can you describe the place where you live?",
+          "raw_text": "Can you describe the place where you live?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q10",
+          "order": 10,
+          "text": "What room does your family spend most of the time in?",
+          "raw_text": "What room does your family spend most of the time in?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q11",
+          "order": 11,
+          "text": "What's your favorite room in your apartment/house?",
+          "raw_text": "What's your favorite room in your apartment/house?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q12",
+          "order": 12,
+          "text": "What makes you feel pleasant in your home?",
+          "raw_text": "What makes you feel pleasant in your home?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q13",
+          "order": 13,
+          "text": "Do you think it is important to live in a comfortable environment?",
+          "raw_text": "Do you think it is important to live in a comfortable environment?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q14",
+          "order": 14,
+          "text": "Do you live in a house or a flat?",
+          "raw_text": "Do you live in a house or a flat?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q15",
+          "order": 15,
+          "text": "Who do you live with?",
+          "raw_text": "Who do you live with?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q16",
+          "order": 16,
+          "text": "What do you usually do in your flat?",
+          "raw_text": "What do you usually do in your flat?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_home_accommodation_2026_01_04_001_q17",
+          "order": 17,
+          "text": "What kinds of accommodation do you live in?",
+          "raw_text": "What kinds of accommodation do you live in?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 3,
+      "source_page_end": 3,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_hometown_2026_01_04_002",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "必考题",
+      "freshness": "unspecified",
+      "sequence": 2,
+      "source_topic_number": 2,
+      "topic": "Hometown",
+      "raw_topic_heading": "2.Hometown",
+      "questions": [
+        {
+          "id": "p1_hometown_2026_01_04_002_q01",
+          "order": 1,
+          "text": "Do you think you will continue living there for along time?",
+          "raw_text": "Do you think you will continue living there for along time?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q02",
+          "order": 2,
+          "text": "Please describe your hometown a little.",
+          "raw_text": "Please describe your hometown a little.",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q03",
+          "order": 3,
+          "text": "How long have you been living there?",
+          "raw_text": "How long have you been living there?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q04",
+          "order": 4,
+          "text": "Do you like your hometown?",
+          "raw_text": "Do you like your hometown?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q05",
+          "order": 5,
+          "text": "Do you like living there?",
+          "raw_text": "Do you like living there?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q06",
+          "order": 6,
+          "text": "What do you like (most) about your hometown?",
+          "raw_text": "What do you like (most) about your hometown?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q07",
+          "order": 7,
+          "text": "ls there anything you dislike about it?",
+          "raw_text": "ls there anything you dislike about it?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q08",
+          "order": 8,
+          "text": "Where is your hometown?",
+          "raw_text": "Where is your hometown?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q09",
+          "order": 9,
+          "text": "ls that a big city or a small place?",
+          "raw_text": "ls that a big city or a small place?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q10",
+          "order": 10,
+          "text": "What's your hometown famous for?",
+          "raw_text": "What's your hometown famous for?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hometown_2026_01_04_002_q11",
+          "order": 11,
+          "text": "Did you learn about the history of your hometown at school?",
+          "raw_text": "Did you learn about the history of your hometown at school?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 3,
+      "source_page_end": 3,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_the_area_you_live_in_2026_01_04_003",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "必考题",
+      "freshness": "unspecified",
+      "sequence": 3,
+      "source_topic_number": 3,
+      "topic": "The area you live in",
+      "raw_topic_heading": "3.The area you live in",
+      "questions": [
+        {
+          "id": "p1_the_area_you_live_in_2026_01_04_003_q01",
+          "order": 1,
+          "text": "Do you like the area that you live in?",
+          "raw_text": "Do you like the area that you live in?",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_area_you_live_in_2026_01_04_003_q02",
+          "order": 2,
+          "text": "Where do you like to go in that area? ",
+          "raw_text": "Where do you like to go in that area? ",
+          "source_page_start": 3,
+          "source_page_end": 3,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_the_area_you_live_in_2026_01_04_003_q03",
+          "order": 3,
+          "text": "Do you know any famous people in your area?",
+          "raw_text": "Do you know any famous people in your area?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_area_you_live_in_2026_01_04_003_q04",
+          "order": 4,
+          "text": "What are some changes in the area recently?",
+          "raw_text": "What are some changes in the area recently?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_area_you_live_in_2026_01_04_003_q05",
+          "order": 5,
+          "text": "Do you know any of your neighbours?",
+          "raw_text": "Do you know any of your neighbours?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_area_you_live_in_2026_01_04_003_q06",
+          "order": 6,
+          "text": "Have you lived in your area for a long time?",
+          "raw_text": "Have you lived in your area for a long time?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 3,
+      "source_page_end": 4,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_the_city_you_live_in_2026_01_04_004",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "必考题",
+      "freshness": "unspecified",
+      "sequence": 4,
+      "source_topic_number": 4,
+      "topic": "The city you live in",
+      "raw_topic_heading": "4.The city you live in",
+      "questions": [
+        {
+          "id": "p1_the_city_you_live_in_2026_01_04_004_q01",
+          "order": 1,
+          "text": "Which city you live in?",
+          "raw_text": "Which city you live in?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_city_you_live_in_2026_01_04_004_q02",
+          "order": 2,
+          "text": "Do you like this city? Why?",
+          "raw_text": "Do you like this city? Why？",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_city_you_live_in_2026_01_04_004_q03",
+          "order": 3,
+          "text": "How long have you live in this city?",
+          "raw_text": "How long have you live in this city ?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_city_you_live_in_2026_01_04_004_q04",
+          "order": 4,
+          "text": "Is this city your permanent residence?",
+          "raw_text": "Is this city your permanent residence?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_the_city_you_live_in_2026_01_04_004_q05",
+          "order": 5,
+          "text": "Are there big changes in this city?",
+          "raw_text": "Are there big changes in this city?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 4,
+      "source_page_end": 4,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_work_or_studies_2026_01_04_005",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "必考题",
+      "freshness": "unspecified",
+      "sequence": 5,
+      "source_topic_number": 5,
+      "topic": "Work or studies",
+      "raw_topic_heading": "5.Work or studies",
+      "questions": [
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q01",
+          "order": 1,
+          "text": "What technology do you use at work?",
+          "raw_text": "What technology do you use at work?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q02",
+          "order": 2,
+          "text": "What technology do you use when you study?",
+          "raw_text": "What technology do you use when you study?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q03",
+          "order": 3,
+          "text": "What subjects are you studying?",
+          "raw_text": "What subjects are you studying?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q04",
+          "order": 4,
+          "text": "Why did you choose to study that subject?",
+          "raw_text": "Why did you choose to study that subject?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q05",
+          "order": 5,
+          "text": "Do you like your subject?",
+          "raw_text": "Do you like your subject?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q06",
+          "order": 6,
+          "text": "Is it very interesting?",
+          "raw_text": "Is it very interesting?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [
+            "duplicate_question_text_in_document"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q07",
+          "order": 7,
+          "text": "What do you like about your studies?",
+          "raw_text": "What do you like about your studies?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q08",
+          "order": 8,
+          "text": "What do you need to study better?",
+          "raw_text": "What do you need to study better?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q09",
+          "order": 9,
+          "text": "How much time do you spend studying every week?",
+          "raw_text": "How much time do you spend studying every week?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q10",
+          "order": 10,
+          "text": "Are you looking forward to working?",
+          "raw_text": "Are you looking forward to working?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q11",
+          "order": 11,
+          "text": "Do you prefer to study in the mornings or in the afternoons?",
+          "raw_text": "Do you prefer to study in the mornings or in the afternoons?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q12",
+          "order": 12,
+          "text": "Why did you choose to do that type of work (or that job)?",
+          "raw_text": "Why did you choose to do that type of work (or that job)?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q13",
+          "order": 13,
+          "text": "Do you like your job?",
+          "raw_text": "Do you like your job?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q14",
+          "order": 14,
+          "text": "ls it very interesting?",
+          "raw_text": "ls it very interesting?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [
+            "duplicate_question_text_in_document"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q15",
+          "order": 15,
+          "text": "Do you miss being a student?",
+          "raw_text": "Do you miss being a student?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q16",
+          "order": 16,
+          "text": "What work do you do?",
+          "raw_text": "What work do you do?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q17",
+          "order": 17,
+          "text": "Who helps you the most? And how?",
+          "raw_text": "Who helps you the most? And how?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q18",
+          "order": 18,
+          "text": "What do you like about your work?",
+          "raw_text": "What do you like about your work?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q19",
+          "order": 19,
+          "text": "What do you need to do your work better?",
+          "raw_text": "What do you need to do your work better?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_work_or_studies_2026_01_04_005_q20",
+          "order": 20,
+          "text": "How much time do you spend working every week?",
+          "raw_text": "How much time do you spend working every week?",
+          "source_page_start": 4,
+          "source_page_end": 4,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 4,
+      "source_page_end": 4,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_teachers_2026_01_04_001",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "人物类",
+      "freshness": "old",
+      "sequence": 1,
+      "source_topic_number": 1,
+      "topic": "Teachers",
+      "raw_topic_heading": "1.Teachers",
+      "questions": [
+        {
+          "id": "p1_teachers_2026_01_04_001_q01",
+          "order": 1,
+          "text": "Do you have a favourite teacher?",
+          "raw_text": "Do you have a favourite teacher?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_teachers_2026_01_04_001_q02",
+          "order": 2,
+          "text": "In what way has your favourite teacher helped you?",
+          "raw_text": "In what way has your favourite teacher helped you?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_teachers_2026_01_04_001_q03",
+          "order": 3,
+          "text": "Do you have a teacher from your past that you still remember?",
+          "raw_text": "Do you have a teacher from your past that you still remember?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_teachers_2026_01_04_001_q04",
+          "order": 4,
+          "text": "Are you still in touch with your primary school teachers?",
+          "raw_text": "Are you still in touch with your primary school teachers?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_teachers_2026_01_04_001_q05",
+          "order": 5,
+          "text": "Do you want to be a teacher in the future?",
+          "raw_text": "Do you want to be a teacher in the future?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_teachers_2026_01_04_001_q06",
+          "order": 6,
+          "text": "When was the last time you laughed?",
+          "raw_text": "When was the last time you laughed?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [
+            "duplicate_question_number_in_topic"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 5,
+      "source_page_end": 5,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_friends_2026_01_04_002",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "人物类",
+      "freshness": "old",
+      "sequence": 2,
+      "source_topic_number": 2,
+      "topic": "Friends",
+      "raw_topic_heading": "2.Friends",
+      "questions": [
+        {
+          "id": "p1_friends_2026_01_04_002_q01",
+          "order": 1,
+          "text": "Do you have a friend you have known for a long time?",
+          "raw_text": "Do you have a friend you have known for a long time?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_friends_2026_01_04_002_q02",
+          "order": 2,
+          "text": "What do you usually do with your friends?",
+          "raw_text": "What do you usually do with your friends?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_friends_2026_01_04_002_q03",
+          "order": 3,
+          "text": "Where do you often meet each other?",
+          "raw_text": "Where do you often meet each other?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_friends_2026_01_04_002_q04",
+          "order": 4,
+          "text": "Do you often go out with your friends?",
+          "raw_text": "Do you often go out with your friends?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_friends_2026_01_04_002_q05",
+          "order": 5,
+          "text": "How important are friends to you?",
+          "raw_text": "How important are friends to you?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_friends_2026_01_04_002_q06",
+          "order": 6,
+          "text": "Do you prefer to spend time with one friend or with a group of friends?",
+          "raw_text": "Do you prefer to spend time with one friend or with a group of friends?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_friends_2026_01_04_002_q07",
+          "order": 7,
+          "text": "Would you invite friends to your home?",
+          "raw_text": "Would you invite friends to your home?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 5,
+      "source_page_end": 5,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_young_people_teenagers_2026_01_04_003",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "人物类",
+      "freshness": "old",
+      "sequence": 3,
+      "source_topic_number": 3,
+      "topic": "Young people /teenagers",
+      "raw_topic_heading": "3.Young people /teenagers",
+      "questions": [
+        {
+          "id": "p1_young_people_teenagers_2026_01_04_003_q01",
+          "order": 1,
+          "text": "Do you care about teenagers' fashion trends?",
+          "raw_text": "Do you care about teenagers' fashion trends?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_young_people_teenagers_2026_01_04_003_q02",
+          "order": 2,
+          "text": "Do you like spending time with teenagers?",
+          "raw_text": "Do you like spending time with teenagers?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_young_people_teenagers_2026_01_04_003_q03",
+          "order": 3,
+          "text": "What activities do young people like to do in your country?",
+          "raw_text": "What activities do young people like to do in your country?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_young_people_teenagers_2026_01_04_003_q04",
+          "order": 4,
+          "text": "Do you know what the fashion trend among young people is like in your country?",
+          "raw_text": "Do you know what the fashion trend among young people is like in your country?",
+          "source_page_start": 5,
+          "source_page_end": 5,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 5,
+      "source_page_end": 5,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_food_2026_01_04_001",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 1,
+      "source_topic_number": 1,
+      "topic": "Food",
+      "raw_topic_heading": "1.Food",
+      "questions": [
+        {
+          "id": "p1_food_2026_01_04_001_q01",
+          "order": 1,
+          "text": "What is your favourite food?",
+          "raw_text": "What is your favourite food?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_food_2026_01_04_001_q02",
+          "order": 2,
+          "text": "What kind of food did you like when you were young?",
+          "raw_text": "What kind of food did you like when you were young?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_food_2026_01_04_001_q03",
+          "order": 3,
+          "text": "Do you eat different foods at different times of the year?",
+          "raw_text": "Do you eat different foods at different times of the year?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_food_2026_01_04_001_q04",
+          "order": 4,
+          "text": "Has your favourite food changed since you were a child?",
+          "raw_text": "Has your favourite food changed since you were a child?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 6,
+      "source_page_end": 6,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_pets_and_animals_2026_01_04_002",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 2,
+      "source_topic_number": 2,
+      "topic": "Pets and Animals",
+      "raw_topic_heading": "2.Pets and Animals",
+      "questions": [
+        {
+          "id": "p1_pets_and_animals_2026_01_04_002_q01",
+          "order": 1,
+          "text": "What's your favourite animal? Why?",
+          "raw_text": "What's your favourite animal?Why?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_pets_and_animals_2026_01_04_002_q02",
+          "order": 2,
+          "text": "Where do you prefer to keep your pet, indoors or outdoors?",
+          "raw_text": "Where do you prefer to keep your pet,indoors or outdoors?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_pets_and_animals_2026_01_04_002_q03",
+          "order": 3,
+          "text": "Have you ever had a pet before?",
+          "raw_text": "Have you ever had a pet before?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_pets_and_animals_2026_01_04_002_q04",
+          "order": 4,
+          "text": "What is the most popular animal in China?",
+          "raw_text": "What is the most popular animal in China?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 6,
+      "source_page_end": 6,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_sports_team_2026_01_04_003",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 3,
+      "source_topic_number": 3,
+      "topic": "Sports team",
+      "raw_topic_heading": "3.Sports team",
+      "questions": [
+        {
+          "id": "p1_sports_team_2026_01_04_003_q01",
+          "order": 1,
+          "text": "Have you ever been part of a sports team?",
+          "raw_text": "Have you ever been part of a sports team?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sports_team_2026_01_04_003_q02",
+          "order": 2,
+          "text": "Is team sports popular in your culture?",
+          "raw_text": "Is team sports popular in your culture?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sports_team_2026_01_04_003_q03",
+          "order": 3,
+          "text": "Do you like to watch team games? Why?",
+          "raw_text": "Do you like to watch team games? Why?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sports_team_2026_01_04_003_q04",
+          "order": 4,
+          "text": "What are the differences between team sports and individual sports?",
+          "raw_text": "What are the differences between team sports and individual sports?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 6,
+      "source_page_end": 6,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_keys_2026_01_04_004",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 4,
+      "source_topic_number": 4,
+      "topic": "Keys",
+      "raw_topic_heading": "4.Keys",
+      "questions": [
+        {
+          "id": "p1_keys_2026_01_04_004_q01",
+          "order": 1,
+          "text": "Do you always bring a lot of keys with you?",
+          "raw_text": "Do you always bring a lot of keys with you?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_keys_2026_01_04_004_q02",
+          "order": 2,
+          "text": "Have you ever lost your keys?",
+          "raw_text": "Have you ever lost your keys?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_keys_2026_01_04_004_q03",
+          "order": 3,
+          "text": "Do you often forget the keys and lock yourself out?",
+          "raw_text": "Do you often forget the keys and lock yourself out?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_keys_2026_01_04_004_q04",
+          "order": 4,
+          "text": "Do you think it's a good idea to leave your keys with a neighbour?",
+          "raw_text": "Do you think it's a good idea to leave your keys with a neighbour?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 6,
+      "source_page_end": 6,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_dreams_2026_01_04_005",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 5,
+      "source_topic_number": 5,
+      "topic": "Dreams",
+      "raw_topic_heading": "5.Dreams",
+      "questions": [
+        {
+          "id": "p1_dreams_2026_01_04_005_q01",
+          "order": 1,
+          "text": "Can you remember the dreams you had?",
+          "raw_text": "Can you remember the dreams you had?",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_dreams_2026_01_04_005_q02",
+          "order": 2,
+          "text": "Do you share your dreams with others? ",
+          "raw_text": "Do you share your dreams with others? ",
+          "source_page_start": 6,
+          "source_page_end": 6,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_dreams_2026_01_04_005_q03",
+          "order": 3,
+          "text": "Do you think dreams have special meanings?",
+          "raw_text": "Do you think dreams have special meanings?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_dreams_2026_01_04_005_q04",
+          "order": 4,
+          "text": "Do you want to make your dreams come true?",
+          "raw_text": "Do you want to make your dreams come true?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 6,
+      "source_page_end": 7,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_gifts_2026_01_04_006",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 6,
+      "source_topic_number": 6,
+      "topic": "Gifts",
+      "raw_topic_heading": "6.Gifts",
+      "questions": [
+        {
+          "id": "p1_gifts_2026_01_04_006_q01",
+          "order": 1,
+          "text": "Have you ever sent handmade gifts to others?",
+          "raw_text": "Have you ever sent handmade gifts to others?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_gifts_2026_01_04_006_q02",
+          "order": 2,
+          "text": "Have you ever received a great gift?",
+          "raw_text": "Have you ever received a great gift?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_gifts_2026_01_04_006_q03",
+          "order": 3,
+          "text": "What do you consider when choosing a gift?",
+          "raw_text": "What do you consider when choosing a gift?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_gifts_2026_01_04_006_q04",
+          "order": 4,
+          "text": "Do you think you are good at choosing gifts?",
+          "raw_text": "Do you think you are good at choosing gifts?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_gifts_2026_01_04_006_q05",
+          "order": 5,
+          "text": "What gift have you received recently?",
+          "raw_text": "What gift have you received recently?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 7,
+      "source_page_end": 7,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_hobby_2026_01_04_007",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 7,
+      "source_topic_number": 7,
+      "topic": "Hobby",
+      "raw_topic_heading": "7.Hobby",
+      "questions": [
+        {
+          "id": "p1_hobby_2026_01_04_007_q01",
+          "order": 1,
+          "text": "Do you have any hobbies?",
+          "raw_text": "Do you have any hobbies？",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hobby_2026_01_04_007_q02",
+          "order": 2,
+          "text": "Did you have any hobbies when you were a child?",
+          "raw_text": "Did you have any hobbies when you were a child?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hobby_2026_01_04_007_q03",
+          "order": 3,
+          "text": "Do you have a hobby that you've had since childhood?",
+          "raw_text": "Do you have a hobby that you’ve had since childhood?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_hobby_2026_01_04_007_q04",
+          "order": 4,
+          "text": "Do you have the same hobbies as your family members?",
+          "raw_text": "Do you have the same hobbies as your family members?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 7,
+      "source_page_end": 7,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_scenery_2026_01_04_008",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 8,
+      "source_topic_number": 8,
+      "topic": "Scenery",
+      "raw_topic_heading": "8.Scenery",
+      "questions": [
+        {
+          "id": "p1_scenery_2026_01_04_008_q01",
+          "order": 1,
+          "text": "Do you look out the window at the scenery when travelling by bus or car?",
+          "raw_text": "Do you look out the window at the scenery when travelling by bus or car?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_scenery_2026_01_04_008_q02",
+          "order": 2,
+          "text": "Do you prefer the mountains or the sea?",
+          "raw_text": "Do you prefer the mountains or the sea?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_scenery_2026_01_04_008_q03",
+          "order": 3,
+          "text": "Do you like to take scenery pictures?",
+          "raw_text": "Do you like to take scenery pictures?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_scenery_2026_01_04_008_q04",
+          "order": 4,
+          "text": "What are the most beautiful sights you have seen while travelling?",
+          "raw_text": "What are the most beautiful sights you have seen while travelling?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 7,
+      "source_page_end": 7,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_building_2026_01_04_009",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 9,
+      "source_topic_number": null,
+      "topic": "Building",
+      "raw_topic_heading": "Building",
+      "questions": [
+        {
+          "id": "p1_building_2026_01_04_009_q01",
+          "order": 1,
+          "text": "Are there tall buildings near your home?",
+          "raw_text": "Are there tall buildings near your home?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_building_2026_01_04_009_q02",
+          "order": 2,
+          "text": "Do you take photos of buildings?",
+          "raw_text": "Do you take photos of buildings?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_building_2026_01_04_009_q03",
+          "order": 3,
+          "text": "Is there a building that you would like to visit?",
+          "raw_text": "Is there a building that you would like to visit?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_building_2026_01_04_009_q04",
+          "order": 4,
+          "text": "Do you want to live in a tall building?",
+          "raw_text": "Do you want to live in a tall building?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 7,
+      "source_page_end": 7,
+      "status": "draft",
+      "version": 1,
+      "warnings": [
+        "topic_heading_missing_number"
+      ],
+      "needs_review": true
+    },
+    {
+      "id": "p1_daily_routine_2026_01_04_010",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 10,
+      "source_topic_number": 10,
+      "topic": "Daily routine",
+      "raw_topic_heading": "10.Daily routine",
+      "questions": [
+        {
+          "id": "p1_daily_routine_2026_01_04_010_q01",
+          "order": 1,
+          "text": "What is your daily study routine?",
+          "raw_text": "What is your daily study routine?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_daily_routine_2026_01_04_010_q02",
+          "order": 2,
+          "text": "Have you ever changed your routine?",
+          "raw_text": "Have you ever changed your routine?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_daily_routine_2026_01_04_010_q03",
+          "order": 3,
+          "text": "Do you think it is important to have a daily routine for your study?",
+          "raw_text": "Do you think it is important to have a daily routine for your study?",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_daily_routine_2026_01_04_010_q04",
+          "order": 4,
+          "text": "What part of your day do you like best? ",
+          "raw_text": "What part of your day do you like best? ",
+          "source_page_start": 7,
+          "source_page_end": 7,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_daily_routine_2026_01_04_010_q05",
+          "order": 5,
+          "text": "Do you often go to bed late or early?",
+          "raw_text": "Do you often go to bed late or early?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 7,
+      "source_page_end": 8,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_views_2026_01_04_011",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 11,
+      "source_topic_number": 11,
+      "topic": "Views",
+      "raw_topic_heading": "11.Views",
+      "questions": [
+        {
+          "id": "p1_views_2026_01_04_011_q01",
+          "order": 1,
+          "text": "Do you like talking pictures of different views?",
+          "raw_text": "Do you like talking pictures of different views？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_views_2026_01_04_011_q02",
+          "order": 2,
+          "text": "Do you prefer views in urban areas or rural areas?",
+          "raw_text": "Do you prefer views in urban areas or rural areas？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_views_2026_01_04_011_q03",
+          "order": 3,
+          "text": "Do you prefer views in your own country or in other countries?",
+          "raw_text": "Do you prefer views in your own country or in other countries？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_views_2026_01_04_011_q04",
+          "order": 4,
+          "text": "Have you seen an unforgettable and beautiful view or scenery?",
+          "raw_text": "Have you seen an unforgettable and beautiful view or scenery？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 8,
+      "source_page_end": 8,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_childhood_activities_2026_01_04_012",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "new",
+      "sequence": 12,
+      "source_topic_number": 12,
+      "topic": "Childhood activities",
+      "raw_topic_heading": "12.Childhood activities",
+      "questions": [
+        {
+          "id": "p1_childhood_activities_2026_01_04_012_q01",
+          "order": 1,
+          "text": "What are you favourite activities?",
+          "raw_text": "What are you favourite activities？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_childhood_activities_2026_01_04_012_q02",
+          "order": 2,
+          "text": "What were you favourite activities when you were a child?",
+          "raw_text": "What were you favourite activities when you were a child？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_childhood_activities_2026_01_04_012_q03",
+          "order": 3,
+          "text": "Did you prefer to do activities alone or with a group of people when you were a child?",
+          "raw_text": "Did you prefer to do activities alone or with a group of people when you were a child？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_childhood_activities_2026_01_04_012_q04",
+          "order": 4,
+          "text": "Are these any differences between the activities you liked when you were a child and those you like now?",
+          "raw_text": "Are these any differences between the activities you liked when you were a child and those you like now？",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 8,
+      "source_page_end": 8,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_rules_2026_01_04_001",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 1,
+      "source_topic_number": 1,
+      "topic": "Rules",
+      "raw_topic_heading": "1.Rules",
+      "questions": [
+        {
+          "id": "p1_rules_2026_01_04_001_q01",
+          "order": 1,
+          "text": "Are there any rules for students at your school?",
+          "raw_text": "Are there any rules for students at your school?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_rules_2026_01_04_001_q02",
+          "order": 2,
+          "text": "Do you think students would benefit more from more rules?",
+          "raw_text": "Do you think students would benefit more from more rules?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_rules_2026_01_04_001_q03",
+          "order": 3,
+          "text": "Have you ever had a really dedicated teacher?",
+          "raw_text": "Have you ever had a really dedicated teacher?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_rules_2026_01_04_001_q04",
+          "order": 4,
+          "text": "Do you prefer to have more or fewer rules at school?",
+          "raw_text": "Do you prefer to have more or fewer rules at school?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 8,
+      "source_page_end": 8,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_advertisement_2026_01_04_002",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 2,
+      "source_topic_number": 2,
+      "topic": "Advertisement",
+      "raw_topic_heading": "2.Advertisement",
+      "questions": [
+        {
+          "id": "p1_advertisement_2026_01_04_002_q01",
+          "order": 1,
+          "text": "Is there an advertisement that made an impression on you when you were a child?",
+          "raw_text": "Is there an advertisement that made an impression on you when you were a child?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_advertisement_2026_01_04_002_q02",
+          "order": 2,
+          "text": "Do you see a lot of advertising on trains or other transport?",
+          "raw_text": "Do you see a lot of advertising on trains or other transport?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_advertisement_2026_01_04_002_q03",
+          "order": 3,
+          "text": "Do you like advertisements?",
+          "raw_text": "Do you like advertisements?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_advertisement_2026_01_04_002_q04",
+          "order": 4,
+          "text": "What kind of advertising do you like?",
+          "raw_text": "What kind of advertising do you like?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 8,
+      "source_page_end": 8,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_art_2026_01_04_003",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 3,
+      "source_topic_number": 3,
+      "topic": "Art",
+      "raw_topic_heading": "3.Art",
+      "questions": [
+        {
+          "id": "p1_art_2026_01_04_003_q01",
+          "order": 1,
+          "text": "Do you like art?",
+          "raw_text": "Do you like art?",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_art_2026_01_04_003_q02",
+          "order": 2,
+          "text": "Do you like visiting art galleries? ",
+          "raw_text": "Do you like visiting art galleries? ",
+          "source_page_start": 8,
+          "source_page_end": 8,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_art_2026_01_04_003_q03",
+          "order": 3,
+          "text": "Do you want to be an artist?",
+          "raw_text": "Do you want to be an artist?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_art_2026_01_04_003_q04",
+          "order": 4,
+          "text": "Do you like modern art or traditional art?",
+          "raw_text": "Do you like modern art or traditional art?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 8,
+      "source_page_end": 9,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_shoes_2026_01_04_004",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 4,
+      "source_topic_number": 4,
+      "topic": "Shoes",
+      "raw_topic_heading": "4.Shoes",
+      "questions": [
+        {
+          "id": "p1_shoes_2026_01_04_004_q01",
+          "order": 1,
+          "text": "Do you like buying shoes? How often?",
+          "raw_text": "Do you like buying shoes? How often?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_shoes_2026_01_04_004_q02",
+          "order": 2,
+          "text": "Have you ever bought shoes online?",
+          "raw_text": "Have you ever bought shoes online?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_shoes_2026_01_04_004_q03",
+          "order": 3,
+          "text": "How much money do you usually spend on shoes?",
+          "raw_text": "How much money do you usually spend on shoes?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_shoes_2026_01_04_004_q04",
+          "order": 4,
+          "text": "Which do you prefer, fashionable shoes or comfortable shoes?",
+          "raw_text": "Which do you prefer, fashionable shoes or comfortable shoes?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 9,
+      "source_page_end": 9,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_plants_2026_01_04_005",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 5,
+      "source_topic_number": 5,
+      "topic": "Plants",
+      "raw_topic_heading": "5.Plants",
+      "questions": [
+        {
+          "id": "p1_plants_2026_01_04_005_q01",
+          "order": 1,
+          "text": "Do you keep plants at home?",
+          "raw_text": "Do you keep plants at home?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_plants_2026_01_04_005_q02",
+          "order": 2,
+          "text": "What plant did you grow when you were young?",
+          "raw_text": "What plant did you grow when you were young?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_plants_2026_01_04_005_q03",
+          "order": 3,
+          "text": "Do you know anything about growing a plant?",
+          "raw_text": "Do you know anything about growing a plant?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_plants_2026_01_04_005_q04",
+          "order": 4,
+          "text": "Do Chinese people send plants as gifts?",
+          "raw_text": "Do Chinese people send plants as gifts?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 9,
+      "source_page_end": 9,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_dream_job_2026_01_04_006",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 6,
+      "source_topic_number": 6,
+      "topic": "Dream job",
+      "raw_topic_heading": "6.Dream job",
+      "questions": [
+        {
+          "id": "p1_dream_job_2026_01_04_006_q01",
+          "order": 1,
+          "text": "What was your dream job when you were young?",
+          "raw_text": "What was your dream job when you were young?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_dream_job_2026_01_04_006_q02",
+          "order": 2,
+          "text": "How did you change your mind on your dream job?",
+          "raw_text": "How did you change your mind on your dream job?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_dream_job_2026_01_04_006_q03",
+          "order": 3,
+          "text": "What do you plan to do in the future?",
+          "raw_text": "What do you plan to do in the future?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_dream_job_2026_01_04_006_q04",
+          "order": 4,
+          "text": "What kinds of jobs are popular in China?",
+          "raw_text": "What kinds of jobs are popular in China?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_dream_job_2026_01_04_006_q05",
+          "order": 5,
+          "text": "Have you had a full-time or part-time job before?",
+          "raw_text": "Have you had a full-time or part-time job before?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 9,
+      "source_page_end": 9,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_machine_2026_01_04_007",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 7,
+      "source_topic_number": 7,
+      "topic": "Machine",
+      "raw_topic_heading": "7.Machine",
+      "questions": [
+        {
+          "id": "p1_machine_2026_01_04_007_q01",
+          "order": 1,
+          "text": "What is your favourite machine in your home?",
+          "raw_text": "What is your favourite machine in your home?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_machine_2026_01_04_007_q02",
+          "order": 2,
+          "text": "Do you think washing machines and sweeping machines are important?",
+          "raw_text": "Do you think washing machines and sweeping machines are important?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_machine_2026_01_04_007_q03",
+          "order": 3,
+          "text": "Do you read the instructions before using a machine?",
+          "raw_text": "Do you read the instructions before using a machine?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_machine_2026_01_04_007_q04",
+          "order": 4,
+          "text": "Do you think it is important to read the instructions?",
+          "raw_text": "Do you think it is important to read the instructions?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 9,
+      "source_page_end": 9,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_patience_2026_01_04_008",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 8,
+      "source_topic_number": 8,
+      "topic": "Patience",
+      "raw_topic_heading": "8.Patience",
+      "questions": [
+        {
+          "id": "p1_patience_2026_01_04_008_q01",
+          "order": 1,
+          "text": "Are you a patient person?",
+          "raw_text": "Are you a patient person?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_patience_2026_01_04_008_q02",
+          "order": 2,
+          "text": "What is it that makes you feel impatient?",
+          "raw_text": "What is it that makes you feel impatient?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_patience_2026_01_04_008_q03",
+          "order": 3,
+          "text": "How do you feel when you have to do something for a long time?",
+          "raw_text": "How do you feel when you have to do something for a long time?",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_patience_2026_01_04_008_q04",
+          "order": 4,
+          "text": "Does your job require you to be patient? ",
+          "raw_text": "Does your job require you to be patient? ",
+          "source_page_start": 9,
+          "source_page_end": 9,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_patience_2026_01_04_008_q05",
+          "order": 5,
+          "text": "Are you more patient now than when you were a child?",
+          "raw_text": "Are you more patient now than when you were a child?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 9,
+      "source_page_end": 10,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_flowers_2026_01_04_009",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 9,
+      "source_topic_number": 9,
+      "topic": "Flowers",
+      "raw_topic_heading": "9.Flowers",
+      "questions": [
+        {
+          "id": "p1_flowers_2026_01_04_009_q01",
+          "order": 1,
+          "text": "Do you love flowers?",
+          "raw_text": "Do you love flowers?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_flowers_2026_01_04_009_q02",
+          "order": 2,
+          "text": "Do you know anyone who loves flowers?",
+          "raw_text": "Do you know anyone who loves flowers?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_flowers_2026_01_04_009_q03",
+          "order": 3,
+          "text": "Are there a lot of flowers where you live?",
+          "raw_text": "Are there a lot of flowers where you live?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_flowers_2026_01_04_009_q04",
+          "order": 4,
+          "text": "Do you take photos of flowers in your daily life?",
+          "raw_text": "Do you take photos of flowers in your daily life?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_flowers_2026_01_04_009_q05",
+          "order": 5,
+          "text": "Do people in your country often send flowers to others?",
+          "raw_text": "Do people in your country often send flowers to others?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 10,
+      "source_page_end": 10,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_text_messages_2026_01_04_010",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 10,
+      "source_topic_number": 10,
+      "topic": "Text messages",
+      "raw_topic_heading": "10.Text messages",
+      "questions": [
+        {
+          "id": "p1_text_messages_2026_01_04_010_q01",
+          "order": 1,
+          "text": "How often do you send text messages?",
+          "raw_text": "How often do you send text messages?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_text_messages_2026_01_04_010_q02",
+          "order": 2,
+          "text": "Is sending messages popular in your country?",
+          "raw_text": "Is sending messages popular in your country?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_text_messages_2026_01_04_010_q03",
+          "order": 3,
+          "text": "Did you send more messages when you were younger?",
+          "raw_text": "Did you send more messages when you were younger?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_text_messages_2026_01_04_010_q04",
+          "order": 4,
+          "text": "Do you reply to messages as soon as you receive them?",
+          "raw_text": "Do you reply to messages as soon as you receive them?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 10,
+      "source_page_end": 10,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_internet_2026_01_04_011",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 11,
+      "source_topic_number": 11,
+      "topic": "Internet",
+      "raw_topic_heading": "11.Internet",
+      "questions": [
+        {
+          "id": "p1_internet_2026_01_04_011_q01",
+          "order": 1,
+          "text": "When did you start using the internet?",
+          "raw_text": "When did you start using the internet?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_internet_2026_01_04_011_q02",
+          "order": 2,
+          "text": "How often do you go online?",
+          "raw_text": "How often do you go online?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_internet_2026_01_04_011_q03",
+          "order": 3,
+          "text": "How does the internet influence people?",
+          "raw_text": "How does the internet influence people?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_internet_2026_01_04_011_q04",
+          "order": 4,
+          "text": "Do you think you spend too much time online?",
+          "raw_text": "Do you think you spend too much time online?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_internet_2026_01_04_011_q05",
+          "order": 5,
+          "text": "What would you do without the internet?",
+          "raw_text": "What would you do without the internet?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 10,
+      "source_page_end": 10,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_memory_2026_01_04_012",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 12,
+      "source_topic_number": 12,
+      "topic": "Memory",
+      "raw_topic_heading": "12.Memory",
+      "questions": [
+        {
+          "id": "p1_memory_2026_01_04_012_q01",
+          "order": 1,
+          "text": "Are you good at memorising things?",
+          "raw_text": "Are you good at memorising things?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_memory_2026_01_04_012_q02",
+          "order": 2,
+          "text": "Have you ever forgotten something important?",
+          "raw_text": "Have you ever forgotten something important?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_memory_2026_01_04_012_q03",
+          "order": 3,
+          "text": "What do you need to remember in your daily life?",
+          "raw_text": "What do you need to remember in your daily life?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_memory_2026_01_04_012_q04",
+          "order": 4,
+          "text": "How do you remember important things?",
+          "raw_text": "How do you remember important things?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 10,
+      "source_page_end": 10,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_geography_2026_01_04_013",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 13,
+      "source_topic_number": 13,
+      "topic": "Geography",
+      "raw_topic_heading": "13.Geography",
+      "questions": [
+        {
+          "id": "p1_geography_2026_01_04_013_q01",
+          "order": 1,
+          "text": "How do you like geography?",
+          "raw_text": "How do you like geography?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_geography_2026_01_04_013_q02",
+          "order": 2,
+          "text": "Do you think geography is useful?",
+          "raw_text": "Do you think geography is useful?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_geography_2026_01_04_013_q03",
+          "order": 3,
+          "text": "Have you ever learned geography?",
+          "raw_text": "Have you ever learned geography?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_geography_2026_01_04_013_q04",
+          "order": 4,
+          "text": "Do you want to be a geography teacher?",
+          "raw_text": "Do you want to be a geography teacher?",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_geography_2026_01_04_013_q05",
+          "order": 5,
+          "text": "Will you learn more about the geography of other countries? ",
+          "raw_text": "Will you learn more about the geography of other countries? ",
+          "source_page_start": 10,
+          "source_page_end": 10,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 10,
+      "source_page_end": 10,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_chocolate_2026_01_04_014",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 14,
+      "source_topic_number": 14,
+      "topic": "Chocolate",
+      "raw_topic_heading": "14.Chocolate",
+      "questions": [
+        {
+          "id": "p1_chocolate_2026_01_04_014_q01",
+          "order": 1,
+          "text": "Do you like eating chocolate? Why or why not?",
+          "raw_text": "Do you like eating chocolate? Why or why not?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chocolate_2026_01_04_014_q02",
+          "order": 2,
+          "text": "How often do you eat chocolate?",
+          "raw_text": "How often do you eat chocolate?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chocolate_2026_01_04_014_q03",
+          "order": 3,
+          "text": "Did you often eat chocolate when you were a kid?",
+          "raw_text": "Did you often eat chocolate when you were a kid?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chocolate_2026_01_04_014_q04",
+          "order": 4,
+          "text": "Why do you think chocolate is popular around the world?",
+          "raw_text": "Why do you think chocolate is popular around the world?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chocolate_2026_01_04_014_q05",
+          "order": 5,
+          "text": "What's your favourite flavour of chocolate?",
+          "raw_text": "What's your favourite flavour of chocolate?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chocolate_2026_01_04_014_q06",
+          "order": 6,
+          "text": "Do you think it is good to use chocolate as gifts to others?",
+          "raw_text": "Do you think it is good to use chocolate as gifts to others?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 11,
+      "source_page_end": 11,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_public_transportation_2026_01_04_015",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 15,
+      "source_topic_number": 15,
+      "topic": "Public transportation",
+      "raw_topic_heading": "15.Public transportation",
+      "questions": [
+        {
+          "id": "p1_public_transportation_2026_01_04_015_q01",
+          "order": 1,
+          "text": "What kind of public transportation do you usually take?",
+          "raw_text": "What kind of public transportation do you usually take?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_public_transportation_2026_01_04_015_q02",
+          "order": 2,
+          "text": "When do you usually take public transportation, in your everyday life or when you are travelling?",
+          "raw_text": "When do you usually take public transportation, in your everyday life or when you are travelling?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_public_transportation_2026_01_04_015_q03",
+          "order": 3,
+          "text": "Do most people prefer public transportation in your country?",
+          "raw_text": "Do most people prefer public transportation in your country?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_public_transportation_2026_01_04_015_q04",
+          "order": 4,
+          "text": "Did you take public transportation when you were a kid?",
+          "raw_text": "Did you take public transportation when you were a kid?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_public_transportation_2026_01_04_015_q05",
+          "order": 5,
+          "text": "Will there be more people taking public transportation in the future?",
+          "raw_text": "Will there be more people taking public transportation in the future?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 11,
+      "source_page_end": 11,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_weather_2026_01_04_016",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 16,
+      "source_topic_number": 16,
+      "topic": "Weather",
+      "raw_topic_heading": "16.Weather",
+      "questions": [
+        {
+          "id": "p1_weather_2026_01_04_016_q01",
+          "order": 1,
+          "text": "What's the weather like where you live?",
+          "raw_text": "What's the weather like where you live?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_weather_2026_01_04_016_q02",
+          "order": 2,
+          "text": "Do you prefer cold or hot weather?",
+          "raw_text": "Do you prefer cold or hot weather?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_weather_2026_01_04_016_q03",
+          "order": 3,
+          "text": "Do you prefer dry or wet weather?",
+          "raw_text": "Do you prefer dry or wet weather?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_weather_2026_01_04_016_q04",
+          "order": 4,
+          "text": "Are you in the habit of checking the weather forecast? When and how often?",
+          "raw_text": "Are you in the habit of checking the weather forecast? When and how often?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_weather_2026_01_04_016_q05",
+          "order": 5,
+          "text": "What do you think are the effects of climate change in recent years?",
+          "raw_text": "What do you think are the effects of climate change in recent years?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_weather_2026_01_04_016_q06",
+          "order": 6,
+          "text": "Would you like to visit other cities that have different climates from where you live?",
+          "raw_text": "Would you like to visit other cities that have different climates from where you live?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 11,
+      "source_page_end": 11,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_snacks_2026_01_04_017",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 17,
+      "source_topic_number": 17,
+      "topic": "Snacks",
+      "raw_topic_heading": "17.Snacks",
+      "questions": [
+        {
+          "id": "p1_snacks_2026_01_04_017_q01",
+          "order": 1,
+          "text": "When do you usually eat snacks now?",
+          "raw_text": "When do you usually eat snacks now?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_snacks_2026_01_04_017_q02",
+          "order": 2,
+          "text": "Do you think it is healthy for you to eat snacks?",
+          "raw_text": "Do you think it is healthy for you to eat snacks?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_snacks_2026_01_04_017_q03",
+          "order": 3,
+          "text": "Did you often eat snacks when you were young?",
+          "raw_text": "Did you often eat snacks when you were young?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_snacks_2026_01_04_017_q04",
+          "order": 4,
+          "text": "What snacks do you like to eat?",
+          "raw_text": "What snacks do you like to eat?",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 11,
+      "source_page_end": 11,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_names_2026_01_04_018",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 18,
+      "source_topic_number": 18,
+      "topic": "Names",
+      "raw_topic_heading": "18.Names",
+      "questions": [
+        {
+          "id": "p1_names_2026_01_04_018_q01",
+          "order": 1,
+          "text": "Does your name have any special meaning? ",
+          "raw_text": "Does your name have any special meaning? ",
+          "source_page_start": 11,
+          "source_page_end": 11,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_names_2026_01_04_018_q02",
+          "order": 2,
+          "text": "How would you choose names for your next generation?",
+          "raw_text": "How would you choose names for your next generation?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_names_2026_01_04_018_q03",
+          "order": 3,
+          "text": "Does anyone in your family have the same name as you?",
+          "raw_text": "Does anyone in your family have the same name as you?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_names_2026_01_04_018_q04",
+          "order": 4,
+          "text": "Are there any differences between how Chinese name their children now and in the past?",
+          "raw_text": "Are there any differences between how Chinese name their children now and in the past?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_names_2026_01_04_018_q05",
+          "order": 5,
+          "text": "Are there any names that are more popular than others in China?",
+          "raw_text": "Are there any names that are more popular than others in China?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 11,
+      "source_page_end": 12,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_puzzles_2026_01_04_019",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 19,
+      "source_topic_number": 19,
+      "topic": "Puzzles",
+      "raw_topic_heading": "19.Puzzles",
+      "questions": [
+        {
+          "id": "p1_puzzles_2026_01_04_019_q01",
+          "order": 1,
+          "text": "Did you do puzzles in your childhood?",
+          "raw_text": "Did you do puzzles in your childhood?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_puzzles_2026_01_04_019_q02",
+          "order": 2,
+          "text": "When do you do puzzles, during your trip or when you feel bored?",
+          "raw_text": "When do you do puzzles, during your trip or when you feel bored?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_puzzles_2026_01_04_019_q03",
+          "order": 3,
+          "text": "Do you like doing word puzzles or number puzzles? Which is more difficult for you?",
+          "raw_text": "Do you like doing word puzzles or number puzzles? Which is more difficult for you?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_puzzles_2026_01_04_019_q04",
+          "order": 4,
+          "text": "Do you think it is good for old people to do puzzles?",
+          "raw_text": "Do you think it is good for old people to do puzzles?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 12,
+      "source_page_end": 12,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_list_2026_01_04_020",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 20,
+      "source_topic_number": 20,
+      "topic": "List",
+      "raw_topic_heading": "20.List",
+      "questions": [
+        {
+          "id": "p1_list_2026_01_04_020_q01",
+          "order": 1,
+          "text": "Do you make a list when you shop?",
+          "raw_text": "Do you make a list when you shop?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_list_2026_01_04_020_q02",
+          "order": 2,
+          "text": "Do you make a list for your work? Does it work?",
+          "raw_text": "Do you make a list for your work? Does it work?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_list_2026_01_04_020_q03",
+          "order": 3,
+          "text": "Why don't some people like making lists?",
+          "raw_text": "Why don't some people like making lists?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_list_2026_01_04_020_q04",
+          "order": 4,
+          "text": "Do you prefer to make a list on paper or your phone?",
+          "raw_text": "Do you prefer to make a list on paper or your phone?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 12,
+      "source_page_end": 12,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_books_and_reading_habits_2026_01_04_021",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 21,
+      "source_topic_number": 21,
+      "topic": "Books and reading habits",
+      "raw_topic_heading": "21.Books and reading habits",
+      "questions": [
+        {
+          "id": "p1_books_and_reading_habits_2026_01_04_021_q01",
+          "order": 1,
+          "text": "Do you often read books? When?",
+          "raw_text": "Do you often read books? When?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_books_and_reading_habits_2026_01_04_021_q02",
+          "order": 2,
+          "text": "Are your reading habits now different than before?",
+          "raw_text": "Are your reading habits now different than before?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_books_and_reading_habits_2026_01_04_021_q03",
+          "order": 3,
+          "text": "Have you ever read a novel that has been adapted into a film?",
+          "raw_text": "Have you ever read a novel that has been adapted into a film?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_books_and_reading_habits_2026_01_04_021_q04",
+          "order": 4,
+          "text": "Which do you prefer, reading books or watching movies?",
+          "raw_text": "Which do you prefer, reading books or watching movies?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_books_and_reading_habits_2026_01_04_021_q05",
+          "order": 5,
+          "text": "Do you read more or less now than when you were younger?",
+          "raw_text": "Do you read more or less now than when you were younger?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 12,
+      "source_page_end": 12,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_computers_2026_01_04_022",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 22,
+      "source_topic_number": 22,
+      "topic": "Computers",
+      "raw_topic_heading": "22.Computers",
+      "questions": [
+        {
+          "id": "p1_computers_2026_01_04_022_q01",
+          "order": 1,
+          "text": "In what conditions would you use a computer?",
+          "raw_text": "In what conditions would you use a computer?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_computers_2026_01_04_022_q02",
+          "order": 2,
+          "text": "When was the first time you used a computer?",
+          "raw_text": "When was the first time you used a computer?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_computers_2026_01_04_022_q03",
+          "order": 3,
+          "text": "What would your life be like without computers?",
+          "raw_text": "What would your life be like without computers?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_computers_2026_01_04_022_q04",
+          "order": 4,
+          "text": "In what conditions would it be difficult for you to use a computer?",
+          "raw_text": "In what conditions would it be difficult for you to use a computer?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 12,
+      "source_page_end": 12,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_mobile_phone_2026_01_04_023",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 23,
+      "source_topic_number": 23,
+      "topic": "Mobile phone",
+      "raw_topic_heading": "23.Mobile phone",
+      "questions": [
+        {
+          "id": "p1_mobile_phone_2026_01_04_023_q01",
+          "order": 1,
+          "text": "What was your first mobile phone?",
+          "raw_text": "What was your first mobile phone?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_mobile_phone_2026_01_04_023_q02",
+          "order": 2,
+          "text": "Do you often use your mobile phone for texting or calls?",
+          "raw_text": "Do you often use your mobile phone for texting or calls?",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_mobile_phone_2026_01_04_023_q03",
+          "order": 3,
+          "text": "Will you buy a new one in the future? ",
+          "raw_text": "Will you buy a new one in the future? ",
+          "source_page_start": 12,
+          "source_page_end": 12,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_mobile_phone_2026_01_04_023_q04",
+          "order": 4,
+          "text": "How has your mobile phone changed your life?",
+          "raw_text": "How has your mobile phone changed your life?",
+          "source_page_start": 13,
+          "source_page_end": 13,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 12,
+      "source_page_end": 13,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_social_media_2026_01_04_024",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事物类",
+      "freshness": "old",
+      "sequence": 24,
+      "source_topic_number": 24,
+      "topic": "social media",
+      "raw_topic_heading": "24.social media",
+      "questions": [
+        {
+          "id": "p1_social_media_2026_01_04_024_q01",
+          "order": 1,
+          "text": "When did you start using social media?",
+          "raw_text": "When did you start using social media?",
+          "source_page_start": 13,
+          "source_page_end": 13,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_social_media_2026_01_04_024_q02",
+          "order": 2,
+          "text": "Do you think you spend too much time on social media?",
+          "raw_text": "Do you think you spend too much time on social media?",
+          "source_page_start": 13,
+          "source_page_end": 13,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_social_media_2026_01_04_024_q03",
+          "order": 3,
+          "text": "Do your friends use social media?",
+          "raw_text": "Do your friends use social media?",
+          "source_page_start": 13,
+          "source_page_end": 13,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_social_media_2026_01_04_024_q04",
+          "order": 4,
+          "text": "What do people often do on social media? ",
+          "raw_text": "What do people often do on social media? ",
+          "source_page_start": 13,
+          "source_page_end": 13,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 13,
+      "source_page_end": 13,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_walking_2026_01_04_001",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "new",
+      "sequence": 1,
+      "source_topic_number": 1,
+      "topic": "Walking",
+      "raw_topic_heading": "1.Walking",
+      "questions": [
+        {
+          "id": "p1_walking_2026_01_04_001_q01",
+          "order": 1,
+          "text": "Do you walk a lot?",
+          "raw_text": "Do you walk a lot?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_walking_2026_01_04_001_q02",
+          "order": 2,
+          "text": "Did you often go outside to have a walk when you were a child?",
+          "raw_text": "Did you often go outside to have a walk when you were a child?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_walking_2026_01_04_001_q03",
+          "order": 3,
+          "text": "Why do people like to walk in parks?",
+          "raw_text": "Why do people like to walk in parks?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_walking_2026_01_04_001_q04",
+          "order": 4,
+          "text": "Where would you like to take a long walk if you had the chance?",
+          "raw_text": "Where would you like to take a long walk if you had the chance?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_walking_2026_01_04_001_q05",
+          "order": 5,
+          "text": "Where did you go for a walk lately?",
+          "raw_text": "Where did you go for a walk lately?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 14,
+      "source_page_end": 14,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_reading_2026_01_04_002",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "new",
+      "sequence": 2,
+      "source_topic_number": 2,
+      "topic": "Reading",
+      "raw_topic_heading": "2.Reading",
+      "questions": [
+        {
+          "id": "p1_reading_2026_01_04_002_q01",
+          "order": 1,
+          "text": "Do you like reading?",
+          "raw_text": "Do you like reading?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_reading_2026_01_04_002_q02",
+          "order": 2,
+          "text": "Do you prefer to read on paper or on a screen?",
+          "raw_text": "Do you prefer to read on paper or on a screen?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_reading_2026_01_04_002_q03",
+          "order": 3,
+          "text": "When do you need to read carefully, and when not?",
+          "raw_text": "When do you need to read carefully, and when not?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_reading_2026_01_04_002_q04",
+          "order": 4,
+          "text": "Do you prefer scanning or detailed reading?",
+          "raw_text": "Do you prefer scanning or detailed reading?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 14,
+      "source_page_end": 14,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_morning_time_2026_01_04_003",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "new",
+      "sequence": 3,
+      "source_topic_number": 3,
+      "topic": "Morning time",
+      "raw_topic_heading": "3.Morning time",
+      "questions": [
+        {
+          "id": "p1_morning_time_2026_01_04_003_q01",
+          "order": 1,
+          "text": "Do you like getting up early in the morning?",
+          "raw_text": "Do you like getting up early in the morning?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_morning_time_2026_01_04_003_q02",
+          "order": 2,
+          "text": "What do you usually do in the morning?",
+          "raw_text": "What do you usually do in the morning?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_morning_time_2026_01_04_003_q03",
+          "order": 3,
+          "text": "What did you do in the morning when you were little? Why?",
+          "raw_text": "What did you do in the morning when you were little?Why?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_morning_time_2026_01_04_003_q04",
+          "order": 4,
+          "text": "Are there any differences between what you do in the morning now and what you did in the past?",
+          "raw_text": "Are there any differences between what you do in the morning now and what you did in the past?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_morning_time_2026_01_04_003_q05",
+          "order": 5,
+          "text": "Do you spend your mornings doing the same things on both weekends and weekdays? Why?",
+          "raw_text": "Do you spend your mornings doing the same things on both weekends and weekdays?Why?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 14,
+      "source_page_end": 14,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_typing_2026_01_04_004",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "new",
+      "sequence": 4,
+      "source_topic_number": 4,
+      "topic": "Typing",
+      "raw_topic_heading": "4.Typing",
+      "questions": [
+        {
+          "id": "p1_typing_2026_01_04_004_q01",
+          "order": 1,
+          "text": "Do you prefer typing or handwriting?",
+          "raw_text": "Do you prefer typing or handwriting?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_typing_2026_01_04_004_q02",
+          "order": 2,
+          "text": "Do you type on a desktop or laptop keyboard every day?",
+          "raw_text": "Do you type on a desktop or laptop keyboard every day?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_typing_2026_01_04_004_q03",
+          "order": 3,
+          "text": "When did you learn how to type on a keyboard?",
+          "raw_text": "When did you learn how to type on a keyboard?",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_typing_2026_01_04_004_q04",
+          "order": 4,
+          "text": "How do you improve your typing? ",
+          "raw_text": "How do you improve your typing? ",
+          "source_page_start": 14,
+          "source_page_end": 14,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 14,
+      "source_page_end": 14,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_life_stages_2026_01_04_005",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "new",
+      "sequence": 5,
+      "source_topic_number": 5,
+      "topic": "Life stages",
+      "raw_topic_heading": "5.Life stages",
+      "questions": [
+        {
+          "id": "p1_life_stages_2026_01_04_005_q01",
+          "order": 1,
+          "text": "What did you often do with your friends in your childhood?",
+          "raw_text": "What did you often do with your friends in your childhood?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_life_stages_2026_01_04_005_q02",
+          "order": 2,
+          "text": "What do you think is the most important at the moment?",
+          "raw_text": "What do you think is the most important at the moment?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_life_stages_2026_01_04_005_q03",
+          "order": 3,
+          "text": "Do you have any plans for the next five years?",
+          "raw_text": "Do you have any plans for the next five years?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_life_stages_2026_01_04_005_q04",
+          "order": 4,
+          "text": "How do people remember each stage of their lives?",
+          "raw_text": "How do people remember each stage of their lives?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 15,
+      "source_page_end": 15,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_day_off_2026_01_04_006",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "new",
+      "sequence": 6,
+      "source_topic_number": 6,
+      "topic": "Day off",
+      "raw_topic_heading": "6.Day off",
+      "questions": [
+        {
+          "id": "p1_day_off_2026_01_04_006_q01",
+          "order": 1,
+          "text": "When was the last time you had a few days off?",
+          "raw_text": "When was the last time you had a few days off？",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_day_off_2026_01_04_006_q02",
+          "order": 2,
+          "text": "What do you usually do when you have days off?",
+          "raw_text": "What do you usually do when you have days off？",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_day_off_2026_01_04_006_q03",
+          "order": 3,
+          "text": "Do you usually spend your days off with your parents or with your friends?",
+          "raw_text": "Do you usually spend your days off with your parents or with your friends？",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_day_off_2026_01_04_006_q04",
+          "order": 4,
+          "text": "What would you like to do if you had a day off tomorrow?",
+          "raw_text": "What would you like to do if you had a day off tomorrow？",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 15,
+      "source_page_end": 15,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_staying_with_old_people_2026_01_04_001",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 1,
+      "source_topic_number": 1,
+      "topic": "Staying with old people",
+      "raw_topic_heading": "1.Staying with old people",
+      "questions": [
+        {
+          "id": "p1_staying_with_old_people_2026_01_04_001_q01",
+          "order": 1,
+          "text": "Have you ever worked with old people?",
+          "raw_text": "Have you ever worked with old people?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_with_old_people_2026_01_04_001_q02",
+          "order": 2,
+          "text": "Are you happy to work with people who are older than you?",
+          "raw_text": "Are you happy to work with people who are older than you?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_with_old_people_2026_01_04_001_q03",
+          "order": 3,
+          "text": "What are the benefits of being friends with or working with old people?",
+          "raw_text": "What are the benefits of being friends with or working with old people?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_with_old_people_2026_01_04_001_q04",
+          "order": 4,
+          "text": "Do you enjoy spending time with old people?",
+          "raw_text": "Do you enjoy spending time with old people?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 15,
+      "source_page_end": 15,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_growing_vegetables_fruits_2026_01_04_002",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 2,
+      "source_topic_number": 2,
+      "topic": "Growing vegetables/fruits",
+      "raw_topic_heading": "2.Growing vegetables/fruits",
+      "questions": [
+        {
+          "id": "p1_growing_vegetables_fruits_2026_01_04_002_q01",
+          "order": 1,
+          "text": "Are you interested in growing vegetables and fruits?",
+          "raw_text": "Are you interested in growing vegetables and fruits?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_growing_vegetables_fruits_2026_01_04_002_q02",
+          "order": 2,
+          "text": "ls growing vegetables popular in your country?",
+          "raw_text": "ls growing vegetables popular in your country?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_growing_vegetables_fruits_2026_01_04_002_q03",
+          "order": 3,
+          "text": "Do many people grow vegetables in your city?",
+          "raw_text": "Do many people grow vegetables in your city?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_growing_vegetables_fruits_2026_01_04_002_q04",
+          "order": 4,
+          "text": "Do you think it's easy to grow vegetables?",
+          "raw_text": "Do you think it's easy to grow vegetables?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_growing_vegetables_fruits_2026_01_04_002_q05",
+          "order": 5,
+          "text": "Should schools teach students how to grow vegetables?",
+          "raw_text": "Should schools teach students how to grow vegetables?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 15,
+      "source_page_end": 15,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_going_out_2026_01_04_003",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 3,
+      "source_topic_number": 3,
+      "topic": "Going out",
+      "raw_topic_heading": "3.Going out",
+      "questions": [
+        {
+          "id": "p1_going_out_2026_01_04_003_q01",
+          "order": 1,
+          "text": "Do you bring food or snacks with you when going out?",
+          "raw_text": "Do you bring food or snacks with you when going out?",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_going_out_2026_01_04_003_q02",
+          "order": 2,
+          "text": "Do you always take your mobile phone with you when going out? ",
+          "raw_text": "Do you always take your mobile phone with you when going out? ",
+          "source_page_start": 15,
+          "source_page_end": 15,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_going_out_2026_01_04_003_q03",
+          "order": 3,
+          "text": "Do you often bring cash with you?",
+          "raw_text": "Do you often bring cash with you?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_going_out_2026_01_04_003_q04",
+          "order": 4,
+          "text": "How often do you use cash?",
+          "raw_text": "How often do you use cash?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 15,
+      "source_page_end": 16,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_chatting_2026_01_04_004",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 4,
+      "source_topic_number": 4,
+      "topic": "Chatting",
+      "raw_topic_heading": "4.Chatting",
+      "questions": [
+        {
+          "id": "p1_chatting_2026_01_04_004_q01",
+          "order": 1,
+          "text": "Do you like chatting with friends?",
+          "raw_text": "Do you like chatting with friends?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chatting_2026_01_04_004_q02",
+          "order": 2,
+          "text": "What do you usually chat about with friends?",
+          "raw_text": "What do you usually chat about with friends?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chatting_2026_01_04_004_q03",
+          "order": 3,
+          "text": "Do you prefer to chat with a group of people or with only one friend?",
+          "raw_text": "Do you prefer to chat with a group of people or with only one friend?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chatting_2026_01_04_004_q04",
+          "order": 4,
+          "text": "Do you prefer to communicate face-to-face or via social media?",
+          "raw_text": "Do you prefer to communicate face-to-face or via social media?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_chatting_2026_01_04_004_q05",
+          "order": 5,
+          "text": "Do you argue with friends?",
+          "raw_text": "Do you argue with friends?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 16,
+      "source_page_end": 16,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_borrowing_lending_2026_01_04_005",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 5,
+      "source_topic_number": 5,
+      "topic": "Borrowing/lending",
+      "raw_topic_heading": "5.Borrowing/lending",
+      "questions": [
+        {
+          "id": "p1_borrowing_lending_2026_01_04_005_q01",
+          "order": 1,
+          "text": "Have you borrowed books from others?",
+          "raw_text": "Have you borrowed books from others?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_borrowing_lending_2026_01_04_005_q02",
+          "order": 2,
+          "text": "Have you ever borrowed money from others?",
+          "raw_text": "Have you ever borrowed money from others?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_borrowing_lending_2026_01_04_005_q03",
+          "order": 3,
+          "text": "Do you like to lend things to others?",
+          "raw_text": "Do you like to lend things to others?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_borrowing_lending_2026_01_04_005_q04",
+          "order": 4,
+          "text": "How do you feel when people don't return things they borrowed from you?",
+          "raw_text": "How do you feel when people don't return things they borrowed from you?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 16,
+      "source_page_end": 16,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_having_a_break_2026_01_04_006",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 6,
+      "source_topic_number": 6,
+      "topic": "Having a break",
+      "raw_topic_heading": "6.Having a break",
+      "questions": [
+        {
+          "id": "p1_having_a_break_2026_01_04_006_q01",
+          "order": 1,
+          "text": "How often do you take a rest or a break?",
+          "raw_text": "How often do you take a rest or a break?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_having_a_break_2026_01_04_006_q02",
+          "order": 2,
+          "text": "What do you usually do when you are resting?",
+          "raw_text": "What do you usually do when you are resting?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_having_a_break_2026_01_04_006_q03",
+          "order": 3,
+          "text": "Do you take a nap when you are taking your rest?",
+          "raw_text": "Do you take a nap when you are taking your rest?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_having_a_break_2026_01_04_006_q04",
+          "order": 4,
+          "text": "How do you feel after taking a nap?",
+          "raw_text": "How do you feel after taking a nap?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 16,
+      "source_page_end": 16,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_sharing_2026_01_04_007",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 7,
+      "source_topic_number": 7,
+      "topic": "Sharing",
+      "raw_topic_heading": "7.Sharing",
+      "questions": [
+        {
+          "id": "p1_sharing_2026_01_04_007_q01",
+          "order": 1,
+          "text": "Did your parents teach you to share when you were a child?",
+          "raw_text": "Did your parents teach you to share when you were a child?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sharing_2026_01_04_007_q02",
+          "order": 2,
+          "text": "What kind of things do you like to share with others?",
+          "raw_text": "What kind of things do you like to share with others?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sharing_2026_01_04_007_q03",
+          "order": 3,
+          "text": "What kind of things are not suitable for sharing?",
+          "raw_text": "What kind of things are not suitable for sharing?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sharing_2026_01_04_007_q04",
+          "order": 4,
+          "text": "Do you have anything to share with others recently?",
+          "raw_text": "Do you have anything to share with others recently?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sharing_2026_01_04_007_q05",
+          "order": 5,
+          "text": "Who is the first person you would like to share good news with?",
+          "raw_text": "Who is the first person you would like to share good news with?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_sharing_2026_01_04_007_q06",
+          "order": 6,
+          "text": "What kind of news do you share with your friends?",
+          "raw_text": "What kind of news do you share with your friends?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 16,
+      "source_page_end": 16,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_doing_something_well_2026_01_04_008",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 8,
+      "source_topic_number": 8,
+      "topic": "Doing something well",
+      "raw_topic_heading": "8.Doing something well",
+      "questions": [
+        {
+          "id": "p1_doing_something_well_2026_01_04_008_q01",
+          "order": 1,
+          "text": "Do you have an experience that you did something well?",
+          "raw_text": "Do you have an experience that you did something well?",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_doing_something_well_2026_01_04_008_q02",
+          "order": 2,
+          "text": "Do you have an experience that your teacher thought you did a good job? ",
+          "raw_text": "Do you have an experience that your teacher thought you did a good job? ",
+          "source_page_start": 16,
+          "source_page_end": 16,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_doing_something_well_2026_01_04_008_q03",
+          "order": 3,
+          "text": "Do you often tell your friends when they do something well?",
+          "raw_text": "Do you often tell your friends when they do something well?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [
+            "question_missing_question_mark",
+            "question_contains_chinese",
+            "source_marks_question_incomplete"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 16,
+      "source_page_end": 17,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_praising_encouragement_2026_01_04_009",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 9,
+      "source_topic_number": 9,
+      "topic": "Praising/encouragement",
+      "raw_topic_heading": "9.Praising/encouragement",
+      "questions": [
+        {
+          "id": "p1_praising_encouragement_2026_01_04_009_q01",
+          "order": 1,
+          "text": "Have you had any achievements recently?",
+          "raw_text": "Have you had any achievements recently?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_praising_encouragement_2026_01_04_009_q02",
+          "order": 2,
+          "text": "How do you feel when you are praised?",
+          "raw_text": "How do you feel when you are praised?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_praising_encouragement_2026_01_04_009_q03",
+          "order": 3,
+          "text": "When was the last time you praised someone?",
+          "raw_text": "When was the last time you praised someone?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_praising_encouragement_2026_01_04_009_q04",
+          "order": 4,
+          "text": "Do you think parents should often praise their children?",
+          "raw_text": "Do you think parents should often praise their children?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_praising_encouragement_2026_01_04_009_q05",
+          "order": 5,
+          "text": "Have you ever been praise and encourage their children?",
+          "raw_text": "Have you ever been praise and encourage their children?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 17,
+      "source_page_end": 17,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_saying_thank_you_2026_01_04_010",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 10,
+      "source_topic_number": 10,
+      "topic": "Saying 'thank you'",
+      "raw_topic_heading": "10.Saying ‘thank you'",
+      "questions": [
+        {
+          "id": "p1_saying_thank_you_2026_01_04_010_q01",
+          "order": 1,
+          "text": "Have you ever sent a thank you card to others?",
+          "raw_text": "Have you ever sent a thank you card to others?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_saying_thank_you_2026_01_04_010_q02",
+          "order": 2,
+          "text": "Do people in your country often say 'thank you'?",
+          "raw_text": "Do people in your country often say ‘thank you'?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_saying_thank_you_2026_01_04_010_q03",
+          "order": 3,
+          "text": "On what occasions do you say 'thank you'?",
+          "raw_text": "On what occasions do you say ‘thank you'?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_saying_thank_you_2026_01_04_010_q04",
+          "order": 4,
+          "text": "Why do people need to say 'thank you'?",
+          "raw_text": "Why do people need to say ‘thank you'?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 17,
+      "source_page_end": 17,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_being_busy_2026_01_04_011",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 11,
+      "source_topic_number": 11,
+      "topic": "Being busy",
+      "raw_topic_heading": "11.Being busy",
+      "questions": [
+        {
+          "id": "p1_being_busy_2026_01_04_011_q01",
+          "order": 1,
+          "text": "Are you often busy?",
+          "raw_text": "Are you often busy?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_being_busy_2026_01_04_011_q02",
+          "order": 2,
+          "text": "Why are you busy?",
+          "raw_text": "Why are you busy?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_being_busy_2026_01_04_011_q03",
+          "order": 3,
+          "text": "When are you busy?",
+          "raw_text": "When are you busy?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_being_busy_2026_01_04_011_q04",
+          "order": 4,
+          "text": "Are you busier now than when you were a child?",
+          "raw_text": "Are you busier now than when you were a child?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 17,
+      "source_page_end": 17,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_spare_time_2026_01_04_012",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 12,
+      "source_topic_number": 12,
+      "topic": "Spare time",
+      "raw_topic_heading": "12.Spare time",
+      "questions": [
+        {
+          "id": "p1_spare_time_2026_01_04_012_q01",
+          "order": 1,
+          "text": "Do you often have free time?",
+          "raw_text": "Do you often have free time?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_spare_time_2026_01_04_012_q02",
+          "order": 2,
+          "text": "What do you usually do in your spare time?",
+          "raw_text": "What do you usually do in your spare time?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_spare_time_2026_01_04_012_q03",
+          "order": 3,
+          "text": "Which day do you have more free time on, Saturday or Sunday?",
+          "raw_text": "Which day do you have more free time on, Saturday or Sunday?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_spare_time_2026_01_04_012_q04",
+          "order": 4,
+          "text": "Would you like to have more free time in the future?",
+          "raw_text": "Would you like to have more free time in the future?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 17,
+      "source_page_end": 17,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_staying_up_2026_01_04_013",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 13,
+      "source_topic_number": 13,
+      "topic": "Staying up",
+      "raw_topic_heading": "13.Staying up",
+      "questions": [
+        {
+          "id": "p1_staying_up_2026_01_04_013_q01",
+          "order": 1,
+          "text": "Do you often stay up late?",
+          "raw_text": "Do you often stay up late?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_up_2026_01_04_013_q02",
+          "order": 2,
+          "text": "Did you stay up late when you were a kid?",
+          "raw_text": "Did you stay up late when you were a kid?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_up_2026_01_04_013_q03",
+          "order": 3,
+          "text": "What do you do when you stay up late?",
+          "raw_text": "What do you do when you stay up late?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_up_2026_01_04_013_q04",
+          "order": 4,
+          "text": "What does it feel like the next morning if you stay up late?",
+          "raw_text": "What does it feel like the next morning if you stay up late?",
+          "source_page_start": 17,
+          "source_page_end": 17,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 17,
+      "source_page_end": 17,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_taking_photos_2026_01_04_014",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 14,
+      "source_topic_number": 14,
+      "topic": "Taking photos",
+      "raw_topic_heading": "14.Taking photos",
+      "questions": [
+        {
+          "id": "p1_taking_photos_2026_01_04_014_q01",
+          "order": 1,
+          "text": "Do you like taking photos?",
+          "raw_text": "Do you like taking photos?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_taking_photos_2026_01_04_014_q02",
+          "order": 2,
+          "text": "Do you like taking selfies?",
+          "raw_text": "Do you like taking selfies?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_taking_photos_2026_01_04_014_q03",
+          "order": 3,
+          "text": "What is your favourite family photo?",
+          "raw_text": "What is your favourite family photo?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_taking_photos_2026_01_04_014_q04",
+          "order": 4,
+          "text": "Do you want to improve your photography skills?",
+          "raw_text": "Do you want to improve your photography skills?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 18,
+      "source_page_end": 18,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_fishing_2026_01_04_015",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 15,
+      "source_topic_number": 15,
+      "topic": "Fishing",
+      "raw_topic_heading": "15.Fishing",
+      "questions": [
+        {
+          "id": "p1_fishing_2026_01_04_015_q01",
+          "order": 1,
+          "text": "Is fishing popular in your country?",
+          "raw_text": "Is fishing popular in your country?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_fishing_2026_01_04_015_q02",
+          "order": 2,
+          "text": "Do you like eating fish?",
+          "raw_text": "Do you like eating fish?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_fishing_2026_01_04_015_q03",
+          "order": 3,
+          "text": "Do you like fishing?",
+          "raw_text": "Do you like fishing?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_fishing_2026_01_04_015_q04",
+          "order": 4,
+          "text": "Did you ever go fishing when you were a child?",
+          "raw_text": "Did you ever go fishing when you were a child?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 18,
+      "source_page_end": 18,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_staying_at_home_2026_01_04_016",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 16,
+      "source_topic_number": 16,
+      "topic": "Staying at home",
+      "raw_topic_heading": "16.Staying at home",
+      "questions": [
+        {
+          "id": "p1_staying_at_home_2026_01_04_016_q01",
+          "order": 1,
+          "text": "Are you a person who likes to stay at home?",
+          "raw_text": "Are you a person who likes to stay at home?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_at_home_2026_01_04_016_q02",
+          "order": 2,
+          "text": "What would you do when staying at home?",
+          "raw_text": "What would you do when staying at home?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_at_home_2026_01_04_016_q03",
+          "order": 3,
+          "text": "What is your favourite place at home?",
+          "raw_text": "What is your favourite place at home?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_at_home_2026_01_04_016_q04",
+          "order": 4,
+          "text": "What did you often do at home as a child?",
+          "raw_text": "What did you often do at home as a child?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_staying_at_home_2026_01_04_016_q05",
+          "order": 5,
+          "text": "Would you like to stay at home a lot in the future?",
+          "raw_text": "Would you like to stay at home a lot in the future?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 18,
+      "source_page_end": 18,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_doing_sports_2026_01_04_017",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 17,
+      "source_topic_number": 17,
+      "topic": "Doing sports",
+      "raw_topic_heading": "17.Doing sports",
+      "questions": [
+        {
+          "id": "p1_doing_sports_2026_01_04_017_q01",
+          "order": 1,
+          "text": "What sports do you like?",
+          "raw_text": "What sports do you like?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_doing_sports_2026_01_04_017_q02",
+          "order": 2,
+          "text": "Where did you learn how to do it?",
+          "raw_text": "Where did you learn how to do it?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_doing_sports_2026_01_04_017_q03",
+          "order": 3,
+          "text": "Did you do some sports when you were young?",
+          "raw_text": "Did you do some sports when you were young?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_doing_sports_2026_01_04_017_q04",
+          "order": 4,
+          "text": "Do you think students need more exercise?",
+          "raw_text": "Do you think students need more exercise?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_doing_sports_2026_01_04_017_q05",
+          "order": 5,
+          "text": "Do you know any people who are good at sports?",
+          "raw_text": "Do you know any people who are good at sports?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_doing_sports_2026_01_04_017_q06",
+          "order": 6,
+          "text": "Do you think it is important for people to exercise?",
+          "raw_text": "Do you think it is important for people to exercise?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_doing_sports_2026_01_04_017_q07",
+          "order": 7,
+          "text": "Should schools encourage young students to take more physical exercise?",
+          "raw_text": "Should schools encourage young students to take more physical exercise?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 18,
+      "source_page_end": 18,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_morning_routines_2026_01_04_018",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 18,
+      "source_topic_number": 18,
+      "topic": "Morning routines",
+      "raw_topic_heading": "18.Morning routines",
+      "questions": [
+        {
+          "id": "p1_morning_routines_2026_01_04_018_q01",
+          "order": 1,
+          "text": "What do you do in the mornings?",
+          "raw_text": "What do you do in the mornings?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_morning_routines_2026_01_04_018_q02",
+          "order": 2,
+          "text": "ls breakfast important?",
+          "raw_text": "ls breakfast important?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_morning_routines_2026_01_04_018_q03",
+          "order": 3,
+          "text": "What is your morning routine?",
+          "raw_text": "What is your morning routine?",
+          "source_page_start": 18,
+          "source_page_end": 18,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        },
+        {
+          "id": "p1_morning_routines_2026_01_04_018_q04",
+          "order": 4,
+          "text": "Do you like to get up early in the morning?",
+          "raw_text": "Do you like to get up early in the morning?",
+          "source_page_start": 19,
+          "source_page_end": 19,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 18,
+      "source_page_end": 19,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_plan_schedule_2026_01_04_019",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "事件类",
+      "freshness": "old",
+      "sequence": 19,
+      "source_topic_number": 19,
+      "topic": "Plan/Schedule",
+      "raw_topic_heading": "19.Plan/Schedule",
+      "questions": [
+        {
+          "id": "p1_plan_schedule_2026_01_04_019_q01",
+          "order": 1,
+          "text": "Do you like making plans?",
+          "raw_text": "Do you like making plans?",
+          "source_page_start": 19,
+          "source_page_end": 19,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_plan_schedule_2026_01_04_019_q02",
+          "order": 2,
+          "text": "Do you use paper or your cellphone to make plans?",
+          "raw_text": "Do you use paper or your cellphone to make plans?",
+          "source_page_start": 19,
+          "source_page_end": 19,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_plan_schedule_2026_01_04_019_q03",
+          "order": 3,
+          "text": "What are the benefits of making plans?",
+          "raw_text": "What are the benefits of making plans?",
+          "source_page_start": 19,
+          "source_page_end": 19,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_plan_schedule_2026_01_04_019_q04",
+          "order": 4,
+          "text": "Why is it that some people don't make plans?",
+          "raw_text": "Why is it that some people don't make plans?",
+          "source_page_start": 19,
+          "source_page_end": 19,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 19,
+      "source_page_end": 19,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    },
+    {
+      "id": "p1_public_places_2026_01_04_001",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "地点类",
+      "freshness": "old",
+      "sequence": 1,
+      "source_topic_number": 1,
+      "topic": "Public places",
+      "raw_topic_heading": "1.Public places",
+      "questions": [
+        {
+          "id": "p1_public_places_2026_01_04_001_q01",
+          "order": 1,
+          "text": "Have you ever talked with someone you don't know in public places?",
+          "raw_text": "Have you ever talked with someone you don't know in public places?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_public_places_2026_01_04_001_q02",
+          "order": 2,
+          "text": "Do you wear headphones in public places?",
+          "raw_text": "Do you wear headphones in public places?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_public_places_2026_01_04_001_q03",
+          "order": 3,
+          "text": "Would you like to see more public places near where you live?",
+          "raw_text": "Would you like to see more public places near where you live?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_public_places_2026_01_04_001_q04",
+          "order": 4,
+          "text": "Do you often go to public places with your friends?",
+          "raw_text": "Do you often go to public places with your friends?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 20,
+      "source_page_end": 20,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_crowded_place_2026_01_04_002",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "地点类",
+      "freshness": "old",
+      "sequence": 2,
+      "source_topic_number": 2,
+      "topic": "Crowded place",
+      "raw_topic_heading": "2.Crowded place",
+      "questions": [
+        {
+          "id": "p1_crowded_place_2026_01_04_002_q01",
+          "order": 1,
+          "text": "Is the city where you live crowded?",
+          "raw_text": "Is the city where you live crowded?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_crowded_place_2026_01_04_002_q02",
+          "order": 2,
+          "text": "Is there a crowded place near where you live?",
+          "raw_text": "Is there a crowded place near where you live?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_crowded_place_2026_01_04_002_q03",
+          "order": 3,
+          "text": "Do you like crowded places?",
+          "raw_text": "Do you like crowded places?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_crowded_place_2026_01_04_002_q04",
+          "order": 4,
+          "text": "Do most people like crowded places?",
+          "raw_text": "Do most people like crowded places?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_crowded_place_2026_01_04_002_q05",
+          "order": 5,
+          "text": "When was the last time you were in a crowded place?",
+          "raw_text": "When was the last time you were in a crowded place?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        }
+      ],
+      "source_page_start": 20,
+      "source_page_end": 20,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": false
+    },
+    {
+      "id": "p1_museum_2026_01_04_003",
+      "part": 1,
+      "season": "2026-01_04",
+      "category": "地点类",
+      "freshness": "old",
+      "sequence": 3,
+      "source_topic_number": 3,
+      "topic": "Museum",
+      "raw_topic_heading": "3.Museum",
+      "questions": [
+        {
+          "id": "p1_museum_2026_01_04_003_q01",
+          "order": 1,
+          "text": "Do you think museums are important?",
+          "raw_text": "Do you think museums are important?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_museum_2026_01_04_003_q02",
+          "order": 2,
+          "text": "Are there many museums in your hometown?",
+          "raw_text": "Are there many museums in your hometown?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_museum_2026_01_04_003_q03",
+          "order": 3,
+          "text": "Do you often visit a museum?",
+          "raw_text": "Do you often visit a museum?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [],
+          "needs_review": false
+        },
+        {
+          "id": "p1_museum_2026_01_04_003_q04",
+          "order": 4,
+          "text": "When was the last time you visited a museum?",
+          "raw_text": "When was the last time you visited a museum?",
+          "source_page_start": 20,
+          "source_page_end": 20,
+          "warnings": [
+            "question_missing_question_mark"
+          ],
+          "needs_review": true
+        }
+      ],
+      "source_page_start": 20,
+      "source_page_end": 20,
+      "status": "draft",
+      "version": 1,
+      "warnings": [],
+      "needs_review": true
+    }
+  ],
+  "summary": {
+    "topic_count": 72,
+    "question_count": 357,
+    "topics_needing_review": 22,
+    "questions_needing_review": 25,
+    "document_warning_count": 0
+  },
+  "document_warnings": []
+}

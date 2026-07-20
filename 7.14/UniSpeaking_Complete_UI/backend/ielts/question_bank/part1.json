@@ -1,0 +1,54 @@
+{
+  "groups": [
+    {
+      "group_id": "p1_home_001",
+      "version": 1,
+      "status": "active",
+      "topic": "Home and accommodation",
+      "training_level": "standard",
+      "questions": [
+        { "question_id": "p1_home_001_q1", "version": 1, "text": "What kind of accommodation do you live in?" },
+        { "question_id": "p1_home_001_q2", "version": 1, "text": "What do you like most about your home?" },
+        { "question_id": "p1_home_001_q3", "version": 1, "text": "Is there anything you would like to change about it?" },
+        { "question_id": "p1_home_001_q4", "version": 1, "text": "Would you like to live there for a long time?" }
+      ]
+    },
+    {
+      "group_id": "p1_work_001",
+      "version": 1,
+      "status": "active",
+      "topic": "Work and study",
+      "training_level": "standard",
+      "questions": [
+        { "question_id": "p1_work_001_q1", "version": 1, "text": "Do you work or are you a student?" },
+        { "question_id": "p1_work_001_q2", "version": 1, "text": "What do you enjoy most about your work or studies?" },
+        { "question_id": "p1_work_001_q3", "version": 1, "text": "What would you like to improve in this area?" },
+        { "question_id": "p1_work_001_q4", "version": 1, "text": "Do you think your work or studies will change in the future?" }
+      ]
+    },
+    {
+      "group_id": "p1_weekend_001",
+      "version": 1,
+      "status": "active",
+      "topic": "Weekends",
+      "training_level": "foundation",
+      "questions": [
+        { "question_id": "p1_weekend_001_q1", "version": 1, "text": "What do you usually do at weekends?" },
+        { "question_id": "p1_weekend_001_q2", "version": 1, "text": "Do you prefer busy or quiet weekends?" },
+        { "question_id": "p1_weekend_001_q3", "version": 1, "text": "Who do you usually spend your weekends with?" }
+      ]
+    },
+    {
+      "group_id": "p1_photos_001",
+      "version": 1,
+      "status": "active",
+      "topic": "Photographs",
+      "training_level": "advanced",
+      "questions": [
+        { "question_id": "p1_photos_001_q1", "version": 1, "text": "Do you enjoy taking photographs?" },
+        { "question_id": "p1_photos_001_q2", "version": 1, "text": "What kinds of photographs do you keep?" },
+        { "question_id": "p1_photos_001_q3", "version": 1, "text": "How has the way people take photographs changed?" }
+      ]
+    }
+  ]
+}

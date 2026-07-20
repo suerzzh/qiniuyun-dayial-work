@@ -723,3 +723,92 @@
   - `task_plan.md` updated
   - `findings.md` updated
   - `progress.md` updated
+
+## Session: 2026-07-20
+
+### Phase 36: IELTS Speaking Special Training Design
+- **Status:** complete
+- Actions taken:
+  - 读取并遵循 `superpowers:using-superpowers`、`superpowers:brainstorming` 与 `planning-with-files-zh`。
+  - 恢复根目录全局规划上下文，确认继续使用全局 `task_plan.md`、`findings.md`、`progress.md`。
+  - 完整读取 `7.20/雅思口语特训场景方案调研与设计.md`，提取 7 类问题和 6 项预期产出。
+  - 将问题归并为考试体验、确定性编排、能力与数据闭环三条主线，并记录初步技术判断。
+  - 读取 `architecture-copilot` 与 `supabase:supabase`，将本轮按现有方案评审与 AI 对话产品架构约束推进。
+  - 扫描 `7.14/UniSpeaking_Complete_UI`、`7.14/UniSpeaking`、`7.17` 中的 Realtime、训练、会话和 Supabase 代码/文档入口。
+  - 确认应复用 Realtime transport 和会话 API，不应复用普通场景的“学词→读句→模拟”领域流程；连接状态与考试状态必须解耦。
+  - 核对 IELTS.org 官方考试格式、官方样题和 Speaking Band Descriptors，锁定时长、Part 关联、示例题量和四项评分边界。
+  - 核对 Supabase 当前 RLS、Data API grants 和安全文档；确认题库读权限与用户会话写权限应分层，权威状态推进放在服务端。
+  - 全项目检索 IELTS 既有决策，确认 7.8 Proposal 已选择“分 Part 专项训练 + 完整模拟”并行入口，且 7.13 架构基线要求复用实时底座、独立专业规则。
+  - 发现当前会员页“官方标准打分报告”与既有非官方反馈边界冲突，记录为需要在方案中修正的产品风险。
+  - 比较 Prompt 全控、混合确定性编排、完整 RAG/多模型流水线三条路线，推荐 Supabase 结构化题库 + 服务端考试状态机 + Realtime 考官。
+  - 形成第一段设计：同一 ExamSession 内核承载专项练习和完整模考，前端/后端/Realtime/异步评估职责严格拆分。
+  - 用户明确排除部署上线问题，并指出题库存 JSON 或数据库尚未决定。
+  - 修正前一轮过早选择 Supabase 的结论：将题库存储与考试流程编排拆成独立决策，题库存储恢复为待选。
+  - 用户确认题库由开发人员直接修改文件维护；题库存储正式收敛为后端 JSON，本轮不引入数据库或 RAG。
+  - 明确 JSON 仍通过后端只读 Repository 加载，并建议按 manifest、Part 1、Part 2、Part 3 分文件组织，保留未来替换存储而不改组卷逻辑的边界。
+  - 用户选择固定题库方案 A：所有计划内题目来自 JSON，AI 只允许在当前题目范围内做次数受限的自然追问。
+  - 用户选择后端状态机方案 A，并补充 Part 2 必须显示完整抽取题卡，不能只口述。
+  - 明确 Part 2 的准备、回答、收尾状态和题卡持续可见规则；前端倒计时为展示，后端时间为权威。
+  - 通过 Visual Companion 展示 A/B/C 三种 Part 2 页面布局；用户最终选择 B“全宽题卡，下方笔记与回答状态”。
+  - 通过 Visual Companion 展示三种 Part 2 笔记策略；用户最终选择 A“准备时可编辑，回答时保留显示并锁定”。
+  - 用户选择模式操作方案 A：完整模考无暂停/跳题/重试，专项练习允许重试当前题和进入下一题。
+  - 用户选择完整模考组卷方案 A：以官方 Part 时长为主约束，后端配置默认题量、最小覆盖和上限，由状态机按时间预算推进，模型不决定题量。
+  - 明确 Part 2 保持 1 张题卡 + 60 秒准备 + 1–2 分钟长回答 + 0–2 个 JSON 收尾问题；Part 1/3 题数是可测试的产品配置，不宣称为官方固定题数。
+  - 用户选择 Part 2/Part 3 主题簇关联方案 B：两类题目都在 JSON 中显式声明 `topic_cluster`，组卷器从同主题的兼容题组中选择，不由 AI 临场语义匹配。
+  - 用户选择题卡展示方案 A：完整模考中 Part 1/3 只语音提问、不显示问题题卡，专项练习可显示当前题目；Part 2 两种模式始终展示完整题卡。实时字幕政策留待单独确认。
+  - 用户确定完整模考字幕默认隐藏，但允许用户在会话中随时开启；字幕仅为 UI 辅助开关，不影响计时或状态机，使用情况可记入会话快照。
+  - 用户选择 MVP 试卷类型方案 A：只实现随机组卷，开考前生成并冻结完整试卷快照；本期不做人工固定试卷或试卷编辑能力。
+  - 用户选择重复题回避方案 A：当前试卷题目绝不重复，并尽量回避最近 5 场已完成训练题目；题库不足时逐级放宽历史回避，不放宽当前试卷唯一性和 Part 2/3 主题关联。
+  - 用户选择难度适配方案 A：完整模考不按用户水平改变题目；专项练习可按基础/标准/进阶训练标签筛选，但标签不映射官方 IELTS 分数段。
+  - 用户选择 MVP 考后反馈方案 A：按 IELTS 四维输出带证据的 AI 练习反馈、优点和改进建议，不输出精确 0–9 分；发音缺少可靠音频证据时显式标记“证据不足，未评估”。
+  - 用户选择原始录音方案 B：开考前由用户主动开启保存录音，默认关闭；未录音时只保存转写、时间和状态记录，发音维度不评估。
+  - 用户授权后续未决内容按推荐方案收敛；开始组织并写回 7.20 主方案文件。
+  - 已在 `7.20/雅思口语特训场景方案调研与设计.md` 追加完整最终方案，将原文所有七类问题和六项预期产出收敛为可开发、可验收的规格。
+  - 文档现为 727 行，包含 4 个可解析 JSON 示例、状态流、组卷顺序、模块边界、异常表、MVP 清单、验收清单和 9 条关键 ADR。
+  - 完成静态自检：JSON 块全部通过 `JSON.parse`；Markdown 围栏成对；必需术语无缺失；未发现 TODO/TBD/待定占位；已再次核对录音、字幕、Part 2 题卡、题库、反馈和完整模考操作等已确认选择。
+- Next:
+  - 已由用户确认进入实施阶段，成果已承接到 Phase 37。
+- Files modified:
+  - `task_plan.md`
+  - `findings.md`
+  - `progress.md`
+
+### Phase 37: IELTS Speaking Interactive Demo
+- **Status:** complete
+- Actions taken:
+  - 用户已要求在设计稿基础上编写详细开发计划并实现可运行 Demo。
+  - 完整读取 `superpowers:writing-plans`、`superpowers:executing-plans`、`superpowers:test-driven-development`、`superpowers:verification-before-completion` 和 `superpowers:using-git-worktrees`。
+  - 确认根仓库当前分支为 `codex/integrate-free-chat-v2`，存在其他用户改动；根据用户“开发改当前项目文件”的要求在当前工作区精确修改尚未改动的 `7.14/UniSpeaking_Complete_UI`，不创建额外 worktree。
+  - 现有 `npm test` 基线为 33 tests、33 pass、0 fail。
+  - 已写入 `docs/superpowers/plans/2026-07-20-ielts-speaking-demo.md`，拆分为题库、组卷、状态机、控制器、UI 集成和验收六个 TDD 任务。
+  - 按计划新增四份本地 JSON 题库文件，以及题库校验、随机组卷、考试状态机、证据反馈和 Demo 控制器模块。
+  - 集成 `#/ielts` 路由、场景入口、四种练习模式、考前偏好、完整模考、Part 2 全题卡与笔记、字幕切换、报告页和响应式样式。
+  - 按 TDD 记录缺模块、缺样式、路由缺失、字幕重复播报和笔记焦点等红灯，再逐项实现至绿灯。
+  - 浏览器验收发现 Part 2 倒计时归零与陈旧输入事件重叠时会抛出控制台错误；确认根因是 UI 事件使用过期 DOM、领域控制器正确拒绝越界写入后，新增回归测试并在 UI 边界忽略陈旧事件。
+  - 最终自动化测试为 62 tests、62 pass、0 fail；ES Module 语法检查、四份 JSON 解析和 `git diff --check` 均通过。
+  - Chromium 端到端验收通过：字幕/录音默认关闭，字幕会话中可开启，完整模考无暂停/跳题/重试，Part 2 cue card 始终完整展示，笔记准备期可编辑并于倒计时后锁定，Part 3/报告流程完成，控制台错误和失败资源均为 0。
+  - 390px 移动端无横向溢出；保存首页、Part 2 桌面/移动端和反馈报告四张验收截图到 `7.14/UniSpeaking_Complete_UI/acceptance/ielts/`。
+- Next:
+  - 当前 Demo 保持本地 JSON 与浏览器 `speechSynthesis`/手动回答结束替身；真实 Realtime 音频、后端持久化、数据库迁移和部署不在本轮范围。
+
+### Phase 38: IELTS Microphone Answer Interaction
+- **Status:** complete
+- Actions taken:
+  - 用户确认统一采用“开始说话 → 暂停 → 继续说话”，并以独立“结束本轮回答”推进考试。
+  - 用户确认使用浏览器 Web Speech API 实时转写；不支持或权限拒绝时保留可编辑文字回退。
+  - 写入 `docs/superpowers/specs/2026-07-20-ielts-microphone-answer-design.md` 与 `docs/superpowers/plans/2026-07-20-ielts-microphone-answer.md`。
+  - 新增 `speech-recognition-adapter.mjs`，隔离厂商前缀、权限流、interim/final 结果、一次意外重启和媒体轨道释放。
+  - 新增 `voice-answer-controller.mjs`，管理 idle/requesting/listening/paused/fallback/finalizing、回答计时、转写追加、手动修正和幂等结束。
+  - 用统一麦克风回答面板替换 Part 1–3 和完整模考的模拟文本表单；Part 2 准备阶段继续只显示题卡、笔记和倒计时。
+  - 接入开始、暂停、继续、结束、转写输入、换题重置、退出清理和页面卸载释放；结束本轮只提交一次并重置下一题。
+  - 完成桌面和 390px 移动端样式、动态声波、ARIA 状态和 reduced-motion；更新 README 的 Chrome 兼容、权限和无原始音频边界。
+- Verification:
+  - TDD 新增适配器、回答控制器、视图、应用接线、视觉和 README 红—绿测试。
+  - 自动化回归增至 79 tests，全部通过（最终复核后记录准确数量）。
+  - Chromium 注入语音识别验收：初始权限请求 0；开始后 1；暂停计时保持；继续后两段转写正确追加；结束后只推进一题且下一题恢复 idle。
+  - Part 2 准备阶段麦克风数量 0；长回答阶段数量 1，题卡 3 条提示完整、笔记锁定。
+  - 权限拒绝进入 `is-fallback`，文字可编辑并能推进；390px 下无横向溢出，麦克风宽度 80px；控制台与失败资源为空。
+- Next:
+  - 真实设备使用 Chrome 打开本地 Demo，首次点击“开始说话”时允许麦克风权限即可体验；原始音频仍不上传或保存。
+- Next:
+  - 核对官方 IELTS Speaking 规则与现有 UniSpeaking 代码/架构，再提出可比较的实现方案和需要用户确认的关键取舍。

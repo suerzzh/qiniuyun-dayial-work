@@ -1,0 +1,40 @@
+{
+  "groups": [
+    {
+      "group_id": "p3_people_001",
+      "version": 1,
+      "status": "active",
+      "topic_cluster": "people_and_relationships",
+      "training_level": "standard",
+      "questions": [
+        { "question_id": "p3_people_001_q1", "version": 1, "text": "What kinds of people influence young people today?", "probes": ["Why do you think that is?"] },
+        { "question_id": "p3_people_001_q2", "version": 1, "text": "Do family members influence people differently from public figures?", "probes": ["Has this changed compared with the past?"] },
+        { "question_id": "p3_people_001_q3", "version": 1, "text": "Is it important for influential people to behave responsibly?", "probes": ["Who should decide what responsible behaviour means?"] }
+      ]
+    },
+    {
+      "group_id": "p3_places_001",
+      "version": 1,
+      "status": "active",
+      "topic_cluster": "places_and_cities",
+      "training_level": "foundation",
+      "questions": [
+        { "question_id": "p3_places_001_q1", "version": 1, "text": "What makes a public place attractive to local people?", "probes": ["Does this differ between age groups?"] },
+        { "question_id": "p3_places_001_q2", "version": 1, "text": "How can cities create better shared spaces?", "probes": ["Who should pay for these improvements?"] },
+        { "question_id": "p3_places_001_q3", "version": 1, "text": "Do modern cities have enough quiet places?", "probes": ["Why might quiet places matter?"] }
+      ]
+    },
+    {
+      "group_id": "p3_learning_001",
+      "version": 1,
+      "status": "active",
+      "topic_cluster": "learning_and_skills",
+      "training_level": "advanced",
+      "questions": [
+        { "question_id": "p3_learning_001_q1", "version": 1, "text": "Which skills will be most valuable in the future?", "probes": ["Why will these skills become more important?"] },
+        { "question_id": "p3_learning_001_q2", "version": 1, "text": "Should schools focus more on practical skills?", "probes": ["What might schools have to reduce to make room?"] },
+        { "question_id": "p3_learning_001_q3", "version": 1, "text": "How has technology changed the way adults learn?", "probes": ["Are there disadvantages to this change?"] }
+      ]
+    }
+  ]
+}

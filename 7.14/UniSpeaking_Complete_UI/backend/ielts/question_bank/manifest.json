@@ -1,0 +1,17 @@
+{
+  "bank_version": "2026.07.20-demo.1",
+  "schema_version": 1,
+  "locale": "en-GB",
+  "files": {
+    "part1": "part1.json",
+    "part2": "part2.json",
+    "part3": "part3.json"
+  },
+  "defaults": {
+    "recent_completed_sessions_to_avoid": 5,
+    "part1_target_seconds": 270,
+    "part2_prep_seconds": 60,
+    "part2_answer_max_seconds": 120,
+    "part3_target_seconds": 270
+  }
+}
