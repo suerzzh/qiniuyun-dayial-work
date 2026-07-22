@@ -1,32 +1,18 @@
 // @ts-check
 
-/** @param {string} baseUrl */
-function normalizeBaseUrl(baseUrl) {
-  let url;
-  try {
-    url = new URL(baseUrl);
-  } catch {
-    throw new Error("实时服务地址必须是有效的 HTTP URL");
-  }
-  if (url.protocol !== "http:" && url.protocol !== "https:") {
-    throw new Error("实时服务地址必须使用 HTTP 或 HTTPS");
-  }
-  return url.toString().replace(/\/$/, "");
-}
+import { resolveHttpBase } from "./local-service-config.mjs";
 
 /**
- * @param {{ baseUrl: string, publicKey?: string, fetchImpl?: typeof fetch }} options
+ * @param {{ origin?: string, baseUrl?: string, publicKey?: string, fetchImpl?: typeof fetch }} [options]
  */
-export function createRealtimeApi({ baseUrl, publicKey = "", fetchImpl = fetch }) {
-  const base = normalizeBaseUrl(baseUrl);
-  const apiKey = publicKey.trim();
+export function createRealtimeApi({ origin, fetchImpl = fetch } = {}) {
+  const base = resolveHttpBase(origin);
 
   /** @param {string} path @param {RequestInit} [options] */
   async function request(path, options = {}) {
     const response = await fetchImpl(`${base}${path}`, {
       ...options,
       headers: {
-        ...(apiKey ? { apikey: apiKey } : {}),
         ...(options.headers || {}),
       },
     });

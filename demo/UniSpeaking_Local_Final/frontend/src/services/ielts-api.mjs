@@ -1,9 +1,9 @@
 // @ts-nocheck
 
-const trimSlash = (value) => String(value || "").replace(/\/+$/, "");
+import { resolveHttpBase } from "./local-service-config.mjs";
 
-export function createIeltsApi({ baseUrl = "http://127.0.0.1:8000", fetchImpl = fetch } = {}) {
-  const root = trimSlash(baseUrl);
+export function createIeltsApi({ origin, fetchImpl = fetch } = {}) {
+  const root = resolveHttpBase(origin);
   async function request(path, options = {}) {
     const response = await fetchImpl(`${root}${path}`, options);
     const type = response.headers?.get?.("content-type") || "";
