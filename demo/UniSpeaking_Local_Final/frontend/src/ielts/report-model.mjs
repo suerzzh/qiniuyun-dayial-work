@@ -1,3 +1,56 @@
+/**
+ * @typedef {object} IeltsDimension
+ * @property {string} [code]
+ * @property {number | null} [band]
+ * @property {number | null} [confidence]
+ * @property {string[]} [positiveEvidence]
+ * @property {string[]} [limitingEvidence]
+ * @property {string | null} [unavailableReason]
+ */
+
+/**
+ * @typedef {object} TaskAchievement
+ * @property {number | null} [score]
+ * @property {number | null} [confidence]
+ * @property {string[]} [positiveEvidence]
+ * @property {string[]} [limitingEvidence]
+ * @property {string | null} [unavailableReason]
+ */
+
+/**
+ * @typedef {object} RadarDimension
+ * @property {string} code
+ * @property {string} [label]
+ * @property {number | null} [score]
+ */
+
+/**
+ * @typedef {object} RawIeltsReport
+ * @property {number | null} [overallBand]
+ * @property {number | null} [overall_band]
+ * @property {string | null} [scoringStatus]
+ * @property {string | null} [scoring_status]
+ * @property {Record<string, IeltsDimension | null | undefined> | null} [officialDimensions]
+ * @property {IeltsDimension | null} [fc]
+ * @property {IeltsDimension | null} [lr]
+ * @property {IeltsDimension | null} [gra]
+ * @property {IeltsDimension | null} [pronunciation]
+ * @property {TaskAchievement | null} [taskAchievement]
+ * @property {RadarDimension[] | null} [radarDimensions]
+ * @property {number[] | null} [bandRange]
+ * @property {number[] | null} [band_range]
+ * @property {number | null} [confidence]
+ * @property {Record<string, string> | null} [partSummaries]
+ * @property {Record<string, string> | null} [part_summaries]
+ * @property {string[] | null} [dataQualityWarnings]
+ * @property {string[] | null} [data_quality_warnings]
+ * @property {string | null} [disclaimer]
+ */
+
+/** @typedef {"fluencyCoherence" | "lexicalResource" | "grammaticalRangeAccuracy" | "pronunciation"} OfficialDimensionKey */
+/** @typedef {"fc" | "lr" | "gra" | "pronunciation"} LegacyDimensionKey */
+
+/** @type {ReadonlyArray<readonly [string, string, OfficialDimensionKey, LegacyDimensionKey]>} */
 const AXES = [
   ["FC", "流利度与连贯性", "fluencyCoherence", "fc"],
   ["LR", "词汇资源", "lexicalResource", "lr"],
@@ -5,10 +58,17 @@ const AXES = [
   ["P", "发音", "pronunciation", "pronunciation"],
 ];
 
+/**
+ * @param {number | null | undefined} band
+ * @returns {number | null}
+ */
 export function bandToRadarScore(band) {
   return Number.isFinite(band) ? Math.round(Number(band) / 9 * 100) : null;
 }
 
+/**
+ * @param {RawIeltsReport} [raw]
+ */
 export function normalizeIeltsReport(raw = {}) {
   const suppliedOfficial = raw.officialDimensions ?? {};
   const officialDimensions = Object.fromEntries(

@@ -2,6 +2,16 @@ import React from "react";
 import { normalizeIeltsReport } from "../../ielts/report-model.mjs";
 import FiveDimensionRadar from "./FiveDimensionRadar.jsx";
 
+/**
+ * @typedef {object} IeltsDimension
+ * @property {number | null} [band]
+ * @property {number | null} [confidence]
+ * @property {string[]} [positiveEvidence]
+ * @property {string[]} [limitingEvidence]
+ * @property {string | null} [unavailableReason]
+ */
+
+/** @type {ReadonlyArray<readonly [string, string, string, string]>} */
 const OFFICIAL_DIMENSIONS = [
   ["fluencyCoherence", "FC", "Fluency and Coherence", "流利度与连贯性"],
   ["lexicalResource", "LR", "Lexical Resource", "词汇资源"],
@@ -9,24 +19,39 @@ const OFFICIAL_DIMENSIONS = [
   ["pronunciation", "P", "Pronunciation", "发音"],
 ];
 
+/** @type {Record<string, string>} */
 const PART_LABELS = {
   part1: "Part 1",
   part2: "Part 2",
   part3: "Part 3",
 };
 
+/** @param {number | null | undefined} value */
 function percent(value) {
-  return Number.isFinite(value) ? `${Math.round(value * 100)}%` : "不可用";
+  return typeof value === "number" && Number.isFinite(value)
+    ? `${Math.round(value * 100)}%`
+    : "不可用";
 }
 
+/** @param {number | null | undefined} value */
 function band(value) {
-  return Number.isFinite(value) ? Number(value).toFixed(1) : "不可用";
+  return typeof value === "number" && Number.isFinite(value)
+    ? value.toFixed(1)
+    : "不可用";
 }
 
-function EvidenceList({ title, items = [], emptyLabel }) {
+/**
+ * @param {{
+ *   title: string,
+ *   items?: string[],
+ *   emptyLabel: string,
+ *   headingLevel?: 3 | 4,
+ * }} props
+ */
+function EvidenceList({ title, items = [], emptyLabel, headingLevel = 4 }) {
   return (
     <div className="ielts-evidence-group">
-      <h4>{title}</h4>
+      {headingLevel === 3 ? <h3>{title}</h3> : <h4>{title}</h4>}
       {items.length > 0 ? (
         <ul>
           {items.map((item, index) => <li key={`${item}-${index}`}>{item}</li>)}
@@ -38,6 +63,14 @@ function EvidenceList({ title, items = [], emptyLabel }) {
   );
 }
 
+/**
+ * @param {{
+ *   dimension: IeltsDimension,
+ *   code: string,
+ *   englishLabel: string,
+ *   chineseLabel: string,
+ * }} props
+ */
 function OfficialDimensionCard({ dimension, code, englishLabel, chineseLabel }) {
   const available = Number.isFinite(dimension?.band);
 
@@ -65,6 +98,13 @@ function OfficialDimensionCard({ dimension, code, englishLabel, chineseLabel }) 
   );
 }
 
+/**
+ * @param {{
+ *   report?: Parameters<typeof normalizeIeltsReport>[0],
+ *   onRestart?: () => void,
+ *   onRetry?: () => void,
+ * }} props
+ */
 export default function IeltsReportView({ report, onRestart, onRetry }) {
   const normalized = normalizeIeltsReport(report);
   const range = normalized.bandRange.filter(Number.isFinite);
@@ -127,11 +167,13 @@ export default function IeltsReportView({ report, onRestart, onRetry }) {
           title="正向证据"
           items={taskAchievement.positiveEvidence}
           emptyLabel={taskAvailable ? "暂无补充证据" : "不可用"}
+          headingLevel={3}
         />
         <EvidenceList
           title="限制因素"
           items={taskAchievement.limitingEvidence}
           emptyLabel={taskAvailable ? "暂无明显限制因素" : "不可用"}
+          headingLevel={3}
         />
       </section>
 

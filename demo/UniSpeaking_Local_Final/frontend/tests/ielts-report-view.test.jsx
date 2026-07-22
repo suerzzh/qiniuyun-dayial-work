@@ -87,6 +87,11 @@ describe("IeltsReportView", () => {
     expect(screen.getByText("一段发音证据置信度较低")).toBeInTheDocument();
     expect(screen.getByText(completeReport.disclaimer)).toBeInTheDocument();
 
+    const taskSection = screen.getByRole("region", { name: "任务完成度/互动回应" });
+    expect(within(taskSection).getByRole("heading", { name: "正向证据", level: 3 })).toBeInTheDocument();
+    const firstOfficialCard = within(officialSection).getAllByRole("article")[0];
+    expect(within(firstOfficialCard).getByRole("heading", { name: "正向证据", level: 4 })).toBeInTheDocument();
+
     fireEvent.click(screen.getByRole("button", { name: "重新测试" }));
     expect(onRestart).toHaveBeenCalledOnce();
   });
@@ -122,7 +127,9 @@ describe("IeltsReportView", () => {
 
     expect(screen.getByText("部分诊断")).toBeInTheDocument();
     expect(screen.getAllByText(/不可用/).length).toBeGreaterThan(0);
-    expect(screen.queryByText(/^0(?:\.0)?$/)).not.toBeInTheDocument();
+    expect(screen.queryByRole("heading", { name: /^Overall 0(?:\.0)?$/ })).not.toBeInTheDocument();
+    expect(screen.queryByText(/^Band 0(?:\.0)?$/)).not.toBeInTheDocument();
+    expect(screen.queryByText(/^0\s*\/\s*100$/)).not.toBeInTheDocument();
     expect(screen.getByRole("img", { name: /P 不可用.*TA 不可用/ })).toBeInTheDocument();
   });
 });
@@ -144,6 +151,22 @@ describe("FiveDimensionRadar", () => {
       />,
     );
 
+    expect(container.querySelector("[data-radar-polygon]")).not.toBeInTheDocument();
+  });
+
+  it("keeps canonical axes when an input dimension is omitted", () => {
+    const dimensionsWithoutPronunciation = completeReport.radarDimensions.filter(
+      (item) => item.code !== "P",
+    );
+    const { container } = render(
+      <FiveDimensionRadar dimensions={dimensionsWithoutPronunciation} complete />,
+    );
+
+    expect(screen.getByRole("img", {
+      name: /FC 72分；LR 67分；GRA 72分；P 不可用；TA 82分/,
+    })).toBeInTheDocument();
+    expect(container.querySelectorAll(".ielts-radar-grid line")).toHaveLength(5);
+    expect(container.querySelectorAll(".ielts-radar-labels text")).toHaveLength(5);
     expect(container.querySelector("[data-radar-polygon]")).not.toBeInTheDocument();
   });
 });

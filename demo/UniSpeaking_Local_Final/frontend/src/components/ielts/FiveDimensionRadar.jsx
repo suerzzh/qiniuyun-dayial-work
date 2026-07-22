@@ -1,10 +1,31 @@
 import React from "react";
 
+/**
+ * @typedef {object} RadarDimension
+ * @property {string} code
+ * @property {string} [label]
+ * @property {number | null} [score]
+ */
+
+/** @typedef {{ x: number, y: number }} RadarPoint */
+
 const CENTER = 160;
 const RADIUS = 105;
 const LABEL_RADIUS = 137;
 const GRID_LEVELS = [0.2, 0.4, 0.6, 0.8, 1];
+const CANONICAL_AXES = [
+  { code: "FC", label: "流利度与连贯性" },
+  { code: "LR", label: "词汇资源" },
+  { code: "GRA", label: "语法多样性与准确性" },
+  { code: "P", label: "发音" },
+  { code: "TA", label: "任务完成度/互动回应" },
+];
 
+/**
+ * @param {number} index
+ * @param {number} radius
+ * @returns {RadarPoint}
+ */
 function axisPoint(index, radius) {
   const angle = -Math.PI / 2 + index * (Math.PI * 2 / 5);
   return {
@@ -13,20 +34,36 @@ function axisPoint(index, radius) {
   };
 }
 
+/** @param {Array<RadarPoint | null>} points */
 function pointList(points) {
-  return points.map(({ x, y }) => `${x.toFixed(2)},${y.toFixed(2)}`).join(" ");
+  return points
+    .filter((point) => point !== null)
+    .map(({ x, y }) => `${x.toFixed(2)},${y.toFixed(2)}`)
+    .join(" ");
 }
 
+/** @param {number} x */
 function labelAnchor(x) {
   if (x < CENTER - 8) return "end";
   if (x > CENTER + 8) return "start";
   return "middle";
 }
 
+/** @param {{ dimensions?: RadarDimension[], complete?: boolean }} props */
 export default function FiveDimensionRadar({ dimensions = [], complete = false }) {
-  const fiveDimensions = dimensions.slice(0, 5);
+  const suppliedByCode = new Map(dimensions.map((item) => [item.code, item]));
+  const fiveDimensions = CANONICAL_AXES.map((axis) => {
+    const supplied = suppliedByCode.get(axis.code);
+    const suppliedScore = supplied?.score;
+    return {
+      ...axis,
+      ...supplied,
+      code: axis.code,
+      label: supplied?.label ?? axis.label,
+      score: Number.isFinite(suppliedScore) ? Number(suppliedScore) : null,
+    };
+  });
   const hasCompleteData = complete
-    && fiveDimensions.length === 5
     && fiveDimensions.every((item) => Number.isFinite(item.score));
   const accessibleScores = fiveDimensions.map((item) => (
     Number.isFinite(item.score)
@@ -37,8 +74,9 @@ export default function FiveDimensionRadar({ dimensions = [], complete = false }
 
   const axisPoints = fiveDimensions.map((_, index) => axisPoint(index, RADIUS));
   const dataPoints = fiveDimensions.map((item, index) => {
-    if (!Number.isFinite(item.score)) return null;
-    const score = Math.min(100, Math.max(0, item.score));
+    const itemScore = item.score;
+    if (!Number.isFinite(itemScore)) return null;
+    const score = Math.min(100, Math.max(0, Number(itemScore)));
     return axisPoint(index, RADIUS * score / 100);
   });
 
@@ -93,6 +131,7 @@ export default function FiveDimensionRadar({ dimensions = [], complete = false }
         {fiveDimensions.map((item, index) => {
           if (!Number.isFinite(item.score)) return null;
           const point = dataPoints[index];
+          if (!point) return null;
           return (
             <circle
               key={item.code}
