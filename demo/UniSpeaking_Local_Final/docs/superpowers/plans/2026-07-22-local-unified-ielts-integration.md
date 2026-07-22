@@ -543,6 +543,7 @@ Expected: requests contain no `apikey` header and WebSocket URLs use the Vite or
 - Create: `frontend/tests/ielts-report-view.test.jsx`
 - Modify: `frontend/package.json`
 - Modify: `frontend/package-lock.json`
+- Modify: `frontend/tsconfig.json`
 
 **Interfaces:**
 - Consumes: Java `IeltsReport` JSON.
@@ -554,7 +555,7 @@ Run:
 
 ```bash
 cd frontend
-npm install --save-dev vitest@^2.1.9 jsdom@^25.0.1 @testing-library/react@^16.1.0 @testing-library/jest-dom@^6.6.3
+npm install --save-dev vite@8.1.5 @vitejs/plugin-react@6.0.4 vitest@4.1.10 jsdom@29.1.1 @testing-library/react@16.3.2 @testing-library/jest-dom@7.0.0
 ```
 
 Set `test` to run both suites:
@@ -633,7 +634,7 @@ export function normalizeIeltsReport(raw = {}) {
 }
 ```
 
-The implementation must use `?? null`, never `|| 0`, for scores.
+The implementation must use `?? null`, never `|| 0`, for scores. Extend `tsconfig.json` so `src/ielts/**/*.mjs` and `src/components/ielts/**/*.jsx` are covered by `npm run typecheck`.
 
 - [ ] **Step 5: Write failing React report tests**
 
@@ -651,9 +652,9 @@ For partial data, assert the UI contains `部分诊断` and `不可用` and does
 
 - [ ] **Step 6: Implement accessible SVG radar and official cards**
 
-`FiveDimensionRadar` receives `{ dimensions, complete }`, calculates five fixed axis points, renders grid/spokes/labels, and renders a polygon only when all five scores are finite. It always exposes an `aria-label` containing each available score and each unavailable axis.
+`FiveDimensionRadar` receives `{ dimensions, complete }`, normalizes input against the fixed canonical codes `FC`, `LR`, `GRA`, `P`, and `TA`, calculates five fixed axis points even when an item is omitted, renders grid/spokes/labels, and renders a polygon only when all five scores are finite. It always exposes an `aria-label` containing each available score and each unavailable axis.
 
-`IeltsReportView` renders Overall, band range, confidence, four official cards, task-achievement evidence, Part summaries, warnings, disclaimer, and restart/retry actions. It labels the radar section `UniSpeaking 五维训练诊断` and displays `任务完成度/互动回应不属于 IELTS 官方评分项，也不参与 Overall`.
+`IeltsReportView` renders Overall, band range, confidence, four official cards, task-achievement evidence, Part summaries, warnings, disclaimer, and restart/retry actions. It labels the radar section `UniSpeaking 五维训练诊断` and displays `任务完成度/互动回应不属于 IELTS 官方评分项，也不参与 Overall`. Evidence heading levels must follow their containing section without skipping levels. Partial-report tests must explicitly reject `Overall 0`, `Band 0`, and `0 / 100` for unavailable values.
 
 - [ ] **Step 7: Run RED to GREEN and commit**
 
@@ -662,6 +663,7 @@ cd frontend
 npm test
 npm run lint
 npm run typecheck
+npm audit --audit-level=high
 git add package.json package-lock.json src/ielts/report-model.mjs src/components/ielts tests
 git commit -m "feat: render official IELTS report with five-dimension radar"
 ```
