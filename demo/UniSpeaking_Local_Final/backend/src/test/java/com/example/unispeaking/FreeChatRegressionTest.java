@@ -7,6 +7,7 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.http.HttpHeaders;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.util.ReflectionTestUtils;
@@ -38,6 +39,18 @@ class FreeChatRegressionTest {
                 .andExpect(jsonPath("$.qwenRealtimeConfigured").value(false))
                 .andExpect(jsonPath("$.qwenScoringConfigured").value(false))
                 .andExpect(jsonPath("$.xfyunConfigured").value(false));
+    }
+
+    @Test
+    void modelProxyAcceptsOnlyTheDocumentedLocalFrontendOrigins() throws Exception {
+        mvc.perform(get("/health").header(HttpHeaders.ORIGIN, "http://127.0.0.1:8080"))
+                .andExpect(status().isOk())
+                .andExpect(header().string(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN,
+                        "http://127.0.0.1:8080"));
+
+        mvc.perform(get("/health").header(HttpHeaders.ORIGIN, "https://attacker.example"))
+                .andExpect(status().isForbidden())
+                .andExpect(header().doesNotExist(HttpHeaders.ACCESS_CONTROL_ALLOW_ORIGIN));
     }
 
     @Test

@@ -173,6 +173,27 @@ test("environment example contains only the eight supported assignments", async 
   ]);
 });
 
+test("Java proxy stays loopback-only and trusts only the two local frontend origins", async () => {
+  const [properties, application, scoringController, ieltsController, websocketConfig] =
+    await Promise.all([
+      readFile(projectPath("backend", "src", "main", "resources", "application.properties"), "utf8"),
+      readFile(projectPath("backend", "src", "main", "java", "com", "example", "unispeaking", "UnispeakingApplication.java"), "utf8"),
+      readFile(projectPath("backend", "src", "main", "java", "com", "example", "unispeaking", "controller", "ScoringController.java"), "utf8"),
+      readFile(projectPath("backend", "src", "main", "java", "com", "example", "unispeaking", "controller", "IeltsAttemptController.java"), "utf8"),
+      readFile(projectPath("backend", "src", "main", "java", "com", "example", "unispeaking", "config", "ScoringWebSocketConfig.java"), "utf8"),
+    ]);
+
+  assert.match(properties, /^server\.address=127\.0\.0\.1$/m);
+  for (const controller of [scoringController, ieltsController]) {
+    assert.match(controller, /http:\/\/127\.0\.0\.1:8080/);
+    assert.match(controller, /http:\/\/localhost:8080/);
+    assert.doesNotMatch(controller, /origins\s*=\s*(?:\{\s*)?"\*"/);
+  }
+  assert.match(websocketConfig, /setAllowedOrigins\([\s\S]*?http:\/\/127\.0\.0\.1:8080[\s\S]*?http:\/\/localhost:8080[\s\S]*?\)/);
+  assert.doesNotMatch(websocketConfig, /setAllowedOriginPatterns\("\*"\)/);
+  assert.doesNotMatch(application, /\.vscode|Paths\.get\("\.\.\/\.env"\)|loadDotEnv/);
+});
+
 test("frontend declares the supported Node runtime in package metadata", async () => {
   const expected = "^20.19.0 || ^22.13.0 || >=24.0.0";
   const packageJson = JSON.parse(await readFile(frontendPath("package.json"), "utf8"));

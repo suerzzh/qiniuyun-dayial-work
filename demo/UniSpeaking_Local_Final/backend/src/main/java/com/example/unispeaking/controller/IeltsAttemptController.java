@@ -14,7 +14,7 @@ import java.util.concurrent.CompletableFuture;
 
 @RestController
 @RequestMapping("/api/ielts/attempts")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = {"http://127.0.0.1:8080", "http://localhost:8080"})
 public class IeltsAttemptController {
     private final IeltsAttemptRegistry registry;
     private final IeltsScoringOrchestrator orchestrator;

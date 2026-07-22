@@ -20,7 +20,9 @@ public class ScoringWebSocketConfig implements WebSocketConfigurer {
 
     @Override
     public void registerWebSocketHandlers(WebSocketHandlerRegistry registry) {
-        registry.addHandler(handler, "/api/scoring-stream").setAllowedOriginPatterns("*");
-        registry.addHandler(ieltsHandler, "/api/ielts/scoring-stream").setAllowedOriginPatterns("*");
+        registry.addHandler(handler, "/api/scoring-stream")
+                .setAllowedOrigins("http://127.0.0.1:8080", "http://localhost:8080");
+        registry.addHandler(ieltsHandler, "/api/ielts/scoring-stream")
+                .setAllowedOrigins("http://127.0.0.1:8080", "http://localhost:8080");
     }
 }
