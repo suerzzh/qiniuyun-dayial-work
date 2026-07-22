@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import React from "react";
 
 const HEALTH_LABEL = {
@@ -8,8 +6,24 @@ const HEALTH_LABEL = {
   unavailable: "不可用",
 };
 
+/** @typedef {"checking" | "ready" | "unavailable"} ResourceHealth */
+/** @param {ResourceHealth | undefined} status */
+function healthLabel(status) {
+  return status ? HEALTH_LABEL[status] : "检查中";
+}
+/**
+ * @param {{
+ *   selection?: { mode?: string, selectedPart?: string | null } | null,
+ *   preflight?: { recordingEnabled?: boolean, captionsEnabled?: boolean, acceleratedDemo?: boolean } | null,
+ *   serviceHealth?: { status?: string, service?: ResourceHealth, microphone?: ResourceHealth, messages?: string[] } | null,
+ *   onChange: (patch: Record<string, boolean>) => unknown,
+ *   onStart: () => unknown,
+ *   onExit: () => unknown,
+ * }} props
+ */
 export default function IeltsPreflight({ selection, preflight, serviceHealth, onChange, onStart, onExit }) {
   const fullMock = selection?.mode === "full_mock";
+  const healthMessages = serviceHealth?.messages || [];
   const startBlocked = serviceHealth?.status !== "ready"
     || serviceHealth?.service !== "ready"
     || serviceHealth?.microphone !== "ready";
@@ -24,11 +38,11 @@ export default function IeltsPreflight({ selection, preflight, serviceHealth, on
 
       <section aria-labelledby="ielts-device-health">
         <h2 id="ielts-device-health">设备与服务</h2>
-        <p>麦克风：{HEALTH_LABEL[serviceHealth?.microphone] || "检查中"}</p>
-        <p>本地服务：{serviceHealth?.service === "ready" ? "已连接" : HEALTH_LABEL[serviceHealth?.service] || "检查中"}</p>
-        {serviceHealth?.messages?.length > 0 && (
+        <p>麦克风：{healthLabel(serviceHealth?.microphone)}</p>
+        <p>本地服务：{serviceHealth?.service === "ready" ? "已连接" : healthLabel(serviceHealth?.service)}</p>
+        {healthMessages.length > 0 && (
           <ul aria-label="能力检查提示">
-            {serviceHealth.messages.map((message) => <li key={message}>{message}</li>)}
+            {healthMessages.map((message) => <li key={message}>{message}</li>)}
           </ul>
         )}
       </section>

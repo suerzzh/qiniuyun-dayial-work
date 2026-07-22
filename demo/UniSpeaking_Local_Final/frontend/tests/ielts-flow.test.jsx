@@ -211,22 +211,48 @@ describe("IELTS React flow", () => {
     expect(session.actions.restart).toHaveBeenCalledOnce();
   });
 
-  it.each([
-    [{ loading: true }, /正在/],
-    [{ error: "麦克风连接失败" }, /麦克风连接失败/],
-  ])("keeps retry and exit actions in a recoverable %s state", (patch, message) => {
+  it("keeps retry and exit actions in a recoverable error state", () => {
     const session = fakeSession({
       screen: "preflight",
       selection: { mode: "full_mock", selectedPart: null },
-      ...patch,
+      error: "麦克风连接失败",
     });
     mocks.useSession.mockReturnValue(session);
     render(<IeltsView />);
 
-    expect(screen.getByText(message)).toBeInTheDocument();
+    expect(screen.getByText("麦克风连接失败")).toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "重试" }));
     fireEvent.click(screen.getByRole("button", { name: "退出" }));
     expect(session.actions.start).toHaveBeenCalledOnce();
     expect(session.actions.exit).toHaveBeenCalledOnce();
+  });
+
+  it("allows exit but never exposes a second start while loading", () => {
+    const session = fakeSession({
+      screen: "preflight",
+      selection: { mode: "full_mock", selectedPart: null },
+      loading: true,
+    });
+    mocks.useSession.mockReturnValue(session);
+    render(<IeltsView />);
+
+    expect(screen.getByText(/正在/)).toBeInTheDocument();
+    expect(screen.queryByRole("button", { name: "重试" })).not.toBeInTheDocument();
+    fireEvent.click(screen.getByRole("button", { name: "退出" }));
+    expect(session.actions.start).not.toHaveBeenCalled();
+    expect(session.actions.exit).toHaveBeenCalledOnce();
+  });
+
+  it("uses safe restart/home when exiting report recovery", () => {
+    const session = fakeSession({
+      screen: "report",
+      error: "报告获取失败",
+    });
+    mocks.useSession.mockReturnValue(session);
+    render(<IeltsView />);
+
+    fireEvent.click(screen.getByRole("button", { name: "退出" }));
+    expect(session.actions.restart).toHaveBeenCalledOnce();
+    expect(session.actions.exit).not.toHaveBeenCalled();
   });
 });

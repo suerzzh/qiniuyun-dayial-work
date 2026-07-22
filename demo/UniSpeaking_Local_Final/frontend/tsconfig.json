@@ -16,6 +16,7 @@
     "src/router.mjs",
     "src/ielts/report-model.mjs",
     "src/components/ielts/**/*.jsx",
+    "src/views/IeltsView.jsx",
     "src/realtime/**/*.mjs",
     "src/services/**/*.mjs",
     "src/hooks/**/*.js"

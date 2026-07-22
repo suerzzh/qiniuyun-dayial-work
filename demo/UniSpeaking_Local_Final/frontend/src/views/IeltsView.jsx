@@ -1,5 +1,3 @@
-// @ts-nocheck
-
 import React from "react";
 import IeltsExamStage from "../components/ielts/IeltsExamStage.jsx";
 import IeltsHome from "../components/ielts/IeltsHome.jsx";
@@ -7,6 +5,7 @@ import IeltsPreflight from "../components/ielts/IeltsPreflight.jsx";
 import IeltsReportView from "../components/ielts/IeltsReportView.jsx";
 import { useIeltsSession } from "../hooks/useIeltsSession.js";
 
+/** @param {string} screen @param {ReturnType<typeof useIeltsSession>["actions"]} actions */
 function retryForScreen(screen, actions) {
   if (screen === "report") return actions.retryReport;
   if (screen === "session") return actions.retry;
@@ -14,11 +13,17 @@ function retryForScreen(screen, actions) {
   return actions.restart;
 }
 
+/** @param {string} screen @param {ReturnType<typeof useIeltsSession>["actions"]} actions */
+function exitForScreen(screen, actions) {
+  return screen === "report" ? actions.restart : actions.exit;
+}
+
 export default function IeltsView() {
   const { snapshot, actions, serviceHealth } = useIeltsSession();
 
   if (snapshot.loading || snapshot.error) {
     const retry = retryForScreen(snapshot.screen, actions);
+    const exit = exitForScreen(snapshot.screen, actions);
     return (
       <main className="ielts-recovery-state">
         {snapshot.error ? (
@@ -33,8 +38,8 @@ export default function IeltsView() {
           </div>
         )}
         <div>
-          <button type="button" onClick={() => void retry()}>重试</button>
-          <button type="button" onClick={actions.exit}>退出</button>
+          {snapshot.error && <button type="button" onClick={() => void retry()}>重试</button>}
+          <button type="button" onClick={() => void exit()}>退出</button>
         </div>
       </main>
     );

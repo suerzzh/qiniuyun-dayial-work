@@ -9,6 +9,16 @@ import { useIeltsSession } from "../src/hooks/useIeltsSession.js";
 
 afterEach(cleanup);
 
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
+
 function createFixture({ attemptId = "attempt-existing" } = {}) {
   const runtime = {
     stop: vi.fn(async () => {}),
@@ -19,6 +29,7 @@ function createFixture({ attemptId = "attempt-existing" } = {}) {
     report: vi.fn(async (id) => ({ attempt_id: id, scoring_status: "COMPLETE" })),
     finalize: vi.fn(async () => {}),
     createAttempt: vi.fn(async () => ({ attempt_id: "attempt-new" })),
+    abandon: vi.fn(async () => {}),
   };
   const streamer = { stop: vi.fn(async () => {}) };
   const controller = {
@@ -40,6 +51,9 @@ function createFixture({ attemptId = "attempt-existing" } = {}) {
     exit: vi.fn(),
     restart: vi.fn(),
   };
+  runtime.abandon = vi.fn(async () => {
+    await api.abandon(runtime.getAttemptId());
+  });
 
   const options = {
     createApi: vi.fn(() => api),
@@ -137,5 +151,124 @@ describe("useIeltsSession resource ownership", () => {
       exam: { ...answering.exam, currentItemIndex: 1 },
     }));
     expect(fixture.runtime.startAnswer).toHaveBeenCalledTimes(2);
+  });
+
+  it("shares one in-flight controller start across repeated start actions", async () => {
+    const fixture = createFixture();
+    const pendingStart = deferred();
+    fixture.controller.start.mockReturnValue(pendingStart.promise);
+    const { result } = renderHook(() => useIeltsSession(fixture.options));
+
+    let first;
+    let second;
+    act(() => {
+      first = result.current.actions.start();
+      second = result.current.actions.start();
+    });
+
+    expect(first).toBe(second);
+    expect(fixture.controller.start).toHaveBeenCalledTimes(1);
+
+    pendingStart.resolve("started");
+    await act(async () => expect(await first).toBe("started"));
+  });
+
+  it("tears down again after an unresolved start settles following unmount", async () => {
+    const fixture = createFixture();
+    const pendingStart = deferred();
+    fixture.controller.start.mockReturnValue(pendingStart.promise);
+    const rendered = renderHook(() => useIeltsSession(fixture.options));
+
+    let starting;
+    act(() => { starting = rendered.result.current.actions.start(); });
+    rendered.unmount();
+
+    await waitFor(() => {
+      expect(fixture.controller.dispose).toHaveBeenCalledTimes(1);
+      expect(fixture.runtime.stop).toHaveBeenCalledTimes(1);
+    });
+    expect(fixture.runtime.abandon).not.toHaveBeenCalled();
+
+    pendingStart.resolve("started-after-unmount");
+    await starting;
+
+    await waitFor(() => {
+      expect(fixture.runtime.abandon).toHaveBeenCalledTimes(1);
+      expect(fixture.runtime.stop).toHaveBeenCalledTimes(2);
+    });
+    expect(fixture.api.abandon).toHaveBeenCalledWith("attempt-existing");
+  });
+
+  it("awaits old Attempt and transport teardown before returning home", async () => {
+    const fixture = createFixture();
+    const teardown = deferred();
+    fixture.runtime.abandon.mockImplementation(async () => {
+      await fixture.api.abandon("attempt-existing");
+      await teardown.promise;
+    });
+    const { result } = renderHook(() => useIeltsSession(fixture.options));
+
+    let restarting;
+    act(() => { restarting = result.current.actions.restart(); });
+
+    expect(fixture.api.abandon).toHaveBeenCalledWith("attempt-existing");
+    expect(fixture.controller.restart).not.toHaveBeenCalled();
+
+    teardown.resolve();
+    await act(async () => { await restarting; });
+
+    expect(fixture.runtime.stop).toHaveBeenCalledTimes(1);
+    expect(fixture.controller.restart).toHaveBeenCalledTimes(1);
+    expect(fixture.controller.restart.mock.invocationCallOrder[0])
+      .toBeGreaterThan(fixture.runtime.stop.mock.invocationCallOrder[0]);
+  });
+
+  it("does not publish a report continuation after unmount cleanup begins", async () => {
+    const fixture = createFixture();
+    const pendingReport = deferred();
+    const reportWasRead = vi.fn();
+    fixture.api.report.mockReturnValue(pendingReport.promise);
+    const rendered = renderHook(() => useIeltsSession(fixture.options));
+
+    let retrying;
+    act(() => { retrying = rendered.result.current.actions.retryReport(); });
+    expect(rendered.result.current.snapshot.loading).toBe(true);
+
+    pendingReport.resolve({
+      attempt_id: "attempt-existing",
+      get scoring_status() {
+        reportWasRead();
+        return "COMPLETE";
+      },
+    });
+    rendered.unmount();
+    await retrying;
+
+    expect(reportWasRead).not.toHaveBeenCalled();
+  });
+
+  it("invalidates an older report continuation when safe restart returns home", async () => {
+    const fixture = createFixture();
+    const pendingReport = deferred();
+    const reportWasRead = vi.fn();
+    fixture.api.report.mockReturnValue(pendingReport.promise);
+    const { result } = renderHook(() => useIeltsSession(fixture.options));
+
+    let retrying;
+    act(() => { retrying = result.current.actions.retryReport(); });
+    await act(async () => { await result.current.actions.restart(); });
+
+    await act(async () => {
+      pendingReport.resolve({
+        attempt_id: "attempt-existing",
+        get scoring_status() {
+          reportWasRead();
+          return "COMPLETE";
+        },
+      });
+      await retrying;
+    });
+
+    expect(reportWasRead).not.toHaveBeenCalled();
   });
 });

@@ -1,9 +1,24 @@
-// @ts-nocheck
-
 import React from "react";
 
+/** @typedef {{ cueId?: string, text: string }} CuePoint */
+/**
+ * @param {{
+ *   card?: {
+ *     cardId?: string,
+ *     title?: string,
+ *     topicSentence?: string,
+ *     cuePoints?: CuePoint[],
+ *     youShouldSay?: string[],
+ *   } | null,
+ *   notes?: string,
+ *   notesEditable: boolean,
+ *   onNotesChange: (notes: string) => unknown,
+ * }} props
+ */
 export default function IeltsPart2Card({ card, notes, notesEditable, onNotesChange }) {
-  const cues = card?.cuePoints || (card?.youShouldSay || []).map((text) => ({ text }));
+  const cues = /** @type {CuePoint[]} */ (
+    card?.cuePoints || (card?.youShouldSay || []).map((text) => ({ text }))
+  );
 
   return (
     <section className="ielts-part2-card" aria-label="Part 2 题卡">

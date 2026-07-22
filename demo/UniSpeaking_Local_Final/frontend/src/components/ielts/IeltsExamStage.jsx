@@ -1,27 +1,46 @@
-// @ts-nocheck
-
 import React from "react";
 import IeltsPart2Card from "./IeltsPart2Card.jsx";
 
-const STATUS_LABELS = {
+/** @typedef {{ cueId?: string, text: string }} CuePoint */
+/** @typedef {{ renderedText?: string, topicSentence?: string }} Question */
+/** @typedef {{ role?: string, text: string, at?: string }} Caption */
+/**
+ * @typedef {object} ExamStageSnapshot
+ * @property {{ status?: string, currentPart?: string, currentItemIndex?: number, attemptNo?: number, mode?: string, captionsEnabled?: boolean } | null} [exam]
+ * @property {{ parts?: {
+ *   part1?: { questions?: Question[] } | null,
+ *   part2?: { cardId?: string, title?: string, topicSentence?: string, cuePoints?: CuePoint[], youShouldSay?: string[] } | null,
+ *   part3?: { questions?: Question[] } | null,
+ * } } | null} [paper]
+ * @property {{ kind?: string, remainingSeconds?: number } | null} [timer]
+ * @property {{ elapsedSeconds?: number } | null} [part3Timer]
+ * @property {string} [notes]
+ * @property {boolean} [notesLocked]
+ * @property {string} [liveTranscript]
+ * @property {Caption[]} [captions]
+ */
+
+const STATUS_LABELS = /** @type {Record<string, string>} */ ({
   opening: "考试即将开始",
   introduction: "自我介绍",
   part1_answering: "Part 1 回答中",
   part2_preparing: "Part 2 准备中",
   part2_answering: "Part 2 长回答中",
   part3_answering: "Part 3 回答中",
-};
+});
 
+/** @param {ExamStageSnapshot} snapshot @returns {Question | null} */
 function currentItem(snapshot) {
   const { exam, paper } = snapshot;
   if (!exam || !paper) return null;
   if (exam.status === "introduction") return { renderedText: "Please introduce yourself." };
-  if (exam.status === "part1_answering") return paper.parts?.part1?.questions?.[exam.currentItemIndex] || null;
+  if (exam.status === "part1_answering") return paper.parts?.part1?.questions?.[exam.currentItemIndex ?? 0] || null;
   if (exam.status === "part2_preparing" || exam.status === "part2_answering") return paper.parts?.part2 || null;
-  if (exam.status === "part3_answering") return paper.parts?.part3?.questions?.[exam.currentItemIndex] || null;
+  if (exam.status === "part3_answering") return paper.parts?.part3?.questions?.[exam.currentItemIndex ?? 0] || null;
   return null;
 }
 
+/** @param {ExamStageSnapshot} snapshot */
 function questionCount(snapshot) {
   const part = snapshot.exam?.currentPart;
   if (part === "part1") return snapshot.paper?.parts?.part1?.questions?.length || 0;
@@ -29,12 +48,23 @@ function questionCount(snapshot) {
   return part === "part2" ? 1 : 0;
 }
 
+/**
+ * @param {{
+ *   snapshot: ExamStageSnapshot,
+ *   onSubmitAnswer: (text?: string, reason?: string) => unknown,
+ *   onUpdateNotes: (notes: string) => unknown,
+ *   onToggleCaptions: () => unknown,
+ *   onRetry: () => unknown,
+ *   onNext: () => unknown,
+ *   onExit: () => unknown,
+ * }} props
+ */
 export default function IeltsExamStage({ snapshot, onSubmitAnswer, onUpdateNotes, onToggleCaptions, onRetry, onNext, onExit }) {
   const exam = snapshot.exam;
   const item = currentItem(snapshot);
   const status = exam?.status;
   const part2Active = status === "part2_preparing" || status === "part2_answering";
-  const answering = new Set(["introduction", "part1_answering", "part2_answering", "part3_answering"]).has(status);
+  const answering = new Set(["introduction", "part1_answering", "part2_answering", "part3_answering"]).has(status || "");
   const practiceAnswering = exam?.mode === "practice_part" && answering && status !== "introduction";
   const count = questionCount(snapshot);
   const index = count > 0 ? Math.min((exam?.currentItemIndex || 0) + 1, count) : 0;
@@ -43,7 +73,7 @@ export default function IeltsExamStage({ snapshot, onSubmitAnswer, onUpdateNotes
     <main className="ielts-exam-stage">
       <header>
         <p className="eyebrow">IELTS Speaking</p>
-        <h1>{STATUS_LABELS[status] || "考试进行中"}</h1>
+        <h1>{STATUS_LABELS[status || ""] || "考试进行中"}</h1>
         {exam?.currentPart && (
           <p>{exam.currentPart.replace("part", "Part ")}{count ? ` · ${index} / ${count}` : ""}</p>
         )}

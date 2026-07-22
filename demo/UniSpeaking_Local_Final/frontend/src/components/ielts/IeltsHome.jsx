@@ -1,7 +1,6 @@
-// @ts-nocheck
-
 import React from "react";
 
+/** @param {{ onSelectMode: (mode: string, selectedPart?: string) => unknown }} props */
 export default function IeltsHome({ onSelectMode }) {
   return (
     <main className="ielts-home">
