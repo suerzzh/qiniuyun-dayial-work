@@ -681,6 +681,10 @@ git commit -m "feat: render official IELTS report with five-dimension radar"
 - Create: `frontend/src/components/ielts/IeltsPart2Card.jsx`
 - Create: `frontend/tests/use-ielts-session.test.jsx`
 - Create: `frontend/tests/ielts-flow.test.jsx`
+- Modify: `frontend/src/ielts/demo-controller.mjs`
+- Modify: `frontend/src/ielts/ielts-session-runtime.mjs`
+- Modify: `frontend/tests/ielts-demo-controller.test.mjs`
+- Modify: `frontend/tests/ielts-session-runtime.test.mjs`
 - Modify: `frontend/tsconfig.json`
 
 **Interfaces:**
@@ -721,6 +725,8 @@ return () => {
 ```
 
 Track the in-flight start promise. On unmount, immediately stop publishing, request disposal, and attach a final teardown to any pending start so resources acquired after the first cleanup are also closed. Loading UI must not expose a second Start/Retry action. `retryReport` must require both `acceptingChanges` and `!disposed` before every state update. Report recovery exits through the safe restart/home action rather than the terminal exam `exit` transition.
+
+Make controller disposal return/await its runtime stop promise so Hook cleanup is serialized rather than overlapping `stop` and `abandon`. Perform server Attempt abandonment/deletion separately after local disposal. Runtime `finalize()` must capture the current Attempt ID in an immutable local before its first await and use that ID for finalize/report polling. The demo controller must fence finalize callbacks with a session generation so an old report cannot mutate or publish a restarted/new session. Add real controller/runtime regression tests for deferred finalize → restart → new start, in addition to Hook mocks. Loading-state Exit must always use the teardown-aware restart path.
 
 Remove `@ts-nocheck` from all Task 7 production files, include them in `tsconfig.json`, and resolve strict `checkJs` errors with focused JSDoc types rather than weakening compiler options.
 
