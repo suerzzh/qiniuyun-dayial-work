@@ -2,6 +2,110 @@ import test from "node:test";
 import assert from "node:assert/strict";
 import { createIeltsSessionRuntime } from "../src/ielts/ielts-session-runtime.mjs";
 
+const flush = () => new Promise((resolve) => setImmediate(resolve));
+
+function transportHarness({ channel, peer, exchangeSdp, createAudio = () => null, runtimeOptions = {} } = {}) {
+  const cleanup = { trackStops: 0, channelCloses: 0, peerCloses: 0, streamerStops: 0 };
+  const track = { id: "mic", stop() { cleanup.trackStops += 1; } };
+  const stream = { getAudioTracks: () => [track], getTracks: () => [track] };
+  const activeChannel = channel || {
+    readyState: "open", send() {}, close() { cleanup.channelCloses += 1; },
+  };
+  const activePeer = {
+    iceGatheringState: "complete",
+    addTrack() {},
+    createDataChannel: () => activeChannel,
+    createOffer: async () => ({ type: "offer", sdp: "offer" }),
+    async setLocalDescription(offer) { this.localDescription = offer; },
+    setRemoteDescription: async () => {},
+    close() { cleanup.peerCloses += 1; },
+    ...peer,
+  };
+  const runtime = createIeltsSessionRuntime({
+    api: {
+      createAttempt: async () => ({ attempt_id: "att-transport", scoring_ws_url: "/ws", realtime_session_config: {} }),
+      exchangeSdp: exchangeSdp || (async () => "answer"),
+    },
+    streamer: {
+      attach: async () => {}, control() {},
+      async stop() { cleanup.streamerStops += 1; },
+    },
+    mediaDevices: { getUserMedia: async () => stream },
+    createPeerConnection: () => activePeer,
+    createAudio,
+    ...runtimeOptions,
+  });
+  return { runtime, cleanup, track, stream, channel: activeChannel, peer: activePeer };
+}
+
+test("IELTS transport waits for ICE gathering before exchanging SDP", async () => {
+  let exchangeCalls = 0;
+  const fixture = transportHarness({
+    peer: { iceGatheringState: "gathering" },
+    exchangeSdp: async () => { exchangeCalls += 1; return "answer"; },
+  });
+  const started = fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} });
+  await flush();
+  assert.equal(exchangeCalls, 0);
+  fixture.peer.iceGatheringState = "complete";
+  fixture.peer.onicegatheringstatechange();
+  await started;
+  assert.equal(exchangeCalls, 1);
+});
+
+test("IELTS transport rejects when the DataChannel reports an opening error", async () => {
+  let errorHandler = null;
+  const channel = {
+    readyState: "connecting", send() {}, close() {},
+    set onerror(handler) { errorHandler = handler; queueMicrotask(() => errorHandler()); },
+    get onerror() { return errorHandler; },
+  };
+  const fixture = transportHarness({ channel });
+  await assert.rejects(
+    fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} }),
+    /实时通道连接失败/,
+  );
+});
+
+test("IELTS transport rejects when the DataChannel opening deadline expires", async () => {
+  const channel = { readyState: "connecting", send() {}, close() {} };
+  const fixture = transportHarness({
+    channel,
+    runtimeOptions: {
+      transportTimeoutMs: 25,
+      scheduleTransportTimeout(callback) { queueMicrotask(callback); return 1; },
+      cancelTransportTimeout() {},
+    },
+  });
+  await assert.rejects(
+    fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} }),
+    /实时通道连接超时/,
+  );
+});
+
+test("IELTS transport releases media, PCM, channel, peer and audio after startup failure", async () => {
+  const audio = { srcObject: null, pauses: 0, play: async () => {}, pause() { this.pauses += 1; } };
+  const fixture = transportHarness({
+    createAudio: () => audio,
+    peer: {
+      async setLocalDescription(offer) {
+        this.localDescription = offer;
+        this.ontrack({ streams: [{ getAudioTracks: () => [{}] }] });
+      },
+    },
+    exchangeSdp: async () => { throw new Error("SDP exchange failed"); },
+  });
+  await assert.rejects(
+    fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} }),
+    /SDP exchange failed/,
+  );
+  assert.deepEqual(fixture.cleanup, {
+    trackStops: 1, channelCloses: 1, peerCloses: 1, streamerStops: 1,
+  });
+  assert.equal(audio.pauses, 1);
+  assert.equal(audio.srcObject, null);
+});
+
 test("IELTS runtime authorizes one microphone stream and feeds it to Realtime and PCM", async () => {
   const stream = { getAudioTracks: () => [{ id: "mic" }], getTracks: () => [{ stop() {} }] };
   let permissionCalls = 0;

@@ -2,12 +2,16 @@ import { createExaminerPromptCatalog } from "./examiner-prompt-catalog.mjs";
 
 const id = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-function createIeltsRealtimeBridge({ api, mediaDevices, createPeerConnection, createAudio, onEvent, onMediaStream }) {
+function createIeltsRealtimeBridge({
+  api, mediaDevices, createPeerConnection, createAudio, onEvent, onMediaStream,
+  transportTimeoutMs, scheduleTransportTimeout, cancelTransportTimeout,
+}) {
   let sessionId = null;
   let sessionConfig = null;
   let peer = null;
   let channel = null;
   let stream = null;
+  let audio = null;
   const sendEvent = (event) => {
     if (!channel || channel.readyState !== "open") throw new Error("实时通道尚未连接");
     channel.send(JSON.stringify(event));
@@ -21,43 +25,90 @@ function createIeltsRealtimeBridge({ api, mediaDevices, createPeerConnection, cr
       sendEvent({ event_id: id("config"), type: "session.update", session: sessionConfig });
     }
   };
+  const waitForIceGathering = async (activePeer) => {
+    if (activePeer.iceGatheringState === "complete") return;
+    await new Promise((resolve, reject) => {
+      const timer = scheduleTransportTimeout(() => reject(new Error("ICE 候选收集超时")), transportTimeoutMs);
+      const previous = activePeer.onicegatheringstatechange;
+      activePeer.onicegatheringstatechange = () => {
+        previous?.();
+        if (activePeer.iceGatheringState === "complete") {
+          cancelTransportTimeout(timer);
+          resolve();
+        }
+      };
+    });
+  };
+  const waitForChannel = async (activeChannel) => {
+    if (activeChannel.readyState === "open") return;
+    await new Promise((resolve, reject) => {
+      const timer = scheduleTransportTimeout(
+        () => reject(new Error("实时通道连接超时")), transportTimeoutMs,
+      );
+      activeChannel.onopen = () => {
+        cancelTransportTimeout(timer);
+        resolve();
+      };
+      activeChannel.onerror = () => {
+        cancelTransportTimeout(timer);
+        reject(new Error("实时通道连接失败"));
+      };
+    });
+  };
+  const stop = async () => {
+    const closingChannel = channel;
+    const closingPeer = peer;
+    const closingStream = stream;
+    const closingAudio = audio;
+    channel = null; peer = null; stream = null; audio = null;
+    sessionId = null; sessionConfig = null;
+    try { closingChannel?.close?.(); } catch { /* already closed */ }
+    for (const track of closingStream?.getTracks?.() || []) track.stop();
+    if (closingAudio) {
+      closingAudio.pause?.();
+      closingAudio.srcObject = null;
+    }
+    try { closingPeer?.close?.(); } catch { /* already closed */ }
+  };
   return {
     async start() {
       if (peer) return { sessionId };
-      const backend = await api.createSession({});
-      sessionId = backend.session_id;
-      sessionConfig = backend.session_config || {};
-      peer = createPeerConnection();
-      stream = await mediaDevices.getUserMedia({ audio: true });
-      await onMediaStream(stream);
-      for (const track of stream.getAudioTracks()) peer.addTrack(track, stream);
-      peer.ontrack = (event) => {
-        const audio = createAudio();
-        if (!audio) return;
-        audio.autoplay = true;
-        audio.srcObject = event.streams?.[0] || null;
-        audio.play?.().catch(() => {});
-      };
-      channel = peer.createDataChannel("oai-events");
-      channel.onmessage = (message) => handleMessage(message.data);
-      peer.ondatachannel = ({ channel: incoming }) => { incoming.onmessage = (message) => handleMessage(message.data); };
-      const offer = await peer.createOffer();
-      await peer.setLocalDescription(offer);
-      const answerSdp = await api.exchangeSdp(sessionId, peer.localDescription?.sdp || offer.sdp);
-      await peer.setRemoteDescription({ type: "answer", sdp: answerSdp });
-      return { sessionId, history: backend.history || [] };
+      try {
+        const backend = await api.createSession({});
+        sessionId = backend.session_id;
+        sessionConfig = backend.session_config || {};
+        peer = createPeerConnection();
+        stream = await mediaDevices.getUserMedia({ audio: true });
+        await onMediaStream(stream);
+        for (const track of stream.getAudioTracks()) peer.addTrack(track, stream);
+        peer.ontrack = (event) => {
+          audio = createAudio();
+          if (!audio) return;
+          audio.autoplay = true;
+          audio.srcObject = event.streams?.[0] || null;
+          audio.play?.().catch(() => {});
+        };
+        channel = peer.createDataChannel("oai-events");
+        channel.onmessage = (message) => handleMessage(message.data);
+        peer.ondatachannel = ({ channel: incoming }) => { incoming.onmessage = (message) => handleMessage(message.data); };
+        const offer = await peer.createOffer();
+        await peer.setLocalDescription(offer);
+        await waitForIceGathering(peer);
+        const answerSdp = await api.exchangeSdp(sessionId, peer.localDescription?.sdp || offer.sdp);
+        await peer.setRemoteDescription({ type: "answer", sdp: answerSdp });
+        await waitForChannel(channel);
+        return { sessionId, history: backend.history || [] };
+      } catch (error) {
+        await stop();
+        throw error;
+      }
     },
     sendEvent,
     setMuted(value) {
       for (const track of stream?.getAudioTracks?.() || []) track.enabled = !value;
       return Boolean(value);
     },
-    async stop() {
-      channel?.close?.();
-      for (const track of stream?.getTracks?.() || []) track.stop();
-      peer?.close?.();
-      channel = null; stream = null; peer = null; sessionId = null; sessionConfig = null;
-    },
+    stop,
   };
 }
 
@@ -67,6 +118,9 @@ export function createIeltsSessionRuntime({
   examinerResponseTimeoutMs = 30_000,
   scheduleTimeout = (callback, ms) => globalThis.setTimeout(callback, ms),
   cancelTimeout = (timerId) => globalThis.clearTimeout(timerId),
+  transportTimeoutMs = 10_000,
+  scheduleTransportTimeout = (callback, ms) => globalThis.setTimeout(callback, ms),
+  cancelTransportTimeout = (timerId) => globalThis.clearTimeout(timerId),
 }) {
   let attempt = null;
   let activeTurn = null;
@@ -150,6 +204,7 @@ export function createIeltsSessionRuntime({
       await streamer.attach(stream, wsUrl);
       scoringEvent("stream.start", {});
     },
+    transportTimeoutMs, scheduleTransportTimeout, cancelTransportTimeout,
     onEvent(providerEvent) {
       if (providerEvent.type === "session.updated") {
         realtimeConfigured = true;
@@ -222,7 +277,12 @@ export function createIeltsSessionRuntime({
       pendingExaminerEvents.length = 0;
       clearExaminerRequests();
       attempt = await api.createAttempt({ mode, paper_snapshot: paperSnapshot, client_exam_state_version: 1 });
-      await realtime.start();
+      try {
+        await realtime.start();
+      } catch (error) {
+        await streamer.stop();
+        throw error;
+      }
       return attempt;
     },
     examinerInstruction(text, onDone) {
