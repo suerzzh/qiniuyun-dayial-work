@@ -54,6 +54,32 @@ group_alive() {
   kill -0 -- "-$1" 2>/dev/null
 }
 
+project_group_members_match() {
+  local service="$1"
+  local group_id="$2"
+  local expected_cwd
+  local members
+  local member
+  local member_cwd
+  local observed_group
+  if [[ "$service" == "frontend" ]]; then
+    expected_cwd="$PROJECT_ROOT/frontend"
+  else
+    expected_cwd="$PROJECT_ROOT/backend"
+  fi
+  members="$(ps -axo pid=,pgid=,state= 2>/dev/null \
+    | awk -v group_id="$group_id" '$2 == group_id && $3 !~ /^Z/ { print $1 }')" || return 1
+  [[ -n "$members" ]] || return 1
+  while IFS= read -r member; do
+    [[ -n "$member" ]] || continue
+    observed_group="$(ps -p "$member" -o pgid= 2>/dev/null | tr -d '[:space:]')"
+    [[ "$observed_group" == "$group_id" ]] || return 1
+    member_cwd="$(LC_ALL=en_US.UTF-8 lsof -a -p "$member" -d cwd -Fn 2>/dev/null \
+      | sed -n 's/^n//p' | head -n 1)"
+    [[ "$member_cwd" == "$expected_cwd" ]] || return 1
+  done <<< "$members"
+}
+
 group_has_service_listener() {
   local group_id="$1"
   local port="$2"
@@ -74,6 +100,7 @@ stop_service() {
   local pid_file="$2"
   local pid
   local port
+  local leader_alive=false
   if [[ -L "$pid_file" ]]; then
     print -u2 -- "拒绝使用符号链接 PID 文件：$pid_file"
     return 1
@@ -90,13 +117,21 @@ stop_service() {
       return 1
       ;;
   esac
-  if ! kill -0 "$pid" 2>/dev/null; then
-    rm -f -- "$pid_file"
-    return 0
-  fi
-  if ! project_process_matches "$service" "$pid"; then
-    print -u2 -- "PID $pid 的 cwd、argv 或 PGID 不属于本项目 $service，拒绝终止。"
-    return 1
+  kill -0 "$pid" 2>/dev/null && leader_alive=true
+  if [[ "$leader_alive" == false ]]; then
+    if ! group_alive "$pid"; then
+      rm -f -- "$pid_file"
+      return 0
+    fi
+    if ! project_group_members_match "$service" "$pid"; then
+      print -u2 -- "PGID $pid 的存活成员不全属于本项目 $service，拒绝终止。"
+      return 1
+    fi
+  else
+    if ! project_process_matches "$service" "$pid"; then
+      print -u2 -- "PID $pid 的 cwd、argv 或 PGID 不属于本项目 $service，拒绝终止。"
+      return 1
+    fi
   fi
   [[ "$service" == "frontend" ]] && port=8080 || port=8000
   kill -TERM -- "-$pid"

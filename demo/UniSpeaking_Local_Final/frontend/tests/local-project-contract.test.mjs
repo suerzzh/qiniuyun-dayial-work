@@ -64,6 +64,13 @@ async function createScriptHarness() {
   ]);
   const service = `#!/bin/zsh
 if [[ "\${FAKE_EXIT:-0}" == "1" && "$0" == *mvnw ]]; then exit 23; fi
+if [[ "\${FAKE_FRONTEND_LEADER_EXIT:-0}" == "1" && "$0" == *npm ]]; then
+  trap '' HUP
+  sleep 300 &
+  child=$!
+  print -- "$$ $child" >> "$FAKE_LEDGER"
+  exit 0
+fi
 sleep 300 &
 child=$!
 print -- "$$ $child" >> "$FAKE_LEDGER"
@@ -350,6 +357,27 @@ test("startup failure removes every started group and PID file", { concurrency: 
   await waitUntil(() => pids.every((pid) => !isAlive(pid)));
   const remaining = await readdir(join(harness.root, ".run"));
   assert.deepEqual(remaining.filter((name) => name.endsWith(".pid") || name.endsWith(".tmp")), []);
+});
+
+test("startup failure cleans a validated group after its recorded leader exits", { concurrency: false }, async (t) => {
+  const harness = await createScriptHarness();
+  t.after(async () => {
+    await terminateTestPids(await ledgerPids(harness.ledger));
+    await rm(harness.root, { recursive: true, force: true });
+  });
+
+  const result = await run(harness.start, {
+    ...harness.env,
+    FAKE_FRONTEND_LEADER_EXIT: "1",
+    FAKE_CURL_FAIL: "1",
+  }, 15_000);
+  const pids = await ledgerPids(harness.ledger);
+  assert.notEqual(result.code, 0);
+  assert.ok(pids.length >= 4, "both detached service groups must have started");
+  assert.equal(isAlive(pids[0]), false, "the recorded frontend group leader must already be gone");
+  await waitUntil(() => pids.every((pid) => !isAlive(pid)));
+  await assert.rejects(access(join(harness.root, ".run", "frontend.pid")), { code: "ENOENT" });
+  await assert.rejects(access(join(harness.root, ".run", "backend.pid")), { code: "ENOENT" });
 });
 
 test("realtime API exposes only local origin and fetch options", async () => {
