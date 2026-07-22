@@ -280,7 +280,10 @@ export function createIeltsSessionRuntime({
       try {
         await realtime.start();
       } catch (error) {
-        await streamer.stop();
+        try { await streamer.stop(); } catch { /* preserve the original transport error */ }
+        try {
+          if (attempt?.attempt_id) await api.abandon(attempt.attempt_id);
+        } catch { /* attempt cleanup is best effort */ }
         throw error;
       }
       return attempt;

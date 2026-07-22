@@ -4,8 +4,9 @@ import { createIeltsSessionRuntime } from "../src/ielts/ielts-session-runtime.mj
 
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 
-function transportHarness({ channel, peer, exchangeSdp, createAudio = () => null, runtimeOptions = {} } = {}) {
+function transportHarness({ channel, peer, exchangeSdp, abandon, createAudio = () => null, runtimeOptions = {} } = {}) {
   const cleanup = { trackStops: 0, channelCloses: 0, peerCloses: 0, streamerStops: 0 };
+  const abandonedAttemptIds = [];
   const track = { id: "mic", stop() { cleanup.trackStops += 1; } };
   const stream = { getAudioTracks: () => [track], getTracks: () => [track] };
   const activeChannel = channel || {
@@ -25,6 +26,10 @@ function transportHarness({ channel, peer, exchangeSdp, createAudio = () => null
     api: {
       createAttempt: async () => ({ attempt_id: "att-transport", scoring_ws_url: "/ws", realtime_session_config: {} }),
       exchangeSdp: exchangeSdp || (async () => "answer"),
+      async abandon(attemptId) {
+        abandonedAttemptIds.push(attemptId);
+        return abandon?.(attemptId);
+      },
     },
     streamer: {
       attach: async () => {}, control() {},
@@ -35,7 +40,7 @@ function transportHarness({ channel, peer, exchangeSdp, createAudio = () => null
     createAudio,
     ...runtimeOptions,
   });
-  return { runtime, cleanup, track, stream, channel: activeChannel, peer: activePeer };
+  return { runtime, cleanup, abandonedAttemptIds, track, stream, channel: activeChannel, peer: activePeer };
 }
 
 test("IELTS transport waits for ICE gathering before exchanging SDP", async () => {
@@ -102,8 +107,22 @@ test("IELTS transport releases media, PCM, channel, peer and audio after startup
   assert.deepEqual(fixture.cleanup, {
     trackStops: 1, channelCloses: 1, peerCloses: 1, streamerStops: 1,
   });
+  assert.deepEqual(fixture.abandonedAttemptIds, ["att-transport"]);
   assert.equal(audio.pauses, 1);
   assert.equal(audio.srcObject, null);
+});
+
+test("IELTS transport preserves the startup error when attempt abandonment also fails", async () => {
+  const startupError = new Error("SDP exchange failed first");
+  const fixture = transportHarness({
+    exchangeSdp: async () => { throw startupError; },
+    abandon: async () => { throw new Error("Attempt abandonment failed"); },
+  });
+  await assert.rejects(
+    fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} }),
+    (error) => error === startupError,
+  );
+  assert.deepEqual(fixture.abandonedAttemptIds, ["att-transport"]);
 });
 
 test("IELTS runtime authorizes one microphone stream and feeds it to Realtime and PCM", async () => {
