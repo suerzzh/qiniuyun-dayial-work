@@ -728,6 +728,8 @@ Track the in-flight start promise. On unmount, immediately stop publishing, requ
 
 Make controller disposal return/await its runtime stop promise so Hook cleanup is serialized rather than overlapping `stop` and `abandon`. Perform server Attempt abandonment/deletion separately after local disposal. Runtime `finalize()` must capture the current Attempt ID in an immutable local before its first await and use that ID for finalize/report polling. The demo controller must fence finalize callbacks with a session generation so an old report cannot mutate or publish a restarted/new session. Add real controller/runtime regression tests for deferred finalize → restart → new start, in addition to Hook mocks. Loading-state Exit must always use the teardown-aware restart path.
 
+All session Exit actions—not only loading/report recovery—must use the Hook's serialized teardown queue and must never launch a fire-and-forget controller abandon that can later stop a replacement session. Runtime must also capture an attempt generation for finalize; after the post-roll wait and before sending `stream.end`, it must suppress the old finalizer when a new Attempt has started so the singleton streamer cannot deliver the old event to the new socket. Cover both Exit→Restart and old-finalize→new-stream interactions with real runtime/controller fakes that preserve deferred ordering.
+
 Remove `@ts-nocheck` from all Task 7 production files, include them in `tsconfig.json`, and resolve strict `checkJs` errors with focused JSDoc types rather than weakening compiler options.
 
 Preflight health calls `/health` and maps missing provider flags to Chinese capability messages without exposing environment values.
