@@ -1,6 +1,8 @@
 package com.example.unispeaking;
 
 import com.example.unispeaking.controller.ScoringController;
+import com.example.unispeaking.model.SessionState;
+import com.example.unispeaking.service.SessionRegistry;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
@@ -25,6 +27,7 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class FreeChatRegressionTest {
     @Autowired MockMvc mvc;
+    @Autowired SessionRegistry sessionRegistry;
 
     @Test
     void healthReportsOnlySafeCapabilityFlags() throws Exception {
@@ -83,5 +86,20 @@ class FreeChatRegressionTest {
                 .andExpect(jsonPath("$.scoring_enabled").value(true))
                 .andExpect(jsonPath("$.session_config.turn_detection.silence_duration_ms").value(800))
                 .andExpect(jsonPath("$.session_config.input_audio_transcription.model").value("qwen3-asr-flash-realtime"));
+    }
+
+    @Test
+    void freeChatCanBindTheProviderSessionToItsLocalJavaSession() throws Exception {
+        String sessionId = "provider-binding-test";
+        sessionRegistry.put(new SessionState(sessionId));
+
+        mvc.perform(post("/api/sessions/{sessionId}/provider-session", sessionId)
+                        .contentType(MediaType.APPLICATION_JSON)
+                        .content("{\"provider_session_id\":\"sess_provider_123\"}"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.bound").value(true))
+                .andExpect(jsonPath("$.session_id").value(sessionId));
+
+        assertEquals("sess_provider_123", sessionRegistry.get(sessionId).getProviderSessionId());
     }
 }

@@ -169,4 +169,21 @@ describe("FiveDimensionRadar", () => {
     expect(container.querySelectorAll(".ielts-radar-labels text")).toHaveLength(5);
     expect(container.querySelector("[data-radar-polygon]")).not.toBeInTheDocument();
   });
+
+  it("keeps long radar labels inside the mobile-safe SVG bounds", () => {
+    const { container } = render(
+      <FiveDimensionRadar dimensions={completeReport.radarDimensions} complete />,
+    );
+
+    const labels = [...container.querySelectorAll(".ielts-radar-labels text")];
+    const taskLabel = labels.find((label) => label.textContent?.includes("任务完成度/互动回应"));
+    const grammarLabel = labels.find((label) => label.textContent?.includes("语法多样性与准确性"));
+
+    expect(taskLabel).toHaveAttribute("x", "4");
+    expect(taskLabel).toHaveAttribute("text-anchor", "start");
+    expect(taskLabel?.querySelectorAll("tspan")).toHaveLength(2);
+    expect(grammarLabel).toHaveAttribute("x", "316");
+    expect(grammarLabel).toHaveAttribute("text-anchor", "end");
+    expect(grammarLabel?.querySelectorAll("tspan")).toHaveLength(2);
+  });
 });

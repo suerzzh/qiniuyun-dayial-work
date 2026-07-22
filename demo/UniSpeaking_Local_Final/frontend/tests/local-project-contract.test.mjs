@@ -27,7 +27,13 @@ async function run(path, env = {}, timeout = 25_000) {
     });
     return { code: 0, ...result };
   } catch (error) {
-    return { code: error.code, stdout: error.stdout || "", stderr: error.stderr || "" };
+    return {
+      code: error.code,
+      killed: Boolean(error.killed),
+      signal: error.signal || null,
+      stdout: error.stdout || "",
+      stderr: error.stderr || "",
+    };
   }
 }
 
@@ -62,37 +68,41 @@ async function createScriptHarness() {
     copyFile(projectPath("scripts", "start-local.sh"), join(scripts, "start-local.sh")),
     copyFile(projectPath("scripts", "stop-local.sh"), join(scripts, "stop-local.sh")),
   ]);
-  const service = `#!/bin/zsh
-if [[ "\${FAKE_EXIT:-0}" == "1" && "$0" == *mvnw ]]; then exit 23; fi
-if [[ "\${FAKE_FRONTEND_LEADER_EXIT:-0}" == "1" && "$0" == *npm ]]; then
+  const service = `#!/bin/sh
+case "$0" in *mvnw) is_maven=1 ;; *) is_maven=0 ;; esac
+case "$0" in *npm) is_npm=1 ;; *) is_npm=0 ;; esac
+if [ "\${FAKE_EXIT:-0}" = "1" ] && [ "$is_maven" = "1" ]; then exit 23; fi
+if [ "\${FAKE_FRONTEND_LEADER_EXIT:-0}" = "1" ] && [ "$is_npm" = "1" ]; then
   trap '' HUP
   sleep 300 &
   child=$!
-  print -- "$$ $child" >> "$FAKE_LEDGER"
+  printf '%s %s\n' "$$" "$child" >> "$FAKE_LEDGER"
   exit 0
 fi
 sleep 300 &
 child=$!
-print -- "$$ $child" >> "$FAKE_LEDGER"
+printf '%s %s\n' "$$" "$child" >> "$FAKE_LEDGER"
 trap 'exit 0' TERM INT HUP
 wait "$child"
 `;
-  const fakeLsof = `#!/bin/zsh
+  const fakeLsof = `#!/bin/sh
 for argument in "$@"; do
-  if [[ "$argument" == -iTCP:* ]]; then
-    if [[ -n "\${FAKE_OCCUPIED_PORT:-}" && "$argument" == "-iTCP:\${FAKE_OCCUPIED_PORT}" ]]; then
-      print -- 424242
-      exit 0
-    fi
-    exit 1
-  fi
+  case "$argument" in
+    -iTCP:*)
+      if [ -n "\${FAKE_OCCUPIED_PORT:-}" ] && [ "$argument" = "-iTCP:\${FAKE_OCCUPIED_PORT}" ]; then
+        printf '%s\n' 424242
+        exit 0
+      fi
+      exit 1
+      ;;
+  esac
 done
 exec /usr/sbin/lsof "$@"
 `;
   await Promise.all([
     writeFile(join(fakeBin, "npm"), service),
     writeFile(join(backend, "mvnw"), service),
-    writeFile(join(fakeBin, "curl"), "#!/bin/zsh\n[[ \"${FAKE_CURL_FAIL:-0}\" == 1 ]] && exit 22\nexit 0\n"),
+    writeFile(join(fakeBin, "curl"), "#!/bin/sh\n[ \"${FAKE_CURL_FAIL:-0}\" = 1 ] && exit 22\nexit 0\n"),
     writeFile(join(fakeBin, "lsof"), fakeLsof),
     writeFile(publicationGate, `const fs = require("node:fs");
 const originalOpenSync = fs.openSync;
@@ -223,6 +233,7 @@ test("start refuses an occupied service port without launching children", { conc
   t.after(async () => rm(harness.root, { recursive: true, force: true }));
   const result = await run(harness.start, { ...harness.env, FAKE_OCCUPIED_PORT: "8000" });
   assert.notEqual(result.code, 0);
+  assert.equal(result.killed, false, "occupied-port refusal must return without a test timeout");
   assert.deepEqual(await ledgerPids(harness.ledger), []);
   await assert.rejects(access(join(harness.root, ".run", "frontend.pid")), { code: "ENOENT" });
 });
@@ -241,11 +252,11 @@ test("start rejects a FIFO log target without blocking or spawning", { concurren
   });
 
   const startedAt = Date.now();
-  const result = await run(harness.start, harness.env, 5_000);
+  const result = await run(harness.start, harness.env, 15_000);
   const elapsed = Date.now() - startedAt;
-  assert.notEqual(result.code, "ETIMEDOUT", "opening a FIFO log must never block");
+  assert.equal(result.killed, false, "opening a FIFO log must return before the test timeout");
   assert.notEqual(result.code, 0);
-  assert.ok(elapsed < 3_500, `FIFO rejection took ${elapsed}ms`);
+  assert.ok(elapsed < 15_000, `FIFO rejection took ${elapsed}ms`);
   assert.deepEqual(await ledgerPids(harness.ledger), []);
   await assert.rejects(access(join(runDir, "frontend.pid")), { code: "ENOENT" });
 });

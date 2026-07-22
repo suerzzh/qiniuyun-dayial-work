@@ -9,6 +9,7 @@ public class SessionState {
     private String sessionId;
     private String conversationId;
     private String learnerLevel = "Intermediate"; // default
+    private String providerSessionId;
     private boolean scoringEnabled;
     private String lessonFocus = "";
     private volatile boolean ended;
@@ -43,6 +44,9 @@ public class SessionState {
     public void setLearnerLevel(String learnerLevel) {
         this.learnerLevel = learnerLevel;
     }
+
+    public String getProviderSessionId() { return providerSessionId; }
+    public void setProviderSessionId(String providerSessionId) { this.providerSessionId = providerSessionId; }
 
     public Map<String, Map<String, Object>> getTurnEvaluations() {
         return turnEvaluations;

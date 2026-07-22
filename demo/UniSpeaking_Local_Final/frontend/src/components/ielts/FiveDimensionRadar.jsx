@@ -11,7 +11,6 @@ import React from "react";
 
 const CENTER = 160;
 const RADIUS = 105;
-const LABEL_RADIUS = 137;
 const GRID_LEVELS = [0.2, 0.4, 0.6, 0.8, 1];
 const CANONICAL_AXES = [
   { code: "FC", label: "流利度与连贯性" },
@@ -19,6 +18,14 @@ const CANONICAL_AXES = [
   { code: "GRA", label: "语法多样性与准确性" },
   { code: "P", label: "发音" },
   { code: "TA", label: "任务完成度/互动回应" },
+];
+/** @type {Array<{ x: number, y: number, anchor: "start" | "middle" | "end", split?: [string, string] }>} */
+const LABEL_LAYOUT = [
+  { x: 160, y: 18, anchor: "middle" },
+  { x: 316, y: 118, anchor: "end" },
+  { x: 316, y: 270, anchor: "end", split: ["语法多样性", "与准确性"] },
+  { x: 4, y: 270, anchor: "start" },
+  { x: 4, y: 118, anchor: "start", split: ["任务完成度/", "互动回应"] },
 ];
 
 /**
@@ -40,13 +47,6 @@ function pointList(points) {
     .filter((point) => point !== null)
     .map(({ x, y }) => `${x.toFixed(2)},${y.toFixed(2)}`)
     .join(" ");
-}
-
-/** @param {number} x */
-function labelAnchor(x) {
-  if (x < CENTER - 8) return "end";
-  if (x > CENTER + 8) return "start";
-  return "middle";
 }
 
 /** @param {{ dimensions?: RadarDimension[], complete?: boolean }} props */
@@ -146,17 +146,28 @@ export default function FiveDimensionRadar({ dimensions = [], complete = false }
 
       <g className="ielts-radar-labels" aria-hidden="true">
         {fiveDimensions.map((item, index) => {
-          const point = axisPoint(index, LABEL_RADIUS);
+          const layout = LABEL_LAYOUT[index];
           const value = Number.isFinite(item.score) ? `${item.score}` : "不可用";
+          const lines = layout.split
+            ? [layout.split[0], `${layout.split[1]} ${value}`]
+            : [`${item.label} ${value}`];
           return (
             <text
               key={item.code}
-              x={point.x}
-              y={point.y}
-              textAnchor={labelAnchor(point.x)}
+              x={layout.x}
+              y={layout.y}
+              textAnchor={layout.anchor}
               dominantBaseline="middle"
             >
-              {item.label} {value}
+              {lines.map((line, lineIndex) => (
+                <tspan
+                  key={line}
+                  x={layout.x}
+                  dy={lines.length === 1 ? 0 : lineIndex === 0 ? "-0.55em" : "1.15em"}
+                >
+                  {line}
+                </tspan>
+              ))}
             </text>
           );
         })}

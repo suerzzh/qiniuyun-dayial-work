@@ -13,6 +13,7 @@ test("application shell exposes semantic global navigation", async () => {
   const app = await read("src/App.jsx");
   assert.match(html, /<div id="root"><\/div>/);
   assert.match(html, /src="\/src\/main\.jsx"/);
+  assert.match(html, /<link rel="icon" href="data:image\/svg\+xml,/);
   assert.match(app, /<nav[^>]+aria-label="全局导航"/);
   assert.match(app, /href="#\/conversation"/);
   assert.match(app, /href="#\/scenes"/);

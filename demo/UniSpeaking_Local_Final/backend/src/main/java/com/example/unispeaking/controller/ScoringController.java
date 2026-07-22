@@ -493,6 +493,27 @@ Speech-only output contract:
         return ResponseEntity.status(HttpStatus.CREATED).body(response);
     }
 
+    @PostMapping("/api/sessions/{sessionId}/provider-session")
+    public ResponseEntity<?> bindProviderSession(
+            @PathVariable String sessionId,
+            @RequestBody Map<String, Object> requestBody
+    ) {
+        SessionState session = sessionRegistry.get(sessionId);
+        if (session == null) {
+            return ResponseEntity.status(HttpStatus.NOT_FOUND).body(Map.of("error", "Session not found"));
+        }
+        Object rawProviderSessionId = requestBody.get("provider_session_id");
+        if (!(rawProviderSessionId instanceof String providerSessionId) || providerSessionId.isBlank()) {
+            return ResponseEntity.badRequest().body(Map.of("error", "provider_session_id is required"));
+        }
+        session.setProviderSessionId(providerSessionId.trim());
+        return ResponseEntity.ok(Map.of(
+                "bound", true,
+                "session_id", sessionId,
+                "provider_session_id", session.getProviderSessionId()
+        ));
+    }
+
     @PostMapping("/api/sessions/{sessionId}/latency")
     public ResponseEntity<?> recordLatency(
             @PathVariable String sessionId,
