@@ -681,10 +681,12 @@ git commit -m "feat: render official IELTS report with five-dimension radar"
 - Create: `frontend/src/components/ielts/IeltsPart2Card.jsx`
 - Create: `frontend/tests/use-ielts-session.test.jsx`
 - Create: `frontend/tests/ielts-flow.test.jsx`
+- Modify: `frontend/tsconfig.json`
 
 **Interfaces:**
 - `useIeltsSession(options)` returns `{ snapshot, actions, serviceHealth }`.
 - `actions` contains `selectMode`, `setPreflight`, `start`, `submitAnswer`, `updateNotes`, `toggleCaptions`, `retry`, `next`, `exit`, `restart`, and `retryReport`.
+- `actions.start` is single-flight; `actions.restart` first tears down the prior local/server session before returning home.
 
 - [ ] **Step 1: Write the failing ownership test**
 
@@ -696,6 +698,8 @@ expect(controller.dispose).toHaveBeenCalledTimes(1);
 ```
 
 Also assert `retryReport` calls `api.report(existingAttemptId)` without calling `api.finalize` or `api.createAttempt`.
+
+Add lifecycle tests proving: two calls to `actions.start` share one in-flight controller start; unmount during an unresolved start performs another teardown after the start settles so no newly acquired resource survives; restart waits for runtime teardown and deletes/abandons the previous Attempt before returning home; report-retry continuations cannot update state after cleanup begins.
 
 - [ ] **Step 2: Run and verify RED**
 
@@ -715,6 +719,10 @@ return () => {
   controller.dispose();
 };
 ```
+
+Track the in-flight start promise. On unmount, immediately stop publishing, request disposal, and attach a final teardown to any pending start so resources acquired after the first cleanup are also closed. Loading UI must not expose a second Start/Retry action. `retryReport` must require both `acceptingChanges` and `!disposed` before every state update. Report recovery exits through the safe restart/home action rather than the terminal exam `exit` transition.
+
+Remove `@ts-nocheck` from all Task 7 production files, include them in `tsconfig.json`, and resolve strict `checkJs` errors with focused JSDoc types rather than weakening compiler options.
 
 Preflight health calls `/health` and maps missing provider flags to Chinese capability messages without exposing environment values.
 
