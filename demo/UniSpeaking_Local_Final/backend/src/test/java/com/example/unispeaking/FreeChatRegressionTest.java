@@ -7,6 +7,8 @@ import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
 
+import static org.hamcrest.Matchers.aMapWithSize;
+import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
@@ -14,6 +16,17 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 class FreeChatRegressionTest {
     @Autowired MockMvc mvc;
+
+    @Test
+    void healthReportsOnlySafeCapabilityFlags() throws Exception {
+        mvc.perform(get("/health"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$", aMapWithSize(4)))
+                .andExpect(jsonPath("$.java").value(true))
+                .andExpect(jsonPath("$.qwenRealtimeConfigured").isBoolean())
+                .andExpect(jsonPath("$.qwenScoringConfigured").isBoolean())
+                .andExpect(jsonPath("$.xfyunConfigured").isBoolean());
+    }
 
     @Test
     void existingFreeChatSessionContractRemainsAvailable() throws Exception {

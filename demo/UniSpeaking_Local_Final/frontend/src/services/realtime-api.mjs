@@ -3,7 +3,7 @@
 import { resolveHttpBase } from "./local-service-config.mjs";
 
 /**
- * @param {{ origin?: string, baseUrl?: string, publicKey?: string, fetchImpl?: typeof fetch }} [options]
+ * @param {{ origin?: string, fetchImpl?: typeof fetch }} [options]
  */
 export function createRealtimeApi({ origin, fetchImpl = fetch } = {}) {
   const base = resolveHttpBase(origin);

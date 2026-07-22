@@ -119,6 +119,21 @@ Speech-only output contract:
     @Value("${bailian.model}")
     private String bailianModel;
 
+    @Value("${qwen.scoring.model}")
+    private String qwenScoringModel;
+
+    @Value("${qwen.ielts.judge.model}")
+    private String qwenIeltsJudgeModel;
+
+    @Value("${xfyun.appid}")
+    private String xfyunAppId;
+
+    @Value("${xfyun.apikey}")
+    private String xfyunApiKey;
+
+    @Value("${xfyun.apisecret}")
+    private String xfyunApiSecret;
+
     @Autowired
     private XfyunIseService xfyunIseService;
 
@@ -131,10 +146,19 @@ Speech-only output contract:
     private final HttpClient httpClient = HttpClient.newHttpClient();
 
     @GetMapping("/health")
-    public Map<String, String> health() {
-        Map<String, String> status = new HashMap<>();
-        status.put("status", "UP");
-        return status;
+    public Map<String, Boolean> health() {
+        return Map.of(
+                "java", true,
+                "qwenRealtimeConfigured", allConfigured(apiKey, bailianWorkspaceId, bailianModel),
+                "qwenScoringConfigured", allConfigured(apiKey, qwenScoringModel, qwenIeltsJudgeModel),
+                "xfyunConfigured", allConfigured(xfyunAppId, xfyunApiKey, xfyunApiSecret)
+        );
+    }
+
+    private boolean allConfigured(String... values) {
+        return Arrays.stream(values).allMatch(value -> value != null
+                && !value.isBlank()
+                && !"your_api_key_here".equals(value.trim()));
     }
 
     @PostMapping("/api/sessions")
