@@ -1,0 +1,4 @@
+project_id = "ropgifqbblzktgxllupi"
+
+[functions.realtime-gateway]
+verify_jwt = false

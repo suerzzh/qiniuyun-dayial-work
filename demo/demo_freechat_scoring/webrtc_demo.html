@@ -1,0 +1,2823 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <title>FreeTalk</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif; background: #f5f7fa; color: #1d2129; padding: 24px; line-height: 1.6; }
+
+        .container { max-width: 800px; margin: 0 auto; }
+
+        h1 { font-size: 22px; font-weight: 600; margin-bottom: 20px; color: #1d2129; }
+
+        /* Sticky top bar */
+        .sticky-top { position: sticky; top: 0; z-index: 100; background: #f5f7fa; margin: 0 -24px 16px; padding: 12px 24px; border-bottom: 1px solid transparent; transition: border-color .2s; }
+        .sticky-top.scrolled { border-bottom-color: #e5e6eb; }
+
+        /* Toolbar */
+        .toolbar { display: flex; align-items: center; gap: 10px; flex-wrap: wrap; margin-bottom: 12px; }
+        .toolbar label { display: flex; align-items: center; gap: 6px; font-size: 13px; color: #4e5969; cursor: pointer; }
+
+        /* Buttons */
+        button { padding: 8px 18px; font-size: 13px; font-weight: 500; border: 1px solid #c9cdd4; border-radius: 6px; background: #fff; color: #1d2129; cursor: pointer; transition: all .15s; }
+        button:hover:not(:disabled) { border-color: #165dff; color: #165dff; }
+        button:disabled { opacity: .4; cursor: not-allowed; }
+        .btn-primary { background: #165dff; border-color: #165dff; color: #fff; }
+        .btn-primary:hover:not(:disabled) { background: #4080ff; border-color: #4080ff; color: #fff; }
+        .btn-danger { border-color: #f53f3f; color: #f53f3f; }
+        .btn-danger:hover:not(:disabled) { background: #f53f3f; color: #fff; }
+
+        /* Status indicator */
+        .status-bar { display: flex; align-items: center; gap: 8px; padding: 10px 14px; border-radius: 8px; background: #fff; border: 1px solid #e5e6eb; font-size: 13px; }
+        .status-dot { width: 8px; height: 8px; border-radius: 50%; background: #c9cdd4; flex-shrink: 0; }
+        .status-dot.connected { background: #00b42a; }
+        .status-dot.connecting { background: #ff7d00; animation: pulse 1s infinite; }
+        .status-dot.error { background: #f53f3f; }
+        @keyframes pulse { 0%,100% { opacity: 1; } 50% { opacity: .4; } }
+
+        /* SDP card */
+        .card { background: #fff; border: 1px solid #e5e6eb; border-radius: 10px; padding: 16px; margin-bottom: 16px; }
+        .card-title { font-size: 13px; font-weight: 600; color: #4e5969; margin-bottom: 8px; }
+        .step-num { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: #165dff; color: #fff; font-size: 11px; font-weight: 600; margin-right: 6px; }
+        .card-hint { font-size: 12px; color: #86909c; margin-top: 6px; }
+
+        textarea { width: 100%; font-family: "SF Mono", "Fira Code", "Fira Mono", Menlo, Consolas, monospace; font-size: 12px; padding: 10px; border: 1px solid #e5e6eb; border-radius: 6px; resize: vertical; background: #f7f8fa; color: #1d2129; transition: border-color .15s; }
+        textarea:focus { outline: none; border-color: #165dff; background: #fff; }
+        input[type="text"] { width: 100%; font-size: 13px; padding: 9px 10px; border: 1px solid #e5e6eb; border-radius: 6px; background: #f7f8fa; color: #1d2129; }
+        input[type="text"]:focus { outline: none; border-color: #165dff; background: #fff; }
+        .field-label { display: block; font-size: 12px; color: #4e5969; margin: 10px 0 4px; }
+        .char-count { float: right; color: #86909c; font-weight: 400; }
+
+        /* Conversation */
+        .conversation-card { padding: 0; overflow: hidden; }
+        .conversation-head { display: flex; align-items: center; justify-content: space-between; gap: 12px; padding: 14px 16px; border-bottom: 1px solid #e5e6eb; }
+        .conversation-title { font-size: 15px; font-weight: 600; }
+        .conversation-subtitle { color: #86909c; font-size: 12px; }
+        .level-badge { display: inline-flex; margin-left: 6px; padding: 1px 7px; border-radius: 999px; background: #e8f3ff; color: #165dff; font-size: 11px; font-weight: 600; vertical-align: 1px; }
+        .chat-list { height: 380px; overflow-y: auto; padding: 18px; background: #f7f8fa; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; }
+        .chat-empty { margin: auto; max-width: 360px; color: #86909c; font-size: 13px; text-align: center; }
+        .message-row { display: flex; flex-direction: column; max-width: 82%; }
+        .message-row.user { align-self: flex-end; align-items: flex-end; }
+        .message-row.assistant { align-self: flex-start; align-items: flex-start; }
+        .message-label { color: #86909c; font-size: 11px; margin: 0 6px 4px; }
+        .message-bubble { padding: 10px 13px; border-radius: 14px; font-size: 15px; line-height: 1.55; white-space: pre-wrap; word-break: break-word; box-shadow: 0 1px 2px rgba(0,0,0,.04); }
+        .message-row.user .message-bubble { color: #fff; background: #165dff; border-bottom-right-radius: 4px; }
+        .message-row.assistant .message-bubble { color: #1d2129; background: #fff; border: 1px solid #e5e6eb; border-bottom-left-radius: 4px; }
+        .message-row.partial .message-bubble::after { content: " ●"; color: #ff7d00; font-size: 9px; animation: pulse 1s infinite; }
+        .message-score { margin-top: 7px; padding-top: 6px; border-top: 1px solid rgba(255,255,255,.28); font-size: 12px; opacity: .95; cursor: pointer; }
+        .message-score.pending { opacity: .78; }
+        .message-score-detail { display: none; margin-top: 8px; padding: 9px; border-radius: 8px; background: rgba(255,255,255,.14); font-size: 12px; line-height: 1.65; text-align: left; }
+        .message-score-detail.open { display: block; }
+        .score-detail-row { display: flex; gap: 10px; flex-wrap: wrap; }
+        .practice-config { padding: 12px 16px; }
+        .practice-config input { margin-top: 5px; }
+        .conversation-actions { display: flex; gap: 8px; flex-shrink: 0; }
+        .mode-switch { display: flex; gap: 8px; margin-bottom: 12px; }
+        .mode-switch button.active, .stage-step.active { background: #165dff; border-color: #165dff; color: #fff; }
+        .scenario-builder { display: none; }
+        .scenario-input-row { display: flex; gap: 8px; align-items: flex-start; }
+        .scenario-input-row textarea { flex: 1; min-height: 138px; font-family: inherit; font-size: 13px; line-height: 1.65; }
+        .scenario-input-actions { width: 132px; display: flex; flex-direction: column; gap: 6px; }
+        .stage-steps { display: flex; gap: 8px; margin: 16px 0; }
+        .stage-step { flex: 1; padding: 10px; }
+        .stage-panel { display: none; }
+        .stage-panel.active { display: block; }
+        .learning-section { margin-top: 16px; }
+        .learning-section h3 { font-size: 14px; margin-bottom: 8px; }
+        .learning-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 8px; }
+        .learning-item, .reading-card { border: 1px solid #e5e6eb; border-radius: 8px; padding: 12px; background: #f8fafc; }
+        .learning-item { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+        .learning-text { font-weight: 600; }
+        .learning-meaning { color: #86909c; font-size: 12px; }
+        .play-btn { padding: 5px 10px; flex-shrink: 0; }
+        .reading-list { display: flex; flex-direction: column; gap: 10px; }
+        .reading-card-head { display: flex; justify-content: space-between; gap: 12px; align-items: flex-start; }
+        .reading-actions { display: flex; gap: 6px; flex-shrink: 0; }
+        .reading-result { margin-top: 10px; padding-top: 10px; border-top: 1px dashed #c9cdd4; font-size: 12px; }
+        .reading-words { margin-top: 6px; line-height: 2; }
+        .stage-footer { display: flex; justify-content: flex-end; gap: 8px; margin-top: 16px; }
+        .scenario-summary { padding: 12px; border-radius: 8px; background: #f2f7ff; color: #245bdb; font-size: 13px; }
+        @media (max-width: 640px) { .learning-grid { grid-template-columns: 1fr; } .scenario-input-row { align-items: stretch; flex-direction: column; } }
+
+        /* Video */
+        .video-section { margin-bottom: 16px; }
+        .video-label { font-size: 13px; color: #86909c; margin-bottom: 6px; }
+        video { width: 320px; max-width: 100%; background: #000; border-radius: 8px; display: block; }
+
+        /* Events panel */
+        .events-title { font-size: 14px; font-weight: 600; color: #1d2129; margin-bottom: 10px; }
+        .events-container { display: flex; flex-direction: column; gap: 6px; }
+        .event-item { background: #fff; border: 1px solid #e5e6eb; border-radius: 8px; overflow: hidden; }
+        .event-header { display: flex; align-items: center; gap: 8px; padding: 8px 12px; cursor: pointer; user-select: none; font-size: 12px; }
+        .event-header:hover { background: #f7f8fa; }
+        .event-arrow { font-size: 14px; font-weight: 700; width: 18px; text-align: center; }
+        .event-arrow.server { color: #00b42a; }
+        .event-arrow.client { color: #165dff; }
+        .event-label { color: #4e5969; }
+        .event-time { color: #c9cdd4; margin-left: auto; font-size: 11px; }
+        .event-body { display: none; padding: 10px 12px; background: #f7f8fa; border-top: 1px solid #e5e6eb; }
+        .event-body pre { margin: 0; font-size: 11px; font-family: "SF Mono", Menlo, Consolas, monospace; color: #4e5969; white-space: pre-wrap; word-break: break-all; }
+        .events-empty { font-size: 13px; color: #c9cdd4; padding: 16px 0; text-align: center; }
+
+        /* Modal Overlay */
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background-color: rgba(29, 33, 41, 0.6);
+            backdrop-filter: blur(8px);
+            align-items: center;
+            justify-content: center;
+            animation: fadeIn 0.3s ease-out;
+        }
+        @keyframes fadeIn {
+            from { opacity: 0; }
+            to { opacity: 1; }
+        }
+        .modal-content {
+            background: #fff;
+            border-radius: 12px;
+            width: 95%;
+            max-width: 720px;
+            max-height: 85vh;
+            overflow-y: auto;
+            padding: 30px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            position: relative;
+            animation: slideUp 0.3s ease-out;
+        }
+        @keyframes slideUp {
+            from { transform: translateY(30px); opacity: 0; }
+            to { transform: translateY(0); opacity: 1; }
+        }
+        .close-modal-btn {
+            position: absolute;
+            top: 20px;
+            right: 24px;
+            font-size: 28px;
+            font-weight: 600;
+            color: #86909c;
+            cursor: pointer;
+            transition: color 0.15s;
+        }
+        .close-modal-btn:hover {
+            color: #1d2129;
+        }
+        .report-header {
+            text-align: center;
+            margin-bottom: 24px;
+        }
+        .report-header h2 {
+            font-size: 22px;
+            font-weight: 700;
+            color: #165dff;
+            margin-bottom: 6px;
+        }
+        .report-header p {
+            font-size: 13px;
+            color: #86909c;
+        }
+        .overall-score-section {
+            display: flex;
+            align-items: center;
+            justify-content: space-around;
+            gap: 20px;
+            background: #f8fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 24px;
+        }
+        .score-circle {
+            width: 110px;
+            height: 110px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #165dff, #00b42a);
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            color: #fff;
+            box-shadow: 0 8px 16px rgba(22, 93, 255, 0.2);
+            flex-shrink: 0;
+        }
+        .score-num {
+            font-size: 32px;
+            font-weight: 800;
+        }
+        .score-label {
+            font-size: 11px;
+            opacity: 0.9;
+        }
+        .score-metrics {
+            flex: 1;
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 12px;
+        }
+        .metric-item {
+            background: #fff;
+            padding: 10px 14px;
+            border: 1px solid #e5e6eb;
+            border-radius: 8px;
+            font-size: 13px;
+        }
+        .metric-name {
+            color: #86909c;
+            font-size: 11px;
+            margin-bottom: 2px;
+        }
+        .metric-value {
+            font-weight: 700;
+            color: #1d2129;
+            font-size: 16px;
+        }
+        .metric-value.good { color: #00b42a; }
+        .metric-value.warn { color: #ff7d00; }
+        .metric-value.bad { color: #f53f3f; }
+
+        /* Turns report list */
+        .turns-report-list {
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            margin-top: 16px;
+        }
+        .turn-report-card {
+            border: 1px solid #e5e6eb;
+            border-radius: 10px;
+            padding: 16px;
+            background: #fff;
+        }
+        .turn-number {
+            font-size: 11px;
+            color: #86909c;
+            font-weight: 600;
+            margin-bottom: 6px;
+            text-transform: uppercase;
+        }
+        .turn-transcript {
+            font-size: 15px;
+            line-height: 1.6;
+            margin-bottom: 12px;
+            word-wrap: break-word;
+        }
+        .word-good { color: #00b42a; font-weight: 600; margin-right: 4px; display: inline-block; }
+        .word-ok { color: #ff7d00; font-weight: 600; margin-right: 4px; display: inline-block; }
+        .word-bad { color: #f53f3f; font-weight: 600; text-decoration: underline wavy #f53f3f; margin-right: 4px; display: inline-block; cursor: help; }
+        .word-omitted { color: #86909c; text-decoration: line-through; margin-right: 4px; display: inline-block; }
+        .word-unaligned { color: #86909c; text-decoration: underline dotted #86909c; text-underline-offset: 3px; margin-right: 4px; display: inline-block; cursor: help; }
+        .word-legend { margin: -4px 0 12px; color: #86909c; font-size: 11px; line-height: 1.7; }
+
+        .evaluation-details {
+            border-top: 1px dashed #e5e6eb;
+            padding-top: 12px;
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            font-size: 13px;
+        }
+        .eval-section-title {
+            font-weight: 600;
+            color: #4e5969;
+            margin-bottom: 2px;
+        }
+        .grammar-feedback {
+            color: #4e5969;
+            background: #f7f8fa;
+            padding: 10px;
+            border-left: 3px solid #165dff;
+            border-radius: 4px;
+        }
+        .turn-status-note {
+            color: #4e5969;
+            background: #f7f8fa;
+            padding: 10px 12px;
+            border-radius: 6px;
+            line-height: 1.6;
+        }
+        .turn-status-note.unscorable {
+            color: #ad6800;
+            background: #fff7e6;
+            border-left: 3px solid #faad14;
+        }
+        .turn-status-note.short-response {
+            color: #245bdb;
+            background: #f2f7ff;
+            border-left: 3px solid #4080ff;
+        }
+        .suggested-list {
+            margin-left: 20px;
+            color: #1d2129;
+            font-style: italic;
+        }
+        .report-loading {
+            min-height: 360px;
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            text-align: center;
+            gap: 14px;
+            color: #4e5969;
+        }
+        .report-loading-spinner {
+            width: 48px;
+            height: 48px;
+            border: 4px solid #e8f0ff;
+            border-top-color: #165dff;
+            border-radius: 50%;
+            animation: reportSpin 0.9s linear infinite;
+        }
+        @keyframes reportSpin {
+            to { transform: rotate(360deg); }
+        }
+        .report-loading-title {
+            color: #1d2129;
+            font-size: 18px;
+            font-weight: 700;
+        }
+        .report-loading-detail {
+            max-width: 420px;
+            font-size: 13px;
+            line-height: 1.7;
+            color: #86909c;
+        }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>UniSpeaking 学 · 读 · 说 Demo</h1>
+
+    <section class="card">
+        <div class="card-title">练习方式</div>
+        <div class="mode-switch">
+            <button id="directModeBtn" class="active">直接对话</button>
+            <button id="sceneModeBtn">场景对话</button>
+        </div>
+        <div id="scenarioBuilder" class="scenario-builder">
+            <div class="scenario-input-row">
+                <textarea id="scenarioTopicInput" maxlength="4000" placeholder="输入场景和教学要求，例如：学习者年龄、语言难度、允许使用中文的时机、对话目标和话题边界。">你是一名英语辅导老师，请围绕餐厅点餐场景进行简单、自然的英语教学和对话。</textarea>
+                <div class="scenario-input-actions">
+                    <button id="generateScenarioBtn" class="btn-primary">生成学习内容</button>
+                    <span id="scenarioPromptCount" class="card-hint">0 / 4000</span>
+                </div>
+            </div>
+            <div id="scenarioStatus" class="card-hint">系统将生成相关单词、短语和跟读句子。</div>
+            <div id="stageSteps" class="stage-steps" style="display:none;">
+                <button class="stage-step active" data-stage="learn">1. 学</button>
+                <button class="stage-step" data-stage="read">2. 读</button>
+                <button class="stage-step" data-stage="speak">3. 说</button>
+            </div>
+            <div id="learnStage" class="stage-panel active"></div>
+            <div id="readStage" class="stage-panel"></div>
+            <div id="speakStage" class="stage-panel"></div>
+        </div>
+    </section>
+
+    <div class="sticky-top">
+        <div class="toolbar">
+            <button id="startBtn" class="btn-primary">Start Session</button>
+            <button id="endBtn" class="btn-danger" disabled>End Session</button>
+            <label>
+                <input id="sendVideoCheckbox" type="checkbox" />
+                Enable Video
+            </label>
+            <label>
+                <input id="scoringEnabledCheckbox" type="checkbox" checked />
+                评分练习
+            </label>
+        </div>
+
+        <div class="status-bar">
+            <span class="status-dot" id="statusDot"></span>
+            <span id="statusText">Ready</span>
+            <span id="levelBadge" class="level-badge">CET-4 (B1-B2)</span>
+        </div>
+    </div>
+
+    <section id="practiceConfig" class="card practice-config">
+        <label class="field-label" for="promptBox">练习目标（用于整场任务表现评分）</label>
+        <input id="promptBox" type="text" maxlength="2000" value="围绕一个日常话题完成自然的英语对话，并持续回应教练的追问。" />
+        <span id="promptCount" class="char-count"></span>
+    </section>
+
+    <section id="conversationSection" class="card conversation-card" aria-label="Live conversation">
+        <div class="conversation-head">
+            <div>
+                <div class="conversation-title">Live conversation</div>
+                <div class="conversation-subtitle">Your speech and the AI reply appear here in real time.</div>
+            </div>
+            <div class="conversation-actions">
+                <button id="newConversationBtn">New conversation</button>
+            </div>
+        </div>
+        <div id="chatList" class="chat-list" aria-live="polite">
+            <div class="chat-empty">Start a session to begin a free chat with AI.</div>
+        </div>
+    </section>
+
+    <div class="video-section" id="videoSection" style="display:none;">
+        <div class="video-label">Local Video Preview</div>
+        <video id="localVideo" autoplay playsinline muted></video>
+    </div>
+
+    <div hidden>
+        <button id="setAnswerBtn" disabled></button>
+        <button id="downloadBtn" disabled></button>
+        <button id="copyOfferBtn" disabled></button>
+        <textarea id="offerBox"></textarea>
+        <textarea id="answerBox"></textarea>
+        <div id="events"></div>
+    </div>
+    <!-- Scoring Report Modal -->
+    <div id="reportModal" class="modal">
+        <div class="modal-content">
+            <span id="reportCloseButton" class="close-modal-btn" onclick="closeReportModal()">&times;</span>
+            <div class="report-header">
+                <h2>口语学习成绩单 (Speech Report Card)</h2>
+                <p>AI 实时评测 • 英语口语综合诊断报告</p>
+            </div>
+
+            <div id="reportLoading" class="report-loading" role="status" aria-live="polite">
+                <div id="reportLoadingSpinner" class="report-loading-spinner"></div>
+                <div id="reportLoadingTitle" class="report-loading-title">正在生成完整成绩单</div>
+                <div id="reportLoadingDetail" class="report-loading-detail">
+                    正在等待发音、语法和词汇评分全部完成，请稍候。成绩单生成后会自动展示。
+                </div>
+            </div>
+
+            <div id="reportContent">
+              <div class="overall-score-section">
+                <div class="score-circle">
+                    <span class="score-num" id="overallScore">-</span>
+                    <span class="score-label">综合得分</span>
+                </div>
+                <div class="score-metrics">
+                    <div class="metric-item">
+                        <div class="metric-name">发音表现 (Pronunciation)</div>
+                        <div class="metric-value" id="pronPerformance">-</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-name">语言质量 (Language)</div>
+                        <div class="metric-value" id="languageQuality">-</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-name">任务表现 (Task)</div>
+                        <div class="metric-value" id="taskPerformance">-</div>
+                    </div>
+                    <div class="metric-item">
+                        <div class="metric-name">有效评分轮次</div>
+                        <div class="metric-value" id="effectiveTurns">-</div>
+                    </div>
+                    <div class="metric-item scene-report-metric" style="display:none;">
+                        <div class="metric-name">学习内容已播放</div>
+                        <div class="metric-value" id="learningProgress">-</div>
+                    </div>
+                    <div class="metric-item scene-report-metric" style="display:none;">
+                        <div class="metric-name">跟读表现</div>
+                        <div class="metric-value" id="readingPerformance">-</div>
+                    </div>
+                </div>
+              </div>
+
+              <div class="events-title">逐句详细评估与修正建议 (Detailed Turn Analysis)</div>
+              <div class="word-legend">
+                  绿色：稳定 · 黄色：可改善 · 红色波浪线：明显发音问题 ·
+                  灰色删除线：讯飞判定疑似漏读 · 灰色点线：未可靠对齐，不等于漏读
+              </div>
+              <div id="turnsReportContainer" class="turns-report-list">
+                  <!-- Turn cards will be dynamically inserted here -->
+              </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    const eventsDiv = document.getElementById('events');
+    const startBtn = document.getElementById('startBtn');
+    const setAnswerBtn = document.getElementById('setAnswerBtn');
+    const endBtn = document.getElementById('endBtn');
+    const downloadBtn = document.getElementById('downloadBtn');
+    const copyOfferBtn = document.getElementById('copyOfferBtn');
+    const statusDot = document.getElementById('statusDot');
+    const statusText = document.getElementById('statusText');
+    const chatList = document.getElementById('chatList');
+    const newConversationBtn = document.getElementById('newConversationBtn');
+    const levelBadge = document.getElementById('levelBadge');
+    const directModeBtn = document.getElementById('directModeBtn');
+    const sceneModeBtn = document.getElementById('sceneModeBtn');
+    const scenarioBuilder = document.getElementById('scenarioBuilder');
+    const scenarioTopicInput = document.getElementById('scenarioTopicInput');
+    const generateScenarioBtn = document.getElementById('generateScenarioBtn');
+    const scenarioPromptCount = document.getElementById('scenarioPromptCount');
+    const scenarioStatus = document.getElementById('scenarioStatus');
+    const stageSteps = document.getElementById('stageSteps');
+    const learnStage = document.getElementById('learnStage');
+    const readStage = document.getElementById('readStage');
+    const speakStage = document.getElementById('speakStage');
+
+    const sendVideoCheckbox = document.getElementById('sendVideoCheckbox');
+    const scoringEnabledCheckbox = document.getElementById('scoringEnabledCheckbox');
+    const practiceConfig = document.getElementById('practiceConfig');
+    const localVideo = document.getElementById('localVideo');
+
+    const offerBox = document.getElementById('offerBox');
+    const answerBox = document.getElementById('answerBox');
+    const promptBox = document.getElementById('promptBox');
+    const promptCount = document.getElementById('promptCount');
+    const API_BASE = window.__API_BASE__ || 'http://127.0.0.1:8000';
+    let practiceMode = 'direct';
+    let activeScenario = null;
+    let currentScenarioStage = 'learn';
+    const listenedLearningIds = new Set();
+    const readingAttempts = new Map();
+    const readingPending = new Set();
+    let readingRecorder = null;
+    let readingStream = null;
+    let activeReadingSentenceId = null;
+
+    promptBox.addEventListener('input', () => {
+      promptCount.textContent = `${promptBox.value.length} / ${promptBox.maxLength}`;
+    });
+    scoringEnabledCheckbox.addEventListener('change', () => {
+      practiceConfig.style.display = practiceMode === 'direct' && scoringEnabledCheckbox.checked ? '' : 'none';
+    });
+    directModeBtn.addEventListener('click', () => setPracticeMode('direct'));
+    sceneModeBtn.addEventListener('click', () => setPracticeMode('scene'));
+    generateScenarioBtn.addEventListener('click', generateScenario);
+    document.querySelectorAll('.stage-step').forEach(button => {
+      button.addEventListener('click', () => switchScenarioStage(button.dataset.stage));
+    });
+    scenarioTopicInput.addEventListener('input', () => {
+      scenarioPromptCount.textContent = `${scenarioTopicInput.value.length} / ${scenarioTopicInput.maxLength}`;
+    });
+    scenarioTopicInput.dispatchEvent(new Event('input'));
+
+    class WavRecorder {
+      constructor() {
+        this.audioContext = null;
+        this.scriptProcessor = null;
+        this.mediaStreamSource = null;
+        this.samples = [];
+        this.recording = false;
+        this.inputSampleRate = 44100;
+        this.targetSampleRate = 16000;
+      }
+
+      start(stream) {
+        if (this.recording) return;
+        this.samples = [];
+        this.recording = true;
+        this.audioContext = new (window.AudioContext || window.webkitAudioContext)();
+        this.inputSampleRate = this.audioContext.sampleRate;
+        this.mediaStreamSource = this.audioContext.createMediaStreamSource(stream);
+        this.scriptProcessor = this.audioContext.createScriptProcessor(4096, 1, 1);
+        this.scriptProcessor.onaudioprocess = (e) => {
+          if (!this.recording) return;
+          const inputBuffer = e.inputBuffer.getChannelData(0);
+          this.samples.push(new Float32Array(inputBuffer));
+        };
+        this.mediaStreamSource.connect(this.scriptProcessor);
+        this.scriptProcessor.connect(this.audioContext.destination);
+      }
+
+      stop() {
+        if (!this.recording) return null;
+        this.recording = false;
+        if (this.scriptProcessor) {
+          this.scriptProcessor.disconnect();
+          this.scriptProcessor = null;
+        }
+        if (this.mediaStreamSource) {
+          this.mediaStreamSource.disconnect();
+          this.mediaStreamSource = null;
+        }
+        const wavBlob = this.processAudio();
+        if (this.audioContext) {
+          this.audioContext.close();
+          this.audioContext = null;
+        }
+        return wavBlob;
+      }
+
+      processAudio() {
+        const flattened = this.flatten(this.samples);
+        const downsampled = this.downsample(flattened, this.inputSampleRate, this.targetSampleRate);
+        return this.encodeWAV(downsampled, this.targetSampleRate);
+      }
+
+      flatten(chunks) {
+        let totalLength = 0;
+        for (let i = 0; i < chunks.length; i++) {
+          totalLength += chunks[i].length;
+        }
+        const result = new Float32Array(totalLength);
+        let offset = 0;
+        for (let i = 0; i < chunks.length; i++) {
+          result.set(chunks[i], offset);
+          offset += chunks[i].length;
+        }
+        return result;
+      }
+
+      downsample(samples, fromRate, toRate) {
+        if (fromRate === toRate) return samples;
+        const compression = fromRate / toRate;
+        const length = Math.round(samples.length / compression);
+        const result = new Float32Array(length);
+        for (let i = 0; i < length; i++) {
+          result[i] = samples[Math.round(i * compression)];
+        }
+        return result;
+      }
+
+      encodeWAV(samples, sampleRate) {
+        const buffer = new ArrayBuffer(44 + samples.length * 2);
+        const view = new DataView(buffer);
+        const writeString = (view, offset, string) => {
+          for (let i = 0; i < string.length; i++) {
+            view.setUint8(offset + i, string.charCodeAt(i));
+          }
+        };
+        writeString(view, 0, 'RIFF');
+        view.setUint32(4, 36 + samples.length * 2, true);
+        writeString(view, 8, 'WAVE');
+        writeString(view, 12, 'fmt ');
+        view.setUint32(16, 16, true);
+        view.setUint16(20, 1, true);
+        view.setUint16(22, 1, true);
+        view.setUint32(24, sampleRate, true);
+        view.setUint32(28, sampleRate * 2, true);
+        view.setUint16(32, 2, true);
+        view.setUint16(34, 16, true);
+        writeString(view, 36, 'data');
+        view.setUint32(40, samples.length * 2, true);
+        let offset = 44;
+        for (let i = 0; i < samples.length; i++, offset += 2) {
+          let s = Math.max(-1, Math.min(1, samples[i]));
+          view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+        }
+        return new Blob([view], { type: 'audio/wav' });
+      }
+    }
+
+    class PcmScoringStreamer {
+      constructor(socket) {
+        this.socket = socket;
+        this.audioContext = null;
+        this.source = null;
+        this.processor = null;
+        this.silentGain = null;
+      }
+
+      start(stream) {
+        const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+        this.audioContext = new AudioContextClass();
+        this.source = this.audioContext.createMediaStreamSource(stream);
+        this.processor = this.audioContext.createScriptProcessor(2048, 1, 1);
+        this.silentGain = this.audioContext.createGain();
+        this.silentGain.gain.value = 0;
+        this.processor.onaudioprocess = (event) => {
+          if (!this.socket || this.socket.readyState !== WebSocket.OPEN) return;
+          const input = event.inputBuffer.getChannelData(0);
+          const samples = this.downsample(input, this.audioContext.sampleRate, 16000);
+          const pcm = new Int16Array(samples.length);
+          for (let i = 0; i < samples.length; i++) {
+            const value = Math.max(-1, Math.min(1, samples[i]));
+            pcm[i] = value < 0 ? value * 0x8000 : value * 0x7fff;
+          }
+          this.socket.send(pcm.buffer);
+        };
+        this.source.connect(this.processor);
+        this.processor.connect(this.silentGain);
+        this.silentGain.connect(this.audioContext.destination);
+      }
+
+      downsample(input, fromRate, toRate) {
+        if (fromRate === toRate) return input;
+        const ratio = fromRate / toRate;
+        const output = new Float32Array(Math.floor(input.length / ratio));
+        for (let i = 0; i < output.length; i++) {
+          const start = Math.floor(i * ratio);
+          const end = Math.min(input.length, Math.floor((i + 1) * ratio));
+          let sum = 0;
+          for (let j = start; j < end; j++) sum += input[j];
+          output[i] = sum / Math.max(1, end - start);
+        }
+        return output;
+      }
+
+      async stop() {
+        if (this.processor) this.processor.disconnect();
+        if (this.source) this.source.disconnect();
+        if (this.silentGain) this.silentGain.disconnect();
+        if (this.audioContext) await this.audioContext.close();
+        this.processor = null;
+        this.source = null;
+        this.silentGain = null;
+        this.audioContext = null;
+      }
+    }
+
+    let wavRecorder = new WavRecorder();
+    const turnAudioBlobs = new Map();
+    const turnTranscripts = new Map();
+    let activeRecordingItemId = null;
+
+    function startLocalWavRecorder() {
+      if (localStream && !wavRecorder.recording) {
+        console.log("Starting local WAV recorder...");
+        wavRecorder.start(localStream);
+      }
+    }
+
+    function stopLocalWavRecorder() {
+      if (wavRecorder.recording) {
+        console.log("Stopping local WAV recorder...");
+        return wavRecorder.stop();
+      }
+      return null;
+    }
+
+    function uploadTurnForScoring(turnId, text, turnAudioBlob) {
+      if (!turnAudioBlob) {
+        console.warn("No audio recording found for turn:", turnId);
+        return Promise.resolve();
+      }
+      const turnIndex = ++scoringTurnSequence;
+      console.log("Uploading audio for scoring. Turn:", turnId, "Text:", text);
+
+      const request = (async () => {
+        let lastError = null;
+        for (let attempt = 1; attempt <= 3; attempt++) {
+          try {
+            const formData = new FormData();
+            formData.append('audio', turnAudioBlob, `${turnId}.wav`);
+            formData.append('text', text);
+            formData.append('turn_index', String(turnIndex));
+            const response = await fetch(`${API_BASE}/api/sessions/${sessionId}/turns/${turnId}/score`, {
+              method: 'POST',
+              body: formData
+            });
+            if (!response.ok) {
+              throw new Error(`Scoring request failed (${response.status})`);
+            }
+            const report = await response.json();
+            failedScoreTurnIds.delete(turnId);
+            console.log("Scoring report for turn:", turnId, report);
+            return;
+          } catch (err) {
+            lastError = err;
+            if (attempt < 3) {
+              await new Promise(resolve => setTimeout(resolve, attempt * 800));
+            }
+          }
+        }
+        failedScoreTurnIds.add(turnId);
+        console.error("Error uploading turn for scoring after retries:", lastError);
+      })().finally(() => {
+        pendingScoreWrites.delete(request);
+      });
+      pendingScoreWrites.add(request);
+      return request;
+    }
+
+    function tryQueueTurnForScoring(turnId) {
+      if (!turnId || queuedScoreTurnIds.has(turnId)) return false;
+      const text = turnTranscripts.get(turnId);
+      const turnAudioBlob = turnAudioBlobs.get(turnId);
+      if (!text || !turnAudioBlob) return false;
+
+      queuedScoreTurnIds.add(turnId);
+      turnTranscripts.delete(turnId);
+      turnAudioBlobs.delete(turnId);
+      uploadTurnForScoring(turnId, text, turnAudioBlob);
+      return true;
+    }
+
+    function openReportModal(report) {
+      document.getElementById('reportLoading').style.display = 'none';
+      document.getElementById('reportContent').style.display = 'block';
+      document.getElementById('reportCloseButton').style.display = '';
+      document.querySelector('.report-header h2').textContent = activeScenario
+        ? '学 · 读 · 说场景训练报告'
+        : '口语学习成绩单 (Speech Report Card)';
+      document.getElementById('overallScore').textContent = report.overall_score ?? '-';
+      
+      const pronPerformance = document.getElementById('pronPerformance');
+      pronPerformance.textContent = report.pronunciation_performance != null ? report.pronunciation_performance + ' / 100' : '-';
+      setClassByScore(pronPerformance, report.pronunciation_performance);
+
+      const languageQuality = document.getElementById('languageQuality');
+      languageQuality.textContent = report.language_quality != null ? report.language_quality + ' / 100' : '-';
+      setClassByScore(languageQuality, report.language_quality);
+
+      const taskPerformance = document.getElementById('taskPerformance');
+      taskPerformance.textContent = report.task_performance != null ? report.task_performance + ' / 100' : '-';
+      setClassByScore(taskPerformance, report.task_performance);
+
+      document.getElementById('effectiveTurns').textContent =
+        `${report.effective_turn_count ?? 0} / ${report.total_turn_count ?? 0}`;
+
+      document.querySelectorAll('.scene-report-metric').forEach(item => {
+        item.style.display = activeScenario ? '' : 'none';
+      });
+      if (activeScenario) {
+        document.getElementById('learningProgress').textContent =
+          `${listenedLearningIds.size} / ${allScenarioItems().length}`;
+        const bestScores = (activeScenario.sentences || [])
+          .map(sentence => bestReadingAttempt(sentence.id))
+          .filter(Boolean)
+          .map(attempt => Number(attempt.pronunciation_performance));
+        const readingAverage = bestScores.length
+          ? bestScores.reduce((sum, score) => sum + score, 0) / bestScores.length
+          : null;
+        const readingPerformance = document.getElementById('readingPerformance');
+        readingPerformance.textContent = readingAverage == null
+          ? `0 / ${(activeScenario.sentences || []).length} 句`
+          : `${readingAverage.toFixed(1)} / 100`;
+        setClassByScore(readingPerformance, readingAverage);
+      }
+
+      const container = document.getElementById('turnsReportContainer');
+      container.innerHTML = '';
+
+      if (!report.turns || report.turns.length === 0) {
+        container.innerHTML = '<div class="events-empty">没有评估数据，请说几句英语再试。</div>';
+      } else {
+        report.turns.forEach((turn, idx) => {
+          const card = document.createElement('div');
+          card.className = 'turn-report-card';
+
+          const turnNum = document.createElement('div');
+          turnNum.className = 'turn-number';
+          turnNum.textContent = `Sentence #${idx + 1}`;
+          card.appendChild(turnNum);
+
+          const transcriptDiv = document.createElement('div');
+          transcriptDiv.className = 'turn-transcript';
+          
+          const pron = turn.pronunciation || {};
+          const words = pron.aligned_words || pron.words || [];
+          
+          if (words.length > 0) {
+            words.forEach(w => {
+              const span = document.createElement('span');
+              const err = w.error_type;
+              const score = Number(w.score);
+              const hasScore = w.score != null && w.score !== '' && Number.isFinite(score);
+              const alignmentUncertain = err === 'Unaligned' ||
+                w.alignment === 'provider_unmatched' ||
+                w.alignment === 'reference_unmatched';
+              
+              if (alignmentUncertain) {
+                span.className = 'word-unaligned';
+                span.textContent = w.word + ' ';
+                span.title = '评分序列未可靠对齐，不代表用户漏读';
+              } else if (err === 'Omission') {
+                span.className = 'word-omitted';
+                span.textContent = w.word + ' ';
+                span.title = '讯飞音素评分判定为疑似漏读';
+              } else if (err === 'Insertion' || err === 'Substitution' || err === 'Repetition' || (hasScore && score < 60)) {
+                span.className = 'word-bad';
+                span.textContent = w.word + ' ';
+                span.title = `发音较差: ${score}`;
+              } else if (!hasScore) {
+                span.className = 'word-unaligned';
+                span.textContent = w.word + ' ';
+                span.title = '未获得可靠的逐词评分';
+              } else if (score < 85) {
+                span.className = 'word-ok';
+                span.textContent = w.word + ' ';
+                span.title = `发音一般: ${score}`;
+              } else {
+                span.className = 'word-good';
+                span.textContent = w.word + ' ';
+                span.title = `发音优秀: ${score}`;
+              }
+              transcriptDiv.appendChild(span);
+            });
+          } else {
+            transcriptDiv.textContent = turn.text;
+          }
+          card.appendChild(transcriptDiv);
+
+          const details = document.createElement('div');
+          details.className = 'evaluation-details';
+
+          if (turn.status === 'unscorable' || turn.scorable === false) {
+            const unavailableNote = document.createElement('div');
+            unavailableNote.className = 'turn-status-note unscorable';
+            unavailableNote.textContent = turn.error_reason ||
+              '本句无法可靠评分，已从平均分中排除。';
+            details.appendChild(unavailableNote);
+            card.appendChild(details);
+            container.appendChild(card);
+            return;
+          }
+
+          if (turn.short_response) {
+            const shortNote = document.createElement('div');
+            shortNote.className = 'turn-status-note short-response';
+            shortNote.textContent = '短回答：发音评分正常计入；语法和词汇结果仅供参考。';
+            details.appendChild(shortNote);
+          }
+
+          const grammar = turn.grammar || {};
+          const dimensions = document.createElement('div');
+          dimensions.className = 'score-detail-row';
+          const dimensionValues = [];
+          if (turn.pronunciation_performance != null) dimensionValues.push(`发音表现 ${turn.pronunciation_performance}`);
+          if (turn.language_quality != null) dimensionValues.push(`语言质量 ${turn.language_quality}`);
+          if (turn.turn_score != null) dimensionValues.push(`本轮总分 ${turn.turn_score}`);
+          dimensions.textContent = dimensionValues.join(' · ');
+          if (dimensionValues.length) details.appendChild(dimensions);
+          if (grammar.feedback) {
+            const fbTitle = document.createElement('div');
+            fbTitle.className = 'eval-section-title';
+            fbTitle.textContent = '💡 语法与用词建议：';
+            details.appendChild(fbTitle);
+
+            const fbBox = document.createElement('div');
+            fbBox.className = 'grammar-feedback';
+            fbBox.textContent = grammar.feedback;
+            details.appendChild(fbBox);
+          }
+
+          if (grammar.suggested_expressions && grammar.suggested_expressions.length > 0) {
+            const suggTitle = document.createElement('div');
+            suggTitle.className = 'eval-section-title';
+            suggTitle.textContent = '✨ 更地道的表达：';
+            details.appendChild(suggTitle);
+
+            const suggUl = document.createElement('ul');
+            suggUl.className = 'suggested-list';
+            grammar.suggested_expressions.forEach(sugg => {
+              const li = document.createElement('li');
+              li.textContent = sugg;
+              suggUl.appendChild(li);
+            });
+            details.appendChild(suggUl);
+          }
+          
+          if (details.children.length > 0) {
+            card.appendChild(details);
+          }
+          container.appendChild(card);
+        });
+      }
+      document.getElementById('reportModal').style.display = 'flex';
+    }
+
+    function openReportLoading(pendingCount = 0) {
+      const detail = pendingCount > 0
+        ? `正在等待 ${pendingCount} 条单句评分完成。发音、语法、词汇和逐句建议全部生成后会自动展示。`
+        : '正在汇总发音、语法、词汇和逐句建议，完整成绩单生成后会自动展示。';
+      document.getElementById('reportLoadingTitle').textContent = '正在生成完整成绩单';
+      document.getElementById('reportLoadingDetail').textContent = detail;
+      document.getElementById('reportLoadingSpinner').style.display = '';
+      document.getElementById('reportLoading').style.display = 'flex';
+      document.getElementById('reportContent').style.display = 'none';
+      document.getElementById('reportCloseButton').style.display = 'none';
+      document.getElementById('reportModal').style.display = 'flex';
+    }
+
+    function showReportLoadingError(message) {
+      document.getElementById('reportLoadingTitle').textContent = '成绩单生成失败';
+      document.getElementById('reportLoadingDetail').textContent = message;
+      document.getElementById('reportLoadingSpinner').style.display = 'none';
+      document.getElementById('reportCloseButton').style.display = '';
+    }
+
+    function setClassByScore(element, score) {
+      element.classList.remove('good', 'warn', 'bad');
+      if (score == null) return;
+      if (score >= 80) {
+        element.classList.add('good');
+      } else if (score >= 60) {
+        element.classList.add('warn');
+      } else {
+        element.classList.add('bad');
+      }
+    }
+
+    function closeReportModal() {
+      document.getElementById('reportModal').style.display = 'none';
+    }
+
+    let pc = null;
+    let sessionId = null;
+    let conversationId = localStorage.getItem('englishCoachConversationId');
+    if (conversationId && !/^[A-Za-z0-9_-]{8,64}$/.test(conversationId)) {
+      localStorage.removeItem('englishCoachConversationId');
+      conversationId = null;
+    }
+    let sessionConfig = null;
+    let sessionScoringEnabled = false;
+    let scoringSocket = null;
+    let pcmScoringStreamer = null;
+    let activeScoringTurnId = null;
+    let scoringTurnSequence = 0;
+    const scoringTurnToChatKey = new Map();
+    const pendingStreamingScores = new Set();
+    let hiddenRemoteAudioEl = null;
+
+    let mediaRecorder = null;
+    let recordedChunks = [];
+    let audioBlob = null;
+
+    let localStream = null;
+
+    let sendCanvas = null;
+    let sendCanvasCtx = null;
+    let sendCanvasStream = null;
+    let sendRafId = 0;
+
+    let gatedAudioTracks = [];
+    let gatedVideoTracks = [];
+    let audioSender = null;
+    let videoSender = null;
+    let audioTrack = null;
+    let videoTrack = null;
+    const chatMessages = new Map();
+    const chatOrder = [];
+    const processedToolCallIds = new Set();
+    const pendingEventWrites = new Set();
+    const pendingLatencyWrites = new Set();
+    const pendingScoreWrites = new Set();
+    const pendingTranscriptItems = new Set();
+    const expectedScoreTurnIds = new Set();
+    const queuedScoreTurnIds = new Set();
+    const failedScoreTurnIds = new Set();
+    let finalizingSession = false;
+    let turnSequence = 0;
+    let currentLatency = null;
+    let lastResponseCreatedAt = 0;
+    let transcriptionFallbackTimer = 0;
+    let remoteAudioContext = null;
+    let remoteAudioSource = null;
+    let remoteAudioAnalyser = null;
+    let remoteAudioMonitorRaf = 0;
+    let remoteAudioAudible = false;
+    let remoteAudioSilenceFrames = 0;
+    let qualityStatsTimer = 0;
+    let sessionStartedAt = 0;
+    let qualityStats = null;
+    let activeUserItemId = null;
+
+    function rekeyTurnState(oldKey, newKey) {
+      if (!oldKey || !newKey || oldKey === newKey) return;
+      if (pendingTranscriptItems.delete(oldKey)) {
+        pendingTranscriptItems.add(newKey);
+      }
+      if (turnAudioBlobs.has(oldKey) && !turnAudioBlobs.has(newKey)) {
+        turnAudioBlobs.set(newKey, turnAudioBlobs.get(oldKey));
+        turnAudioBlobs.delete(oldKey);
+      }
+      if (turnTranscripts.has(oldKey) && !turnTranscripts.has(newKey)) {
+        turnTranscripts.set(newKey, turnTranscripts.get(oldKey));
+        turnTranscripts.delete(oldKey);
+      }
+      if (activeRecordingItemId === oldKey) {
+        activeRecordingItemId = newKey;
+      }
+    }
+
+    async function waitForFinalTurnInputs(timeoutMs = 45000) {
+      const deadline = Date.now() + timeoutMs;
+      while (Date.now() < deadline) {
+        const waitingForTranscript = pendingTranscriptItems.size > 0;
+        const waitingForAudioPair =
+          queuedScoreTurnIds.size < expectedScoreTurnIds.size;
+        const waitingForStreamingScore = sessionScoringEnabled && pendingStreamingScores.size > 0;
+        if (!waitingForTranscript && !waitingForAudioPair &&
+            !waitingForStreamingScore && !wavRecorder.recording) {
+          return true;
+        }
+        await new Promise(resolve => setTimeout(resolve, 100));
+      }
+      return pendingTranscriptItems.size === 0 &&
+        queuedScoreTurnIds.size >= expectedScoreTurnIds.size &&
+        (!sessionScoringEnabled || pendingStreamingScores.size === 0);
+    }
+
+    function setStatus(text, state) {
+      statusText.textContent = text;
+      statusDot.className = 'status-dot' + (state ? ' ' + state : '');
+    }
+
+    function gateMedia(on) {
+      for (const t of gatedAudioTracks) t.enabled = !!on;
+      for (const t of gatedVideoTracks) t.enabled = !!on;
+    }
+
+    function sendUpdate(channel) {
+      if (!sessionConfig) throw new Error('Session config is unavailable');
+      const update = {
+        event_id: `event_${Date.now()}`,
+        type: "session.update",
+        session: sessionConfig,
+      };
+      if (channel && channel.readyState === "open") {
+        channel.send(JSON.stringify(update));
+        pushEventFromDataChannel(update);
+      }
+    }
+
+    async function apiRequest(path, options = {}) {
+      let response;
+      try {
+        response = await fetch(`${API_BASE}${path}`, options);
+      } catch (error) {
+        throw new Error(`无法连接后端 ${API_BASE}。请确认 8000 端口服务已启动，再重新操作。`);
+      }
+      const contentType = response.headers.get('content-type') || '';
+      const body = contentType.includes('application/json')
+        ? await response.json()
+        : await response.text();
+      if (!response.ok) {
+        const message = typeof body === 'object' ? body.error : body;
+        throw new Error(message || `API request failed (${response.status})`);
+      }
+      return body;
+    }
+
+    function syncStartAvailability() {
+      if (pc || finalizingSession) return;
+      startBtn.disabled = practiceMode === 'scene' &&
+        (!activeScenario || currentScenarioStage !== 'speak');
+    }
+
+    function setPracticeMode(mode) {
+      if (pc) {
+        alert('请先结束当前对话再切换练习方式。');
+        return;
+      }
+      if (activeReadingSentenceId) {
+        alert('请先完成当前句子的跟读录音。');
+        return;
+      }
+      practiceMode = mode;
+      directModeBtn.classList.toggle('active', mode === 'direct');
+      sceneModeBtn.classList.toggle('active', mode === 'scene');
+      scenarioBuilder.style.display = mode === 'scene' ? 'block' : 'none';
+      practiceConfig.style.display = mode === 'direct' && scoringEnabledCheckbox.checked ? '' : 'none';
+      syncStartAvailability();
+    }
+
+    function switchScenarioStage(stage) {
+      if (!activeScenario) return;
+      if (activeReadingSentenceId && stage !== 'read') {
+        alert('请先完成当前句子的跟读录音。');
+        return;
+      }
+      window.speechSynthesis?.cancel();
+      currentScenarioStage = stage;
+      document.querySelectorAll('.stage-step').forEach(button => {
+        button.classList.toggle('active', button.dataset.stage === stage);
+      });
+      learnStage.classList.toggle('active', stage === 'learn');
+      readStage.classList.toggle('active', stage === 'read');
+      speakStage.classList.toggle('active', stage === 'speak');
+      syncStartAvailability();
+      if (stage === 'speak') {
+        setStatus('场景准备完成，可以开始对话', '');
+      }
+    }
+
+    function speakLearningText(text, itemId) {
+      if (!('speechSynthesis' in window)) {
+        alert('当前浏览器不支持语音播放。');
+        return;
+      }
+      window.speechSynthesis.cancel();
+      const utterance = new SpeechSynthesisUtterance(text);
+      utterance.lang = 'en-US';
+      utterance.rate = 0.86;
+      utterance.pitch = 1;
+      const englishVoice = window.speechSynthesis.getVoices()
+        .find(voice => /^en[-_]/i.test(voice.lang));
+      if (englishVoice) utterance.voice = englishVoice;
+      utterance.onstart = () => {
+        if (itemId) listenedLearningIds.add(itemId);
+        updateLearningProgress();
+      };
+      window.speechSynthesis.speak(utterance);
+    }
+
+    function allScenarioItems() {
+      if (!activeScenario) return [];
+      return [
+        ...(activeScenario.words || []),
+        ...(activeScenario.phrases || []),
+        ...(activeScenario.sentences || []),
+      ];
+    }
+
+    function updateLearningProgress() {
+      const progress = document.getElementById('scenarioLearningProgress');
+      if (progress) progress.textContent = `已播放 ${listenedLearningIds.size} / ${allScenarioItems().length}`;
+    }
+
+    function createLearningSection(title, items) {
+      const section = document.createElement('div');
+      section.className = 'learning-section';
+      const heading = document.createElement('h3');
+      heading.textContent = title;
+      const grid = document.createElement('div');
+      grid.className = 'learning-grid';
+      items.forEach(item => {
+        const card = document.createElement('div');
+        card.className = 'learning-item';
+        const copy = document.createElement('div');
+        const text = document.createElement('div');
+        text.className = 'learning-text';
+        text.textContent = item.text;
+        const meaning = document.createElement('div');
+        meaning.className = 'learning-meaning';
+        meaning.textContent = item.meaning || '';
+        copy.append(text, meaning);
+        const play = document.createElement('button');
+        play.className = 'play-btn';
+        play.textContent = '▶ 播放';
+        play.onclick = () => speakLearningText(item.text, item.id);
+        card.append(copy, play);
+        grid.appendChild(card);
+      });
+      section.append(heading, grid);
+      return section;
+    }
+
+    function renderLearningStage() {
+      learnStage.innerHTML = '';
+      const summary = document.createElement('div');
+      summary.className = 'scenario-summary';
+      summary.innerHTML = `<strong>${escapeHtml(activeScenario.title)}</strong><br>${escapeHtml(activeScenario.goal || '')}<br><span id="scenarioLearningProgress"></span>`;
+      learnStage.appendChild(summary);
+      learnStage.appendChild(createLearningSection('场景单词', activeScenario.words || []));
+      learnStage.appendChild(createLearningSection('实用短语', activeScenario.phrases || []));
+      learnStage.appendChild(createLearningSection('核心句子', activeScenario.sentences || []));
+      const footer = document.createElement('div');
+      footer.className = 'stage-footer';
+      const next = document.createElement('button');
+      next.className = 'btn-primary';
+      next.textContent = '进入句子跟读 →';
+      next.onclick = () => switchScenarioStage('read');
+      footer.appendChild(next);
+      learnStage.appendChild(footer);
+      updateLearningProgress();
+    }
+
+    function readingWordClass(word) {
+      if (word.error_type === 'Omission') return 'word-omitted';
+      const score = Number(word.score);
+      if (['Insertion', 'Substitution', 'Repetition'].includes(word.error_type) || score < 60) return 'word-bad';
+      if (score < 85) return 'word-ok';
+      return 'word-good';
+    }
+
+    function renderReadingResult(container, attempt) {
+      container.innerHTML = '';
+      if (!attempt) return;
+      const score = document.createElement('div');
+      score.innerHTML = `<strong>跟读表现：${Number(attempt.pronunciation_performance).toFixed(1)}</strong> · ` +
+        `准确度 ${attempt.pronunciation?.accuracy_score ?? '-'} · 流利度 ${attempt.pronunciation?.fluency_score ?? '-'} · 完整度 ${attempt.pronunciation?.integrity_score ?? '-'}`;
+      const words = document.createElement('div');
+      words.className = 'reading-words';
+      (attempt.pronunciation?.words || []).forEach(word => {
+        const span = document.createElement('span');
+        span.className = readingWordClass(word);
+        span.textContent = `${word.word} `;
+        span.title = `${word.error_type || 'None'} · ${word.score}`;
+        words.appendChild(span);
+      });
+      container.append(score, words);
+    }
+
+    function bestReadingAttempt(sentenceId) {
+      const attempts = readingAttempts.get(sentenceId) || [];
+      return attempts.reduce((best, item) => !best ||
+        Number(item.pronunciation_performance) > Number(best.pronunciation_performance) ? item : best, null);
+    }
+
+    function renderReadingStage() {
+      readStage.innerHTML = '';
+      const hint = document.createElement('div');
+      hint.className = 'card-hint';
+      hint.textContent = '先听示范，再完整朗读句子。单词和短语不要求跟读。';
+      const list = document.createElement('div');
+      list.className = 'reading-list learning-section';
+      (activeScenario.sentences || []).forEach(sentence => {
+        const card = document.createElement('div');
+        card.className = 'reading-card';
+        const head = document.createElement('div');
+        head.className = 'reading-card-head';
+        const copy = document.createElement('div');
+        const text = document.createElement('div');
+        text.className = 'learning-text';
+        text.textContent = sentence.text;
+        const meaning = document.createElement('div');
+        meaning.className = 'learning-meaning';
+        meaning.textContent = sentence.meaning || '';
+        copy.append(text, meaning);
+        const actions = document.createElement('div');
+        actions.className = 'reading-actions';
+        const play = document.createElement('button');
+        play.className = 'play-btn';
+        play.textContent = '▶ 示范';
+        play.onclick = () => speakLearningText(sentence.text, sentence.id);
+        const record = document.createElement('button');
+        record.className = activeReadingSentenceId === sentence.id ? 'btn-danger' : 'btn-primary';
+        record.textContent = activeReadingSentenceId === sentence.id ? '■ 完成' :
+          (readingPending.has(sentence.id) ? '评分中…' : '● 跟读');
+        record.disabled = readingPending.has(sentence.id) ||
+          (activeReadingSentenceId && activeReadingSentenceId !== sentence.id);
+        record.onclick = () => toggleReadingAttempt(sentence.id);
+        actions.append(play, record);
+        head.append(copy, actions);
+        const result = document.createElement('div');
+        result.className = 'reading-result';
+        const best = bestReadingAttempt(sentence.id);
+        result.style.display = best ? '' : 'none';
+        if (best) renderReadingResult(result, best);
+        card.append(head, result);
+        list.appendChild(card);
+      });
+      const footer = document.createElement('div');
+      footer.className = 'stage-footer';
+      const back = document.createElement('button');
+      back.textContent = '← 返回学习';
+      back.onclick = () => switchScenarioStage('learn');
+      const next = document.createElement('button');
+      next.className = 'btn-primary';
+      next.textContent = '进入场景对话 →';
+      next.onclick = () => switchScenarioStage('speak');
+      footer.append(back, next);
+      readStage.append(hint, list, footer);
+    }
+
+    async function toggleReadingAttempt(sentenceId) {
+      if (pc) return alert('请先结束实时对话。');
+      if (activeReadingSentenceId === sentenceId) {
+        await finishReadingAttempt(sentenceId);
+        return;
+      }
+      window.speechSynthesis?.cancel();
+      try {
+        readingStream = await navigator.mediaDevices.getUserMedia({ audio: true, video: false });
+        readingRecorder = new WavRecorder();
+        readingRecorder.start(readingStream);
+        activeReadingSentenceId = sentenceId;
+        renderReadingStage();
+        setStatus('正在录制跟读，读完后点击“完成”', 'connecting');
+      } catch (error) {
+        alert(error.message || '无法使用麦克风');
+      }
+    }
+
+    async function finishReadingAttempt(sentenceId) {
+      const recorder = readingRecorder;
+      const stream = readingStream;
+      readingRecorder = null;
+      readingStream = null;
+      activeReadingSentenceId = null;
+      const blob = recorder?.stop();
+      stream?.getTracks().forEach(track => track.stop());
+      if (!blob || blob.size < 3200) {
+        renderReadingStage();
+        return alert('录音时间太短，请重新完整朗读。');
+      }
+      readingPending.add(sentenceId);
+      renderReadingStage();
+      setStatus('正在进行句子音素评分…', 'connecting');
+      try {
+        const form = new FormData();
+        form.append('sentence_id', sentenceId);
+        form.append('audio', blob, `${sentenceId}.wav`);
+        const attempt = await apiRequest(
+          `/api/scenarios/${encodeURIComponent(activeScenario.scenario_id)}/reading-attempts`,
+          { method: 'POST', body: form }
+        );
+        const attempts = readingAttempts.get(sentenceId) || [];
+        attempts.push(attempt);
+        readingAttempts.set(sentenceId, attempts);
+        setStatus('跟读评分完成', 'connected');
+      } catch (error) {
+        alert(error.message || '跟读评分失败');
+        setStatus('跟读评分失败，可重新尝试', 'error');
+      } finally {
+        readingPending.delete(sentenceId);
+        renderReadingStage();
+      }
+    }
+
+    function renderSpeakStage() {
+      speakStage.innerHTML = '';
+      const summary = document.createElement('div');
+      summary.className = 'scenario-summary';
+      summary.innerHTML = `<strong>${escapeHtml(activeScenario.title)}</strong><br>${escapeHtml(activeScenario.goal || '')}<br>` +
+        '接下来进入自由场景对话，继续使用现有的发音、语言质量和任务完成度评分。';
+      const footer = document.createElement('div');
+      footer.className = 'stage-footer';
+      const back = document.createElement('button');
+      back.textContent = '← 返回跟读';
+      back.onclick = () => switchScenarioStage('read');
+      const start = document.createElement('button');
+      start.className = 'btn-primary';
+      start.textContent = '开始场景对话';
+      start.onclick = () => startBtn.click();
+      footer.append(back, start);
+      speakStage.append(summary, footer);
+    }
+
+    function scenarioConversationPrompt() {
+      if (!activeScenario) return promptBox.value.trim();
+      const phrases = (activeScenario.phrases || []).map(item => item.text).join(', ');
+      const sentences = (activeScenario.sentences || []).map(item => item.text).join(' | ');
+      return `用户的完整场景与教学要求：\n${activeScenario.topic || ''}\n\n` +
+        `生成的场景：${activeScenario.title}\n任务目标：${activeScenario.goal}\n` +
+        `可参考但不强制使用的表达：${phrases}\n学习句子：${sentences}\n` +
+        '请围绕该场景进行自然角色扮演，并判断用户是否完成任务。';
+    }
+
+    async function generateScenario() {
+      if (pc) return alert('请先结束当前对话。');
+      if (activeReadingSentenceId) return alert('请先完成当前句子的跟读录音。');
+      const topic = scenarioTopicInput.value.trim();
+      if (!topic) return alert('请输入场景主题。');
+      generateScenarioBtn.disabled = true;
+      scenarioStatus.textContent = '正在生成场景单词、短语和句子…';
+      try {
+        activeScenario = await apiRequest('/api/scenarios', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ topic, learner_level: 3 }),
+        });
+        listenedLearningIds.clear();
+        readingAttempts.clear();
+        stageSteps.style.display = 'flex';
+        promptBox.value = scenarioConversationPrompt();
+        promptBox.dispatchEvent(new Event('input'));
+        scoringEnabledCheckbox.checked = true;
+        renderLearningStage();
+        renderReadingStage();
+        renderSpeakStage();
+        switchScenarioStage('learn');
+        scenarioStatus.textContent = '场景内容已生成，请按照“学—读—说”完成练习。';
+      } catch (error) {
+        scenarioStatus.textContent = error.message || '场景生成失败，请重试。';
+      } finally {
+        generateScenarioBtn.disabled = false;
+      }
+    }
+
+    function escapeHtml(value) {
+      return String(value || '').replace(/[&<>'"]/g, char => ({
+        '&': '&amp;', '<': '&lt;', '>': '&gt;', "'": '&#39;', '"': '&quot;'
+      })[char]);
+    }
+
+    async function createBackendSession() {
+      return apiRequest('/api/sessions', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({
+          prompt: practiceMode === 'scene' ? scenarioConversationPrompt() : promptBox.value.trim(),
+          scenario_id: activeScenario?.scenario_id || null,
+          scenario_requirements: practiceMode === 'scene' ? (activeScenario?.topic || '') : null,
+          conversation_id: conversationId,
+          scoring_enabled: scoringEnabledCheckbox.checked,
+        }),
+      });
+    }
+
+    function sendScoringControl(event) {
+      if (scoringSocket?.readyState === WebSocket.OPEN) {
+        scoringSocket.send(JSON.stringify(event));
+        return true;
+      }
+      return false;
+    }
+
+    async function startScoringStream() {
+      if (!sessionScoringEnabled || !sessionId || !localStream) return;
+      const apiUrl = new URL(API_BASE);
+      const protocol = apiUrl.protocol === 'https:' ? 'wss:' : 'ws:';
+      const url = `${protocol}//${apiUrl.host}/api/scoring-stream?session_id=${encodeURIComponent(sessionId)}`;
+      scoringSocket = new WebSocket(url);
+      scoringSocket.binaryType = 'arraybuffer';
+      await new Promise((resolve, reject) => {
+        const timer = setTimeout(() => reject(new Error('Scoring stream connection timed out')), 8000);
+        scoringSocket.onopen = () => {
+          clearTimeout(timer);
+          sendScoringControl({
+            type: 'stream.start',
+            session_id: sessionId,
+            audio_format: {
+              encoding: 'pcm_s16le', sample_rate: 16000,
+              channels: 1, frame_duration_ms: 40,
+            },
+          });
+          resolve();
+        };
+        scoringSocket.onerror = () => {
+          clearTimeout(timer);
+          reject(new Error('Unable to connect scoring stream'));
+        };
+      });
+      scoringSocket.onmessage = (event) => {
+        let message;
+        try { message = JSON.parse(event.data); } catch { return; }
+        if (message.type === 'turn.score_completed') {
+          const key = scoringTurnToChatKey.get(message.turn_id);
+          const chatMessage = key ? chatMessages.get(key) : null;
+          if (chatMessage) {
+            chatMessage.scoreStatus = message.result?.status || 'scored';
+            chatMessage.score = message.result;
+          }
+          pendingStreamingScores.delete(message.turn_id);
+          renderChatMessages();
+        } else if (message.type === 'turn.score_status') {
+          const key = scoringTurnToChatKey.get(message.turn_id);
+          const chatMessage = key ? chatMessages.get(key) : null;
+          if (chatMessage) chatMessage.scoreStatus = message.status;
+          renderChatMessages();
+        }
+      };
+      pcmScoringStreamer = new PcmScoringStreamer(scoringSocket);
+      pcmScoringStreamer.start(localStream);
+    }
+
+    function rememberEvent(eventObj) {
+      if (!sessionId) return;
+      const request = fetch(`${API_BASE}/api/sessions/${encodeURIComponent(sessionId)}/events`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ event: eventObj }),
+      }).catch((error) => {
+        console.warn('Failed to save session event:', error);
+      }).finally(() => {
+        pendingEventWrites.delete(request);
+      });
+      pendingEventWrites.add(request);
+    }
+
+    function renderConversation(history = []) {
+      chatMessages.clear();
+      chatOrder.length = 0;
+      history.forEach((message, index) => {
+        const key = `history:${index}:${message.source_id || ''}`;
+        chatMessages.set(key, {
+          role: message.role,
+          text: message.text,
+          final: true,
+        });
+        chatOrder.push(key);
+      });
+      renderChatMessages();
+    }
+
+    function renderChatMessages() {
+      chatList.innerHTML = '';
+      if (!chatOrder.length) {
+        const empty = document.createElement('div');
+        empty.className = 'chat-empty';
+        empty.textContent = "Start a session and speak naturally. Your words and the AI reply will appear here in real time.";
+        chatList.appendChild(empty);
+        return;
+      }
+
+      for (const key of chatOrder) {
+        const message = chatMessages.get(key);
+        if (!message?.text) continue;
+        const row = document.createElement('div');
+        row.className = `message-row ${message.role}${message.final ? '' : ' partial'}`;
+
+        const label = document.createElement('div');
+        label.className = 'message-label';
+        label.textContent = message.role === 'user' ? 'You' : 'AI';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'message-bubble';
+        const messageText = document.createElement('div');
+        messageText.textContent = message.text;
+        bubble.appendChild(messageText);
+
+        if (message.role === 'user' && message.scoreStatus) {
+          const scoreMeta = document.createElement('div');
+          scoreMeta.className = `message-score ${message.score ? '' : 'pending'}`;
+          const result = message.score;
+          if (!result) {
+            const labels = {
+              correcting_reference: '正在校正发音参考文本…',
+              scoring: '发音与语言评分中…',
+            };
+            scoreMeta.textContent = labels[message.scoreStatus] || '评分中…';
+          } else if (result.turn_score != null) {
+            scoreMeta.textContent = `${result.turn_score} · 查看本轮反馈`;
+          } else if (result.status === 'skipped_short_answer' && result.pronunciation_performance != null) {
+            scoreMeta.textContent = `发音 ${result.pronunciation_performance} · 有效短回答`;
+          } else if (result.status === 'partially_scored') {
+            scoreMeta.textContent = '部分评分完成 · 查看详情';
+          } else {
+            scoreMeta.textContent = result.error_reason || '本轮暂时无法可靠评分';
+          }
+          bubble.appendChild(scoreMeta);
+
+          if (result) {
+            const detail = document.createElement('div');
+            detail.className = 'message-score-detail';
+            const pron = result.pronunciation || {};
+            const language = result.grammar || {};
+            const scoreParts = [];
+            if (result.pronunciation_performance != null) scoreParts.push(`发音表现 ${result.pronunciation_performance}`);
+            if (language.grammar_score != null) scoreParts.push(`语法 ${language.grammar_score}`);
+            if (language.vocab_score != null) scoreParts.push(`词汇 ${language.vocab_score}`);
+            if (language.naturalness_score != null) scoreParts.push(`自然度 ${language.naturalness_score}`);
+            const scoreRow = document.createElement('div');
+            scoreRow.className = 'score-detail-row';
+            scoreRow.textContent = scoreParts.join(' · ') || '暂无可用分项';
+            detail.appendChild(scoreRow);
+            if (language.feedback) {
+              const feedback = document.createElement('div');
+              feedback.textContent = `建议：${language.feedback}`;
+              detail.appendChild(feedback);
+            }
+            if (language.corrected_expression) {
+              const corrected = document.createElement('div');
+              corrected.textContent = `修正表达：${language.corrected_expression}`;
+              detail.appendChild(corrected);
+            }
+            const alignedWords = pron.aligned_words || pron.words || [];
+            const weakWords = alignedWords.filter(word => {
+              if (word.error_type === 'Unaligned') return false;
+              const score = Number(word.score);
+              const hasScore = word.score != null && word.score !== '' && Number.isFinite(score);
+              return word.error_type !== 'None' || (hasScore && score < 70);
+            });
+            if (weakWords.length) {
+              const words = document.createElement('div');
+              words.textContent = `发音关注：${weakWords.map(word => `${word.word} (${word.score})`).join('、')}`;
+              detail.appendChild(words);
+            }
+            const unalignedWords = alignedWords.filter(word => word.error_type === 'Unaligned');
+            if (unalignedWords.length) {
+              const uncertain = document.createElement('div');
+              uncertain.textContent = `未可靠对齐：${unalignedWords.map(word => word.word).join('、')}（不判定为漏读）`;
+              detail.appendChild(uncertain);
+            }
+            scoreMeta.onclick = () => detail.classList.toggle('open');
+            bubble.appendChild(detail);
+          }
+        }
+
+        row.appendChild(label);
+        row.appendChild(bubble);
+        chatList.appendChild(row);
+      }
+      chatList.scrollTop = chatList.scrollHeight;
+    }
+
+    function upsertChatMessage(key, role, text, final, append = false) {
+      if (!text) return;
+      const existing = chatMessages.get(key);
+      if (!existing) chatOrder.push(key);
+      chatMessages.set(key, {
+        ...(existing || {}),
+        role,
+        text: append && existing ? existing.text + text : text,
+        final: !!final,
+      });
+      renderChatMessages();
+    }
+
+    function rekeyChatMessage(oldKey, newKey) {
+      if (!oldKey || oldKey === newKey || !chatMessages.has(oldKey)) return;
+      const oldMessage = chatMessages.get(oldKey);
+      if (!chatMessages.has(newKey)) {
+        chatMessages.set(newKey, oldMessage);
+        const orderIndex = chatOrder.indexOf(oldKey);
+        if (orderIndex >= 0) chatOrder[orderIndex] = newKey;
+      } else {
+        const oldOrderIndex = chatOrder.indexOf(oldKey);
+        if (oldOrderIndex >= 0) chatOrder.splice(oldOrderIndex, 1);
+      }
+      chatMessages.delete(oldKey);
+    }
+
+    function handleConversationEvent(event) {
+      const type = event?.type;
+      const eventItemId = event?.item_id || null;
+      const isUserTranscript =
+        type === 'conversation.item.input_audio_transcription.delta' ||
+        type === 'conversation.item.input_audio_transcription.text' ||
+        type === 'conversation.item.input_audio_transcription.completed' ||
+        type === 'conversation.item.input_audio_transcription.failed';
+      if (isUserTranscript && eventItemId && activeUserItemId &&
+          eventItemId !== activeUserItemId) {
+        rekeyTurnState(activeUserItemId, eventItemId);
+        rekeyChatMessage(
+          `user:${activeUserItemId}`,
+          `user:${eventItemId}`
+        );
+        activeUserItemId = eventItemId;
+      }
+      const itemId =
+        eventItemId || activeUserItemId || event?.response_id || 'current';
+
+      if (type === 'input_audio_buffer.speech_started') {
+        // Only one learner utterance can be active. Remove a stale pending
+        // marker left by an interrupted partial transcription.
+        pendingTranscriptItems.clear();
+        if (sessionScoringEnabled) {
+          activeScoringTurnId = `turn_${++scoringTurnSequence}_${Date.now()}`;
+          sendScoringControl({
+            type: 'turn.speech_started',
+            turn_id: activeScoringTurnId,
+            realtime_item_id: eventItemId || '',
+            timestamp_ms: Math.round(performance.now()),
+          });
+        }
+        activeUserItemId = eventItemId || `live_${Date.now()}`;
+        activeRecordingItemId = activeUserItemId;
+        pendingTranscriptItems.add(activeUserItemId);
+        upsertChatMessage(
+          `user:${activeUserItemId}`,
+          'user',
+          'Listening…',
+          false
+        );
+        return false;
+      }
+      if (type === 'input_audio_buffer.speech_stopped') {
+        const stoppedItemId = eventItemId || activeRecordingItemId || itemId;
+        if (sessionScoringEnabled && activeScoringTurnId) {
+          sendScoringControl({
+            type: 'turn.speech_stopped',
+            turn_id: activeScoringTurnId,
+            timestamp_ms: Math.round(performance.now()),
+          });
+        }
+        activeRecordingItemId = null;
+        const key = `user:${stoppedItemId}`;
+        const existing = chatMessages.get(key);
+        if (!existing || existing.text === 'Listening…') {
+          upsertChatMessage(key, 'user', 'Transcribing…', false);
+        }
+        return false;
+      }
+
+      if (type === 'conversation.item.input_audio_transcription.delta' ||
+          type === 'conversation.item.input_audio_transcription.text') {
+        activeUserItemId = eventItemId || activeUserItemId;
+        upsertChatMessage(
+          `user:${itemId}`,
+          'user',
+          `${event.text || ''}${event.stash || ''}`,
+          false
+        );
+        return false;
+      }
+      if (type === 'conversation.item.input_audio_transcription.completed') {
+        const transcript = event.transcript || event.text ||
+          (event.item?.content || [])
+            .map((part) => part?.transcript || part?.text || '')
+            .join(' ')
+            .trim();
+        if (transcript) {
+          upsertChatMessage(`user:${itemId}`, 'user', transcript, true);
+          if (sessionScoringEnabled && activeScoringTurnId) {
+            const scoreTurnId = activeScoringTurnId;
+            const chatKey = `user:${itemId}`;
+            scoringTurnToChatKey.set(scoreTurnId, chatKey);
+            pendingStreamingScores.add(scoreTurnId);
+            const message = chatMessages.get(chatKey);
+            if (message) {
+              message.scoreStatus = 'pending';
+              message.scoreTurnId = scoreTurnId;
+            }
+            sendScoringControl({
+              type: 'turn.transcript_completed',
+              turn_id: scoreTurnId,
+              realtime_item_id: eventItemId || '',
+              text: transcript,
+              language: 'en',
+            });
+            activeScoringTurnId = null;
+            renderChatMessages();
+          }
+        }
+        pendingTranscriptItems.delete(itemId);
+        activeUserItemId = null;
+        return !!transcript;
+      }
+      if (type === 'conversation.item.input_audio_transcription.failed') {
+        upsertChatMessage(
+          `user:${itemId}`,
+          'user',
+          'Speech was not recognized. Please try again.',
+          true
+        );
+        pendingTranscriptItems.delete(itemId);
+        turnAudioBlobs.delete(itemId);
+        turnTranscripts.delete(itemId);
+        activeScoringTurnId = null;
+        activeUserItemId = null;
+        return false;
+      }
+      if (type === 'response.audio_transcript.delta' ||
+          type === 'response.text.delta') {
+        upsertChatMessage(
+          `assistant:${itemId}`,
+          'assistant',
+          event.delta || '',
+          false,
+          true
+        );
+        return false;
+      }
+      if (type === 'response.audio_transcript.done') {
+        upsertChatMessage(
+          `assistant:${itemId}`,
+          'assistant',
+          event.transcript || '',
+          true
+        );
+        sendScoringControl({ type: 'context.message', role: 'assistant', text: event.transcript || '' });
+        return true;
+      }
+      if (type === 'response.text.done') {
+        upsertChatMessage(
+          `assistant:${itemId}`,
+          'assistant',
+          event.text || '',
+          true
+        );
+        sendScoringControl({ type: 'context.message', role: 'assistant', text: event.text || '' });
+        return true;
+      }
+      return false;
+    }
+
+    function ensureLatencyTurn(trigger = 'speech') {
+      if (!currentLatency) {
+        currentLatency = {
+          turn_index: ++turnSequence,
+          trigger,
+          recorded_at: new Date().toISOString(),
+          user_text: '',
+          assistant_text: '',
+        };
+      }
+      return currentLatency;
+    }
+
+    function elapsed(start, end) {
+      return Number.isFinite(start) && Number.isFinite(end)
+        ? Math.max(0, end - start)
+        : null;
+    }
+
+    function submitLatencyTurn() {
+      if (!currentLatency || !sessionId) return;
+      const turn = currentLatency;
+      currentLatency = null;
+      const metric = {
+        turn_index: turn.turn_index,
+        trigger: turn.trigger,
+        recorded_at: turn.recorded_at,
+        speech_duration_ms: elapsed(turn.speechStartedAt, turn.speechStoppedAt),
+        start_to_first_transcript_ms: elapsed(
+          turn.speechStartedAt,
+          turn.firstTranscriptAt
+        ),
+        end_to_first_audio_ms: elapsed(
+          turn.speechStoppedAt,
+          turn.firstAudioAt
+        ),
+        interruption_stop_ms: elapsed(
+          turn.interruptionStartedAt,
+          turn.interruptionStoppedAt
+        ),
+        end_to_response_ms: elapsed(turn.speechStoppedAt, turn.responseCreatedAt),
+        end_to_first_text_ms: elapsed(turn.speechStoppedAt, turn.firstTextAt),
+        end_to_transcript_ms: elapsed(turn.speechStoppedAt, turn.transcriptDoneAt),
+        response_duration_ms: elapsed(turn.responseCreatedAt, turn.responseDoneAt),
+        total_turn_ms: elapsed(
+          turn.speechStoppedAt || turn.responseCreatedAt,
+          turn.responseDoneAt
+        ),
+        user_text: turn.user_text,
+        assistant_text: turn.assistant_text,
+      };
+      const request = fetch(
+        `${API_BASE}/api/sessions/${encodeURIComponent(sessionId)}/latency`,
+        {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(metric),
+        }
+      ).catch((error) => {
+        console.warn('Failed to record turn latency:', error);
+      }).finally(() => {
+        pendingLatencyWrites.delete(request);
+      });
+      pendingLatencyWrites.add(request);
+    }
+
+    function trackLatencyEvent(event) {
+      const now = performance.now();
+      const type = event?.type;
+      if (type === 'input_audio_buffer.speech_started') {
+        currentLatency = {
+          turn_index: ++turnSequence,
+          trigger: 'speech',
+          recorded_at: new Date().toISOString(),
+          speechStartedAt: now,
+          interruptionStartedAt: remoteAudioAudible ? now : null,
+          user_text: '',
+          assistant_text: '',
+        };
+      } else if (type === 'input_audio_buffer.speech_stopped') {
+        ensureLatencyTurn().speechStoppedAt = now;
+      } else if (type === 'conversation.item.input_audio_transcription.delta' ||
+                 type === 'conversation.item.input_audio_transcription.text') {
+        const turn = ensureLatencyTurn();
+        if (!turn.firstTranscriptAt) turn.firstTranscriptAt = now;
+        turn.user_text = `${event.text || ''}${event.stash || ''}`;
+      } else if (type === 'conversation.item.input_audio_transcription.completed') {
+        const turn = ensureLatencyTurn();
+        if (!turn.firstTranscriptAt) turn.firstTranscriptAt = now;
+        turn.transcriptDoneAt = now;
+        turn.user_text = event.transcript || '';
+      } else if (type === 'response.created') {
+        lastResponseCreatedAt = now;
+        const turn = ensureLatencyTurn('idle');
+        turn.responseCreatedAt = now;
+        turn.responseId = event.response?.id || event.response_id || null;
+      } else if (type === 'response.audio_transcript.delta' ||
+                 type === 'response.text.delta') {
+        const turn = ensureLatencyTurn('idle');
+        if (turn.responseId && event.response_id &&
+            turn.responseId !== event.response_id) return;
+        if (!turn.firstTextAt) turn.firstTextAt = now;
+        turn.assistant_text += event.delta || '';
+      } else if (type === 'response.audio_transcript.done') {
+        const turn = ensureLatencyTurn('idle');
+        if (turn.responseId && event.response_id &&
+            turn.responseId !== event.response_id) return;
+        turn.assistant_text = event.transcript || turn.assistant_text;
+      } else if (type === 'response.text.done') {
+        const turn = ensureLatencyTurn('idle');
+        if (turn.responseId && event.response_id &&
+            turn.responseId !== event.response_id) return;
+        turn.assistant_text = event.text || turn.assistant_text;
+      } else if (type === 'response.done' && currentLatency) {
+        const responseId = event.response?.id || event.response_id;
+        if (currentLatency.responseId && responseId &&
+            currentLatency.responseId !== responseId) return;
+        currentLatency.responseDoneAt = now;
+        // A tool-call response has no spoken text; wait for the final response.
+        if (currentLatency.firstTextAt || currentLatency.assistant_text) {
+          submitLatencyTurn();
+        }
+      }
+    }
+
+    async function startRemoteAudioMonitor(stream) {
+      if (remoteAudioMonitorRaf) cancelAnimationFrame(remoteAudioMonitorRaf);
+      if (remoteAudioContext) {
+        try { await remoteAudioContext.close(); } catch {}
+      }
+      const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+      if (!AudioContextClass || !stream.getAudioTracks().length) return;
+      remoteAudioContext = new AudioContextClass();
+      try { await remoteAudioContext.resume(); } catch {}
+      remoteAudioSource = remoteAudioContext.createMediaStreamSource(
+        new MediaStream(stream.getAudioTracks())
+      );
+      remoteAudioAnalyser = remoteAudioContext.createAnalyser();
+      remoteAudioAnalyser.fftSize = 1024;
+      remoteAudioSource.connect(remoteAudioAnalyser);
+      const samples = new Uint8Array(remoteAudioAnalyser.fftSize);
+
+      const monitor = () => {
+        if (!remoteAudioAnalyser) return;
+        remoteAudioAnalyser.getByteTimeDomainData(samples);
+        let energy = 0;
+        for (const sample of samples) {
+          const normalized = (sample - 128) / 128;
+          energy += normalized * normalized;
+        }
+        const rms = Math.sqrt(energy / samples.length);
+        const audible = rms >= 0.015;
+        const now = performance.now();
+
+        if (audible) {
+          remoteAudioSilenceFrames = 0;
+          remoteAudioAudible = true;
+          if (currentLatency?.responseCreatedAt && !currentLatency.firstAudioAt) {
+            currentLatency.firstAudioAt = now;
+          }
+        } else if (remoteAudioAudible) {
+          remoteAudioSilenceFrames += 1;
+          if (remoteAudioSilenceFrames >= 3) {
+            remoteAudioAudible = false;
+            remoteAudioSilenceFrames = 0;
+            if (currentLatency?.interruptionStartedAt &&
+                !currentLatency.interruptionStoppedAt) {
+              currentLatency.interruptionStoppedAt = now;
+            }
+          }
+        }
+        remoteAudioMonitorRaf = requestAnimationFrame(monitor);
+      };
+      remoteAudioMonitorRaf = requestAnimationFrame(monitor);
+    }
+
+    function resetQualityStats() {
+      sessionStartedAt = performance.now();
+      qualityStats = {
+        packetsLost: 0,
+        packetsReceived: 0,
+        maxJitterMs: 0,
+        rttTotalMs: 0,
+        rttSamples: 0,
+        connectionDisruptions: 0,
+      };
+    }
+
+    async function collectWebRtcStats() {
+      if (!pc || !qualityStats) return;
+      try {
+        const reports = await pc.getStats();
+        reports.forEach((report) => {
+          if (report.type === 'inbound-rtp' && report.kind === 'audio') {
+            qualityStats.packetsLost = Math.max(
+              qualityStats.packetsLost,
+              Number(report.packetsLost || 0)
+            );
+            qualityStats.packetsReceived = Math.max(
+              qualityStats.packetsReceived,
+              Number(report.packetsReceived || 0)
+            );
+            qualityStats.maxJitterMs = Math.max(
+              qualityStats.maxJitterMs,
+              Number(report.jitter || 0) * 1000
+            );
+          }
+          if (report.type === 'candidate-pair' &&
+              report.state === 'succeeded' &&
+              report.currentRoundTripTime != null) {
+            qualityStats.rttTotalMs +=
+              Number(report.currentRoundTripTime) * 1000;
+            qualityStats.rttSamples += 1;
+          }
+        });
+      } catch (error) {
+        console.warn('Unable to read WebRTC stats:', error);
+      }
+    }
+
+    function startQualityMonitoring() {
+      resetQualityStats();
+      if (qualityStatsTimer) clearInterval(qualityStatsTimer);
+      qualityStatsTimer = setInterval(collectWebRtcStats, 5000);
+    }
+
+    function buildSessionQualityMetric() {
+      if (!qualityStats || !sessionStartedAt) return null;
+      const totalPackets =
+        qualityStats.packetsReceived + qualityStats.packetsLost;
+      return {
+        recorded_at: new Date().toISOString(),
+        duration_minutes: (performance.now() - sessionStartedAt) / 60000,
+        packets_received: qualityStats.packetsReceived,
+        packets_lost: qualityStats.packetsLost,
+        packet_loss_percent: totalPackets > 0
+          ? qualityStats.packetsLost / totalPackets * 100
+          : 0,
+        max_jitter_ms: qualityStats.maxJitterMs,
+        avg_rtt_ms: qualityStats.rttSamples > 0
+          ? qualityStats.rttTotalMs / qualityStats.rttSamples
+          : null,
+        connection_disruptions: qualityStats.connectionDisruptions,
+      };
+    }
+
+    function scheduleTranscriptionFailureFallback(event, channel) {
+      if (transcriptionFallbackTimer) {
+        clearTimeout(transcriptionFallbackTimer);
+      }
+      const failureAt = performance.now();
+      const itemId =
+        event?.item_id || activeUserItemId || `failed_${Date.now()}`;
+      upsertChatMessage(
+        `user:${itemId}`,
+        'user',
+        'Speech was not recognized. Please try again.',
+        true
+      );
+      activeUserItemId = null;
+      transcriptionFallbackTimer = setTimeout(() => {
+        transcriptionFallbackTimer = 0;
+        if (!pc || channel.readyState !== 'open') return;
+        if (lastResponseCreatedAt >= failureAt) return;
+        const fallbackRequest = {
+          event_id: `event_retry_${Date.now()}`,
+          type: 'response.create',
+        };
+        channel.send(JSON.stringify(fallbackRequest));
+        pushEventFromDataChannel(fallbackRequest);
+      }, 1000);
+    }
+
+    async function handleRealtimeTool(event, channel) {
+      const callId = event?.call_id;
+      if (!callId || processedToolCallIds.has(callId)) return;
+      processedToolCallIds.add(callId);
+
+      let argumentsObject;
+      try {
+        argumentsObject = JSON.parse(event.arguments || '{}');
+      } catch {
+        argumentsObject = {};
+      }
+
+      let result;
+      try {
+        if (event?.name !== 'update_learner_level') {
+          result = {
+            applied: false,
+            reason: 'Unsupported tool. Continue the conversation normally.',
+          };
+        } else if (!sessionId) {
+          result = {
+            applied: false,
+            reason: 'The session is unavailable. Continue at the current level.',
+          };
+        } else {
+          await Promise.allSettled([...pendingEventWrites]);
+          result = await apiRequest(
+            `/api/sessions/${encodeURIComponent(sessionId)}/tools/learner-level`,
+            {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ arguments: argumentsObject }),
+            }
+          );
+          if (result.learner_profile?.label) {
+            levelBadge.textContent = result.learner_profile.label;
+          }
+        }
+      } catch (error) {
+        console.error('Realtime tool failed:', error);
+        result = {
+          applied: false,
+          reason: 'Level review is temporarily unavailable. Continue the conversation normally at the current level.',
+        };
+      }
+
+      if (!channel || channel.readyState !== 'open') return;
+      const toolOutput = {
+        event_id: `event_tool_${Date.now()}`,
+        type: 'conversation.item.create',
+        item: {
+          type: 'function_call_output',
+          call_id: callId,
+          output: JSON.stringify(result),
+        },
+      };
+      channel.send(JSON.stringify(toolOutput));
+      pushEventFromDataChannel(toolOutput);
+
+      const createResponse = {
+        event_id: `event_response_${Date.now()}`,
+        type: 'response.create',
+      };
+      channel.send(JSON.stringify(createResponse));
+      pushEventFromDataChannel(createResponse);
+    }
+
+    // ===== Events panel =====
+    const events = [];
+    function nowTs() { return new Date().toLocaleTimeString(); }
+
+    function renderEvents() {
+      eventsDiv.innerHTML = "";
+      if (events.length === 0) {
+        const empty = document.createElement("div");
+        empty.className = "events-empty";
+        empty.textContent = "Waiting for events...";
+        eventsDiv.appendChild(empty);
+        return;
+      }
+
+      for (const item of events) {
+        const { event, timestamp } = item;
+        const isClient = event?.type?.includes("update") || event?.type?.includes("create");
+
+        const wrap = document.createElement("div");
+        wrap.className = "event-item";
+
+        const header = document.createElement("div");
+        header.className = "event-header";
+
+        const arrow = document.createElement("span");
+        arrow.className = "event-arrow " + (isClient ? "client" : "server");
+        arrow.textContent = isClient ? "↓" : "↑";
+
+        const label = document.createElement("span");
+        label.className = "event-label";
+        const who = isClient ? "client" : "server";
+        const type = event?.type ?? "message";
+        label.textContent = `${who}: ${type}`;
+
+        const time = document.createElement("span");
+        time.className = "event-time";
+        time.textContent = timestamp;
+
+        const body = document.createElement("div");
+        body.className = "event-body";
+        const pre = document.createElement("pre");
+        pre.textContent = JSON.stringify(event, null, 2);
+        body.appendChild(pre);
+
+        header.onclick = () => { body.style.display = body.style.display === "block" ? "none" : "block"; };
+
+        header.appendChild(arrow);
+        header.appendChild(label);
+        header.appendChild(time);
+        wrap.appendChild(header);
+        wrap.appendChild(body);
+
+        eventsDiv.appendChild(wrap);
+      }
+    }
+
+    function clearUIEvents() { events.length = 0; renderEvents(); }
+    function pushEventFromDataChannel(eventObj) {
+      const ts = eventObj.timestamp || nowTs();
+      if (!eventObj.timestamp) eventObj.timestamp = ts;
+      events.unshift({ event: eventObj, timestamp: ts });
+      renderEvents();
+    }
+
+    function normalizeSdpForSetRemote(sdp) {
+      sdp = String(sdp).trim().replace(/\r?\n/g, "\r\n");
+      if (!sdp.endsWith("\r\n")) sdp += "\r\n";
+      return sdp;
+    }
+
+    // ===== WebRTC =====
+    startBtn.onclick = () => startSession().catch(async (error) => {
+      console.error("startSession error:", error);
+      await endSession(true);
+      setStatus(error.message || 'Unable to start session', 'error');
+      alert(error.message || 'Unable to start session');
+    });
+    endBtn.onclick = () => endSession();
+    newConversationBtn.onclick = async () => {
+      if (pc) {
+        alert('End the current session before starting a new conversation.');
+        return;
+      }
+      if (conversationId) {
+        try {
+          await apiRequest(`/api/conversations/${encodeURIComponent(conversationId)}`, {
+            method: 'DELETE',
+          });
+        } catch (error) {
+          console.warn('Failed to delete saved conversation:', error);
+        }
+      }
+      conversationId = null;
+      localStorage.removeItem('englishCoachConversationId');
+      renderConversation([]);
+      setStatus('New conversation ready', '');
+    };
+    setAnswerBtn.onclick = () => setRemoteAnswerFromUI().catch(err => console.log("setRemoteAnswer error:", err));
+    copyOfferBtn.onclick = async () => {
+      const txt = offerBox.value;
+      if (!txt) return;
+      await navigator.clipboard.writeText(txt);
+      alert("Offer SDP copied");
+    };
+    downloadBtn.onclick = () => {
+      if (audioBlob) downloadBlob(audioBlob, 'remote-audio.webm');
+      else alert('No audio recording available');
+    };
+
+    async function startSession() {
+      if (pc) return;
+      window.speechSynthesis?.cancel();
+      setStatus('Creating backend session...', 'connecting');
+      const backendSession = await createBackendSession();
+      sessionId = backendSession.session_id;
+      sessionScoringEnabled = !!backendSession.scoring_enabled;
+      conversationId = backendSession.conversation_id;
+      localStorage.setItem('englishCoachConversationId', conversationId);
+      sessionConfig = backendSession.session_config;
+      levelBadge.textContent =
+        backendSession.learner_profile?.label || 'CET-4 (B1-B2)';
+      renderConversation(backendSession.history || []);
+      processedToolCallIds.clear();
+      activeUserItemId = null;
+      activeRecordingItemId = null;
+      pendingTranscriptItems.clear();
+      turnAudioBlobs.clear();
+      turnTranscripts.clear();
+      expectedScoreTurnIds.clear();
+      queuedScoreTurnIds.clear();
+      failedScoreTurnIds.clear();
+      scoringTurnToChatKey.clear();
+      pendingStreamingScores.clear();
+      activeScoringTurnId = null;
+      turnSequence = 0;
+      scoringTurnSequence = 0;
+      currentLatency = null;
+      startBtn.disabled = true;
+      scoringEnabledCheckbox.disabled = true;
+      directModeBtn.disabled = true;
+      sceneModeBtn.disabled = true;
+      generateScenarioBtn.disabled = true;
+      document.querySelectorAll('.stage-step').forEach(button => button.disabled = true);
+
+      pc = new RTCPeerConnection({ iceServers: [] });
+      startQualityMonitoring();
+      clearUIEvents();
+      setStatus('Requesting microphone access...', 'connecting');
+
+      offerBox.value = "";
+      answerBox.value = "";
+      setAnswerBtn.disabled = true;
+      copyOfferBtn.disabled = true;
+
+      endBtn.disabled = false;
+      downloadBtn.disabled = true;
+
+      pc.onconnectionstatechange = () => {
+        if (!pc) return;
+        if (qualityStats &&
+            ["failed", "disconnected"].includes(pc.connectionState) &&
+            qualityStats.lastConnectionState !== pc.connectionState) {
+          qualityStats.connectionDisruptions += 1;
+        }
+        if (qualityStats) {
+          qualityStats.lastConnectionState = pc.connectionState;
+        }
+        if (pc.connectionState === 'connected') {
+          setStatus('Connected. Start speaking.', 'connected');
+        } else if (["failed", "closed", "disconnected"].includes(pc.connectionState)) {
+          console.log("onconnectionstatechange:", pc.connectionState);
+          endSession(true);
+        }
+      };
+
+      pc.ontrack = async (e) => {
+        const stream = e.streams[0];
+        ensureHiddenAudioEl();
+        hiddenRemoteAudioEl.srcObject = stream;
+        try { await hiddenRemoteAudioEl.play(); } catch {}
+        await startRemoteAudioMonitor(stream);
+        startRecordingRemoteStream(stream);
+      };
+
+      const wantVideo = !!sendVideoCheckbox.checked;
+
+      const localPreviewFps = 30;
+      const sendFps = 2;
+
+      const constraints = wantVideo
+        ? {
+            audio: true,
+            video: {
+              facingMode: { ideal: "user" },
+              frameRate: { ideal: localPreviewFps, max: localPreviewFps },
+              width: { ideal: 640 },
+              height: { ideal: 480 },
+            }
+          }
+        : { audio: true };
+
+      localStream = await navigator.mediaDevices.getUserMedia(constraints);
+
+      if (sessionScoringEnabled) {
+        try {
+          await startScoringStream();
+        } catch (error) {
+          console.warn('Scoring stream unavailable; realtime conversation will continue:', error);
+          sessionScoringEnabled = false;
+          setStatus('Scoring unavailable. Continuing conversation only.', 'connecting');
+        }
+      }
+
+      const videoSection = document.getElementById('videoSection');
+      if (wantVideo) {
+        localVideo.srcObject = localStream;
+        localVideo.style.display = "block";
+        videoSection.style.display = "";
+        try { await localVideo.play(); } catch {}
+      } else {
+        localVideo.srcObject = null;
+        localVideo.style.display = "none";
+        videoSection.style.display = "none";
+      }
+
+      gatedAudioTracks = [];
+      gatedVideoTracks = [];
+
+      localStream.getAudioTracks().forEach(t => {
+        pc.addTrack(t, localStream);
+        gatedAudioTracks.push(t);
+      });
+
+      if (wantVideo) {
+        if (sendRafId) cancelAnimationFrame(sendRafId);
+        sendRafId = 0;
+        if (sendCanvasStream) sendCanvasStream.getTracks().forEach(t => t.stop());
+        sendCanvasStream = null;
+        sendCanvasCtx = null;
+        sendCanvas = null;
+
+        const settings = localStream.getVideoTracks()[0].getSettings();
+        sendCanvas = document.createElement("canvas");
+        sendCanvas.width = settings.width || 640;
+        sendCanvas.height = settings.height || 480;
+        sendCanvasCtx = sendCanvas.getContext("2d", { alpha: false });
+
+        sendCanvasStream = sendCanvas.captureStream(sendFps);
+        const lowFpsTrack = sendCanvasStream.getVideoTracks()[0];
+        pc.addTrack(lowFpsTrack, sendCanvasStream);
+        gatedVideoTracks.push(lowFpsTrack);
+
+        const pump = () => {
+          if (!sendCanvasCtx || !sendCanvas) return;
+          try { sendCanvasCtx.drawImage(localVideo, 0, 0, sendCanvas.width, sendCanvas.height); } catch {}
+          sendRafId = requestAnimationFrame(pump);
+        };
+        sendRafId = requestAnimationFrame(pump);
+      }
+
+      // gateMedia(false);
+
+      audioSender = pc.getSenders().find(s => s.track?.kind === 'audio');
+      videoSender = pc.getSenders().find(s => s.track?.kind === 'video');
+      audioTrack = audioSender?.track;
+      videoTrack = videoSender?.track;
+
+      // Commented out to ensure SDP negotiation is sendrecv
+      // await audioSender?.replaceTrack(null);
+      // await videoSender?.replaceTrack(videoTrack ? null : undefined);
+
+      const dc = pc.createDataChannel('oai-events');
+      let greetingRequested = false;
+
+      dc.onopen = () => console.log("DC open");
+      dc.onmessage = (e) => {
+        handleDcMessage(e.data, dc);
+      };
+
+      pc.ondatachannel = (event) => {
+        const ch = event.channel;
+        ch.onmessage = (e) => {
+            handleDcMessage(e.data, ch);
+        };
+      };
+
+      function handleDcMessage(data, channel) {
+          let obj;
+          try { obj = JSON.parse(data); }
+          catch (err) {
+            pushEventFromDataChannel({ type: "raw", data: String(data), parseError: String(err) });
+            return;
+          }
+          pushEventFromDataChannel(obj);
+          trackLatencyEvent(obj);
+          if (handleConversationEvent(obj)) rememberEvent(obj);
+          if (obj?.type === 'response.function_call_arguments.done') {
+            handleRealtimeTool(obj, channel);
+          }
+          if (obj?.type === 'conversation.item.input_audio_transcription.failed') {
+            scheduleTranscriptionFailureFallback(obj, channel);
+          }
+
+          if (obj?.type === "session.created") {
+            console.log("Session created, opening media gate.");
+            gateMedia(true);
+            if(audioSender) audioSender.replaceTrack(audioTrack);
+            if(videoSender && videoTrack) videoSender.replaceTrack(videoTrack);
+
+            sendUpdate(channel);
+          }
+          if (obj?.type === 'session.updated' && !greetingRequested) {
+            greetingRequested = true;
+            const greetingRequest = {
+              event_id: `event_greeting_${Date.now()}`,
+              type: 'response.create',
+            };
+            channel.send(JSON.stringify(greetingRequest));
+            pushEventFromDataChannel(greetingRequest);
+            setStatus('AI is greeting you...', 'connecting');
+          }
+          if (obj?.type === 'response.done') {
+            setStatus('Connected. Your turn.', 'connected');
+          }
+      }
+
+      pc.onicegatheringstatechange = () => {
+        if (!pc) return;
+        if (pc.iceGatheringState === "complete" && pc.localDescription?.sdp) {
+          const sdp = pc.localDescription.sdp;
+          offerBox.value = sdp;
+          copyOfferBtn.disabled = false;
+          setAnswerBtn.disabled = false;
+
+          setStatus('Offer SDP generated. Requesting Answer through local proxy...', 'connecting');
+          console.log("ICE Gathering Complete. Ready to set remote description.");
+          requestAnswerFromProxy(sdp).catch((error) => {
+            console.error(error);
+            setStatus(error.message, 'error');
+            alert(error.message);
+          });
+        }
+      };
+
+      const offer = await pc.createOffer();
+      await pc.setLocalDescription(offer);
+    }
+
+    async function requestAnswerFromProxy(offerSdp) {
+      const response = await fetch(`${API_BASE}/api/realtime?session_id=${encodeURIComponent(sessionId)}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/sdp' },
+        body: offerSdp,
+      });
+      const body = await response.text();
+      if (!response.ok) {
+        let message = body;
+        try { message = JSON.parse(body).error || body; } catch {}
+        throw new Error(`Realtime request failed (${response.status}): ${message}`);
+      }
+      answerBox.value = body;
+      await setRemoteAnswerFromUI();
+    }
+
+    async function setRemoteAnswerFromUI() {
+      if (!pc) return alert('Click "Start Session" first to generate the Offer.');
+      const txt = answerBox.value.trim();
+      if (!txt) return alert("Please paste the Answer SDP");
+
+      const answerSdp = normalizeSdpForSetRemote(txt);
+      try {
+          await pc.setRemoteDescription({ type: 'answer', sdp: answerSdp });
+          setStatus('Establishing connection...', 'connecting');
+      } catch (e) {
+          alert("Failed to set Answer: " + e.message);
+          console.error(e);
+      }
+    }
+
+    async function endSession(silent = false) {
+      if (finalizingSession) return;
+      finalizingSession = true;
+      const closingSessionId = sessionId;
+      if (closingSessionId && sessionScoringEnabled && !silent) {
+        openReportLoading(pendingScoreWrites.size);
+      }
+
+      // Stop accepting new microphone audio, but keep the WebRTC data channel
+      // alive long enough for the final speech-stopped/transcription events.
+      gateMedia(false);
+      sendScoringControl({ type: 'stream.end' });
+      let transcriptionsReady = true;
+      if (pendingTranscriptItems.size > 0 ||
+          queuedScoreTurnIds.size < expectedScoreTurnIds.size ||
+          wavRecorder.recording) {
+        if (!silent) setStatus('Waiting for final transcription...', 'connecting');
+        transcriptionsReady = await waitForFinalTurnInputs();
+      }
+      // If the final speech boundary never arrives, release the recorder after
+      // the bounded wait and leave the report in the explicit error state.
+      if (wavRecorder.recording) {
+        stopLocalWavRecorder();
+      }
+      if (sessionScoringEnabled && pendingStreamingScores.size > 0) {
+        transcriptionsReady = await waitForFinalTurnInputs(45000) && transcriptionsReady;
+      }
+      if (pcmScoringStreamer) {
+        try { await pcmScoringStreamer.stop(); } catch {}
+        pcmScoringStreamer = null;
+      }
+      if (scoringSocket) {
+        try { scoringSocket.close(1000, 'Session ended'); } catch {}
+        scoringSocket = null;
+      }
+
+      await collectWebRtcStats();
+      const sessionQualityMetric = buildSessionQualityMetric();
+      if (qualityStatsTimer) {
+        clearInterval(qualityStatsTimer);
+        qualityStatsTimer = 0;
+      }
+      if (sendRafId) cancelAnimationFrame(sendRafId);
+      sendRafId = 0;
+      if (transcriptionFallbackTimer) {
+        clearTimeout(transcriptionFallbackTimer);
+        transcriptionFallbackTimer = 0;
+      }
+
+      if (sendCanvasStream) {
+        sendCanvasStream.getTracks().forEach(t => t.stop());
+      }
+      sendCanvasStream = null;
+      sendCanvasCtx = null;
+      sendCanvas = null;
+
+      try { if (mediaRecorder && mediaRecorder.state !== "inactive") mediaRecorder.stop(); } catch {}
+      mediaRecorder = null;
+
+      if (localStream) {
+        localStream.getTracks().forEach(t => t.stop());
+        localStream = null;
+      }
+      localVideo.srcObject = null;
+      localVideo.style.display = "none";
+      document.getElementById('videoSection').style.display = "none";
+
+      if (pc) {
+        try { pc.close(); } catch {}
+        pc = null;
+      }
+
+      gatedAudioTracks = [];
+      gatedVideoTracks = [];
+
+      if (hiddenRemoteAudioEl) {
+        try { hiddenRemoteAudioEl.pause(); } catch {}
+        hiddenRemoteAudioEl.srcObject = null;
+        hiddenRemoteAudioEl.remove();
+        hiddenRemoteAudioEl = null;
+      }
+      if (remoteAudioMonitorRaf) {
+        cancelAnimationFrame(remoteAudioMonitorRaf);
+        remoteAudioMonitorRaf = 0;
+      }
+      if (remoteAudioSource) {
+        try { remoteAudioSource.disconnect(); } catch {}
+        remoteAudioSource = null;
+      }
+      remoteAudioAnalyser = null;
+      remoteAudioAudible = false;
+      if (remoteAudioContext) {
+        try { await remoteAudioContext.close(); } catch {}
+        remoteAudioContext = null;
+      }
+
+      sessionId = null;
+      sessionConfig = null;
+      activeUserItemId = null;
+      processedToolCallIds.clear();
+
+      startBtn.disabled = true;
+      newConversationBtn.disabled = true;
+      endBtn.disabled = true;
+      setAnswerBtn.disabled = true;
+      copyOfferBtn.disabled = true;
+      downloadBtn.disabled = !audioBlob;
+
+      if (closingSessionId) {
+        if (!silent) setStatus('Closing session...', 'connecting');
+        await Promise.allSettled([...pendingEventWrites]);
+        await Promise.allSettled([...pendingLatencyWrites]);
+        if (pendingScoreWrites.size > 0 && !silent) {
+          setStatus('Waiting for scoring to finish...', 'connecting');
+        }
+        await Promise.allSettled([...pendingScoreWrites]);
+        let reportData = null;
+        if (sessionScoringEnabled) {
+          try {
+            reportData = await apiRequest(`/api/sessions/${encodeURIComponent(closingSessionId)}/report`);
+            console.log("Session report fetched:", reportData);
+          } catch (err) {
+            console.warn("Failed to fetch session report:", err);
+          }
+        }
+
+        try {
+          if (sessionQualityMetric) {
+            await apiRequest(
+              `/api/sessions/${encodeURIComponent(closingSessionId)}/quality`,
+              {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(sessionQualityMetric),
+              }
+            );
+          }
+          await apiRequest(
+            `/api/sessions/${encodeURIComponent(closingSessionId)}`,
+            { method: 'DELETE' }
+          );
+        } catch (error) {
+          console.warn('Failed to close backend session:', error);
+        }
+
+        const reportedTurnCount = Array.isArray(reportData?.turns)
+          ? reportData.turns.length
+          : 0;
+        const visibleUserTurnCount = sessionScoringEnabled
+          ? scoringTurnToChatKey.size
+          : expectedScoreTurnIds.size;
+        const reportIsComplete = transcriptionsReady &&
+          failedScoreTurnIds.size === 0 &&
+          reportedTurnCount >= visibleUserTurnCount;
+
+        if (reportData && reportIsComplete && !silent) {
+          openReportModal(reportData);
+        } else if (!silent) {
+          showReportLoadingError(
+            transcriptionsReady
+              ? `成绩单尚不完整：对话中有 ${visibleUserTurnCount} 句，但只生成了 ${reportedTurnCount} 句评分。请关闭后重新测试。`
+              : '最后一句语音转写超时，未展示不完整成绩单。请关闭后重新测试。'
+          );
+        }
+      }
+      directModeBtn.disabled = false;
+      sceneModeBtn.disabled = false;
+      generateScenarioBtn.disabled = false;
+      document.querySelectorAll('.stage-step').forEach(button => button.disabled = false);
+      syncStartAvailability();
+      newConversationBtn.disabled = false;
+      scoringEnabledCheckbox.disabled = false;
+      finalizingSession = false;
+      setStatus('Disconnected', '');
+      if (!silent) console.log("session ended");
+    }
+
+    function ensureHiddenAudioEl() {
+      if (hiddenRemoteAudioEl) return;
+      hiddenRemoteAudioEl = document.createElement("audio");
+      hiddenRemoteAudioEl.autoplay = true;
+      hiddenRemoteAudioEl.playsInline = true;
+      hiddenRemoteAudioEl.muted = false;
+      hiddenRemoteAudioEl.style.display = "none";
+      document.body.appendChild(hiddenRemoteAudioEl);
+    }
+
+    function startRecordingRemoteStream(remoteStream) {
+      const audioTracks = remoteStream.getAudioTracks();
+      if (!audioTracks.length) return;
+
+      const audioStream = new MediaStream(audioTracks);
+      recordedChunks = [];
+      audioBlob = null;
+      downloadBtn.disabled = true;
+
+      try {
+        mediaRecorder = new MediaRecorder(audioStream, { mimeType: 'audio/webm' });
+      } catch (err) {
+        console.log("MediaRecorder create failed:", err);
+        return;
+      }
+
+      mediaRecorder.ondataavailable = (e) => {
+        if (e.data && e.data.size > 0) recordedChunks.push(e.data);
+      };
+
+      mediaRecorder.onstop = () => {
+        audioBlob = new Blob(recordedChunks, { type: 'audio/webm' });
+        downloadBtn.disabled = !audioBlob || audioBlob.size === 0;
+      };
+
+      mediaRecorder.start();
+    }
+
+    function downloadBlob(blob, filename) {
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement('a');
+      a.style.display = 'none';
+      a.href = url;
+      a.download = filename;
+      document.body.appendChild(a);
+      a.click();
+      URL.revokeObjectURL(url);
+      a.remove();
+    }
+
+    renderEvents();
+
+    const stickyTop = document.querySelector('.sticky-top');
+    window.addEventListener('scroll', () => {
+      stickyTop.classList.toggle('scrolled', window.scrollY > 10);
+    }, { passive: true });
+</script>
+</body>
+</html>

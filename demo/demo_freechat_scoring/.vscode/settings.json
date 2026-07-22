@@ -1,0 +1,9 @@
+{
+  "python.defaultInterpreterPath": "/opt/miniconda3/envs/unispeaking/bin/python",
+  "python.envFile": "${workspaceFolder}/.vscode/.env",
+  "python.terminal.useEnvFile": true,
+  "code-runner.executorMap": {
+    "python": "\"/opt/miniconda3/envs/unispeaking/bin/python\" -u"
+  },
+  "code-runner.fileDirectoryAsCwd": false
+}
