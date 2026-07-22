@@ -1,18 +1,27 @@
 package com.example.unispeaking;
 
+import com.example.unispeaking.controller.ScoringController;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.AutoConfigureMockMvc;
 import org.springframework.boot.test.context.SpringBootTest;
 import org.springframework.http.MediaType;
 import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.util.ReflectionTestUtils;
+
+import java.util.Map;
 
 import static org.hamcrest.Matchers.aMapWithSize;
+import static org.junit.jupiter.api.Assertions.assertEquals;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.get;
 import static org.springframework.test.web.servlet.request.MockMvcRequestBuilders.post;
 import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.*;
 
-@SpringBootTest
+@SpringBootTest(properties = {
+        "dashscope.api.key=", "bailian.workspace.id=", "bailian.model=qwen-realtime",
+        "qwen.scoring.model=qwen-plus", "qwen.ielts.judge.model=qwen-plus",
+        "xfyun.appid=", "xfyun.apikey=", "xfyun.apisecret="
+})
 @AutoConfigureMockMvc
 class FreeChatRegressionTest {
     @Autowired MockMvc mvc;
@@ -23,9 +32,44 @@ class FreeChatRegressionTest {
                 .andExpect(status().isOk())
                 .andExpect(jsonPath("$", aMapWithSize(4)))
                 .andExpect(jsonPath("$.java").value(true))
-                .andExpect(jsonPath("$.qwenRealtimeConfigured").isBoolean())
-                .andExpect(jsonPath("$.qwenScoringConfigured").isBoolean())
-                .andExpect(jsonPath("$.xfyunConfigured").isBoolean());
+                .andExpect(jsonPath("$.qwenRealtimeConfigured").value(false))
+                .andExpect(jsonPath("$.qwenScoringConfigured").value(false))
+                .andExpect(jsonPath("$.xfyunConfigured").value(false));
+    }
+
+    @Test
+    void healthCapabilityFlagsRequireEachProviderConfiguration() {
+        ScoringController controller = new ScoringController();
+        setHealthConfiguration(controller, "dash-key", "workspace", "realtime", "score", "judge",
+                "xf-app", "xf-key", "xf-secret");
+        assertEquals(Map.of(
+                "java", true,
+                "qwenRealtimeConfigured", true,
+                "qwenScoringConfigured", true,
+                "xfyunConfigured", true
+        ), controller.health());
+
+        setHealthConfiguration(controller, "dash-key", "", "realtime", "score", "",
+                "xf-app", "xf-key", "");
+        assertEquals(Map.of(
+                "java", true,
+                "qwenRealtimeConfigured", false,
+                "qwenScoringConfigured", false,
+                "xfyunConfigured", false
+        ), controller.health());
+    }
+
+    private void setHealthConfiguration(ScoringController controller, String apiKey, String workspace,
+                                        String realtimeModel, String scoringModel, String judgeModel,
+                                        String xfyunAppId, String xfyunApiKey, String xfyunApiSecret) {
+        ReflectionTestUtils.setField(controller, "apiKey", apiKey);
+        ReflectionTestUtils.setField(controller, "bailianWorkspaceId", workspace);
+        ReflectionTestUtils.setField(controller, "bailianModel", realtimeModel);
+        ReflectionTestUtils.setField(controller, "qwenScoringModel", scoringModel);
+        ReflectionTestUtils.setField(controller, "qwenIeltsJudgeModel", judgeModel);
+        ReflectionTestUtils.setField(controller, "xfyunAppId", xfyunAppId);
+        ReflectionTestUtils.setField(controller, "xfyunApiKey", xfyunApiKey);
+        ReflectionTestUtils.setField(controller, "xfyunApiSecret", xfyunApiSecret);
     }
 
     @Test
