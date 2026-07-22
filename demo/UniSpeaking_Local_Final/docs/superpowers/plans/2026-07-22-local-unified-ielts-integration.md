@@ -130,9 +130,10 @@ Use an `apply_patch` deletion for these exact targets if present:
 frontend/vercel.json
 frontend/.env.example
 frontend/walkthrough.md
+frontend/tests/realtime-gateway-contract.test.mjs
 ```
 
-Expected: no `vercel.json`, `supabase/`, `.vercel/`, `dist/`, `.vite/`, or acceptance image directory exists below `UniSpeaking_Local_Final`.
+`realtime-gateway-contract.test.mjs` is deployment-specific because every assertion reads the excluded Supabase Edge Function. Java API regression tests remain the authoritative local gateway contract. Expected: no `vercel.json`, `supabase/`, `.vercel/`, `dist/`, `.vite/`, or acceptance image directory exists below `UniSpeaking_Local_Final`.
 
 - [ ] **Step 5: Verify both copied baselines before feature changes**
 
