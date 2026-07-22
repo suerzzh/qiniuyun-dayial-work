@@ -37,6 +37,9 @@ class IeltsScoringOrchestratorTest {
         assertNull(report.pronunciation().band());
         assertEquals("科大讯飞发音证据不可用", report.pronunciation().unavailableReason());
         assertNull(report.overallBand());
+        assertEquals(5, report.radarDimensions().size());
+        assertNull(report.radarDimensions().get(3).score());
+        assertEquals(82, report.radarDimensions().get(4).score());
         assertTrue(report.dataQualityWarnings().stream().anyMatch(s -> s.contains("科大讯飞")));
     }
 
@@ -51,6 +54,8 @@ class IeltsScoringOrchestratorTest {
         assertFalse(report.pronunciationEvidence().isEmpty());
         assertNull(report.pronunciation().band());
         assertNull(report.overallBand());
+        assertEquals(5, report.radarDimensions().size());
+        assertNull(report.radarDimensions().get(4).score());
     }
 
     @Test
@@ -60,7 +65,52 @@ class IeltsScoringOrchestratorTest {
                 new PronunciationEvidence("XFYUN_ISE", "read_sentence", "LOW", Map.of("accuracy_score", 80), "raw", null));
         IeltsReport report = new IeltsScoringOrchestrator(text, ise).score(attempt()).join();
         assertEquals(IeltsScoringStatus.COMPLETE, report.scoringStatus());
+        assertEquals(82, report.taskAchievement().score());
+        assertEquals(5, report.radarDimensions().size());
         assertEquals(6.5, report.overallBand());
+        assertEquals(report.fc(), report.officialDimensions().get("fluencyCoherence"));
+        assertEquals(List.of("fluencyCoherence", "lexicalResource", "grammaticalRangeAccuracy", "pronunciation"),
+                List.copyOf(report.officialDimensions().keySet()));
+        assertThrows(UnsupportedOperationException.class,
+                () -> report.officialDimensions().put("other", report.fc()));
+    }
+
+    @Test
+    void lowTaskAchievementDoesNotChangeFourBandOverall() {
+        Map<String, Object> judge = new java.util.LinkedHashMap<>(validJudge());
+        judge.put("task_achievement", taskAchievement(25));
+        IeltsTextScorer text = input -> CompletableFuture.completedFuture(judge);
+        PronunciationEvidenceProvider ise = turn -> CompletableFuture.completedFuture(
+                new PronunciationEvidence("XFYUN_ISE", "read_sentence", "LOW", Map.of(), "raw", null));
+
+        IeltsReport report = new IeltsScoringOrchestrator(text, ise).score(attempt()).join();
+
+        assertEquals(25, report.taskAchievement().score());
+        assertEquals(6.5, report.overallBand());
+    }
+
+    @Test
+    void invalidOrMissingTaskAchievementDoesNotSuppressValidOverall() {
+        List<Object> invalidValues = List.of(
+                Map.of(),
+                Map.of("score", 25.5),
+                Map.of("score", 101),
+                Map.of("score", "82"));
+
+        for (Object invalidValue : invalidValues) {
+            Map<String, Object> judge = new java.util.LinkedHashMap<>(validJudge());
+            judge.put("task_achievement", invalidValue);
+            IeltsTextScorer text = input -> CompletableFuture.completedFuture(judge);
+            PronunciationEvidenceProvider ise = turn -> CompletableFuture.completedFuture(
+                    new PronunciationEvidence("XFYUN_ISE", "read_sentence", "LOW", Map.of(), "raw", null));
+
+            IeltsReport report = new IeltsScoringOrchestrator(text, ise).score(attempt()).join();
+
+            assertNull(report.taskAchievement().score());
+            assertNull(report.radarDimensions().get(4).score());
+            assertEquals(6.5, report.overallBand());
+            assertTrue(report.dataQualityWarnings().stream().anyMatch(warning -> warning.contains("TA score")));
+        }
     }
 
     @Test
@@ -71,6 +121,8 @@ class IeltsScoringOrchestratorTest {
         IeltsReport report = new IeltsScoringOrchestrator(text, ise).score(empty).join();
         assertEquals(IeltsScoringStatus.UNSCORABLE, report.scoringStatus());
         assertNull(report.overallBand());
+        assertEquals(5, report.radarDimensions().size());
+        assertNull(report.radarDimensions().get(4).score());
     }
 
     @Test
@@ -170,9 +222,18 @@ class IeltsScoringOrchestratorTest {
                 "lexical_resource", dimension(6.0),
                 "grammatical_range_accuracy", dimension(6.5),
                 "pronunciation", dimension(6.0),
+                "task_achievement", taskAchievement(82),
                 "part_summaries", Map.of("part1", "Clear answers", "part2", "Not observed", "part3", "Not observed"),
                 "band_range", List.of(6.0, 6.5), "confidence", 0.72
         );
+    }
+
+    private static Map<String, Object> taskAchievement(int score) {
+        return Map.of(
+                "score", score,
+                "confidence", 0.78,
+                "positive_evidence", List.of("回答覆盖题目要求"),
+                "limiting_evidence", List.of("部分观点缺少例子"));
     }
 
     private static Map<String, Object> dimension(double band) {

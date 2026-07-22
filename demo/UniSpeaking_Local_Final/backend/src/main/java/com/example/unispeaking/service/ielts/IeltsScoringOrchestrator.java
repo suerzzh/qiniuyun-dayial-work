@@ -16,6 +16,7 @@ public class IeltsScoringOrchestrator {
     private final PronunciationEvidenceProvider pronunciationProvider;
     private final IeltsAcousticFeatureService acoustic = new IeltsAcousticFeatureService();
     private final IeltsBandCalculator calculator = new IeltsBandCalculator();
+    private final IeltsRadarMapper radarMapper = new IeltsRadarMapper();
 
     public IeltsScoringOrchestrator(IeltsTextScorer textScorer,
                                     PronunciationEvidenceProvider pronunciationProvider) {
@@ -92,6 +93,9 @@ public class IeltsScoringOrchestrator {
         IeltsDimensionResult p = hasUsableIse
                 ? dimension("P", judge.get("pronunciation"), warnings)
                 : IeltsDimensionResult.unavailable("P", "科大讯飞发音证据不可用");
+        TaskAchievementResult taskAchievement = taskAchievement(judge.get("task_achievement"), warnings);
+        Map<String, IeltsDimensionResult> officialDimensions = officialDimensions(fc, lr, gra, p);
+        List<RadarDimension> radarDimensions = radarMapper.map(fc, lr, gra, p, taskAchievement);
         IeltsBandCalculator.Result calculated = calculator.calculate(fc.band(), lr.band(), gra.band(), p.band());
         IeltsScoringStatus status = calculated.overallBand() == null
                 ? IeltsScoringStatus.PARTIAL : IeltsScoringStatus.COMPLETE;
@@ -99,7 +103,8 @@ public class IeltsScoringOrchestrator {
         List<String> limits = concat(fc.limitingEvidence(), lr.limitingEvidence(), gra.limitingEvidence(), p.limitingEvidence());
         return new IeltsReport(attempt.getAttemptId(), status, calculated.overallBand(),
                 doubles(judge.get("band_range")), nullableNumber(judge.get("confidence")),
-                fc, lr, gra, p, positives, limits, partSummaries(judge.get("part_summaries")),
+                fc, lr, gra, p, officialDimensions, taskAchievement, radarDimensions,
+                positives, limits, partSummaries(judge.get("part_summaries")),
                 pronunciationEvidence, List.copyOf(warnings), DISCLAIMER);
     }
 
@@ -116,6 +121,42 @@ public class IeltsScoringOrchestrator {
         return new IeltsDimensionResult(code, band, nullableNumber(map.get("confidence")),
                 strings(map.get("positive_evidence")), strings(map.get("limiting_evidence")),
                 band == null ? "千问未返回有效的 Band 建议" : null);
+    }
+
+    private TaskAchievementResult taskAchievement(Object raw, List<String> warnings) {
+        Map<String, Object> map = asMap(raw);
+        Object rawScore = map.get("score");
+        if (!(rawScore instanceof Number number)
+                || !Double.isFinite(number.doubleValue())
+                || number.doubleValue() != Math.rint(number.doubleValue())) {
+            warnings.add("TA score 缺失或不是 0–100 整数，已标记 unavailable");
+            return TaskAchievementResult.unavailable("千问未返回有效的任务完成度分数");
+        }
+        double numericScore = number.doubleValue();
+        if (numericScore < 0 || numericScore > 100) {
+            warnings.add("TA score 超出 0–100，已标记 unavailable");
+            return TaskAchievementResult.unavailable("任务完成度分数超出有效范围");
+        }
+        int score = number.intValue();
+        try {
+            TaskAchievementResult.validate(score);
+        } catch (IllegalArgumentException error) {
+            warnings.add("TA score 超出 0–100，已标记 unavailable");
+            return TaskAchievementResult.unavailable("任务完成度分数超出有效范围");
+        }
+        return new TaskAchievementResult(score, nullableNumber(map.get("confidence")),
+                strings(map.get("positive_evidence")), strings(map.get("limiting_evidence")), null);
+    }
+
+    private Map<String, IeltsDimensionResult> officialDimensions(
+            IeltsDimensionResult fc, IeltsDimensionResult lr,
+            IeltsDimensionResult gra, IeltsDimensionResult pronunciation) {
+        Map<String, IeltsDimensionResult> dimensions = new LinkedHashMap<>();
+        dimensions.put("fluencyCoherence", fc);
+        dimensions.put("lexicalResource", lr);
+        dimensions.put("grammaticalRangeAccuracy", gra);
+        dimensions.put("pronunciation", pronunciation);
+        return Collections.unmodifiableMap(dimensions);
     }
 
     private Map<String, Object> structuredInput(IeltsAttempt attempt,
@@ -165,11 +206,14 @@ public class IeltsScoringOrchestrator {
 
     private IeltsReport unavailable(IeltsAttempt attempt, IeltsScoringStatus status,
                                     List<String> warnings, List<PronunciationEvidence> evidence) {
+        IeltsDimensionResult fc = IeltsDimensionResult.unavailable("FC", "千问文本评分不可用");
+        IeltsDimensionResult lr = IeltsDimensionResult.unavailable("LR", "千问文本评分不可用");
+        IeltsDimensionResult gra = IeltsDimensionResult.unavailable("GRA", "千问文本评分不可用");
+        IeltsDimensionResult pronunciation = IeltsDimensionResult.unavailable("P", "发音综合判断不可用");
+        TaskAchievementResult taskAchievement = TaskAchievementResult.unavailable("千问任务完成度不可用");
         return new IeltsReport(attempt.getAttemptId(), status, null, List.of(), null,
-                IeltsDimensionResult.unavailable("FC", "千问文本评分不可用"),
-                IeltsDimensionResult.unavailable("LR", "千问文本评分不可用"),
-                IeltsDimensionResult.unavailable("GRA", "千问文本评分不可用"),
-                IeltsDimensionResult.unavailable("P", "发音综合判断不可用"),
+                fc, lr, gra, pronunciation, officialDimensions(fc, lr, gra, pronunciation),
+                taskAchievement, radarMapper.map(fc, lr, gra, pronunciation, taskAchievement),
                 List.of(), List.of(), Map.of("part1", "不可评分", "part2", "不可评分", "part3", "不可评分"),
                 evidence, warnings, DISCLAIMER);
     }
