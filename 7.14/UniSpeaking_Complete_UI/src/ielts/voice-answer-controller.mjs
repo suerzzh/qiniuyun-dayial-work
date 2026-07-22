@@ -122,7 +122,8 @@ export function createVoiceAnswerController({ createAdapter, clock = globalThis,
       if (finishedTranscript !== null) return finishedTranscript;
       clearTimer();
       adapter.stop();
-      finishedTranscript = normalizeText(snapshot.finalTranscript);
+      finishedTranscript = normalizeText(`${snapshot.finalTranscript} ${snapshot.interimTranscript}`);
+      snapshot.finalTranscript = finishedTranscript;
       snapshot.status = "finalizing";
       snapshot.interimTranscript = "";
       snapshot.message = "正在结束本轮回答…";

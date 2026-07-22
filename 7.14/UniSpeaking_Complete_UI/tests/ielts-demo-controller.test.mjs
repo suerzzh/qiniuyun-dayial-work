@@ -31,7 +31,6 @@ function createController(overrides = {}) {
     clock,
     storage: createMemoryStorage(),
     speak: (text) => speech.push(text),
-    demoPrepSeconds: 10,
     ...overrides,
   });
   return { controller, speech };
@@ -80,12 +79,59 @@ test("completed Part 2 practice produces evidence feedback without numeric IELTS
   controller.updateNotes("a teacher; patient; encouraged me");
   controller.expirePreparationForTest();
   controller.submitAnswer("My teacher influenced me because she encouraged me to speak confidently.");
-  controller.submitAnswer("Yes, I still keep in touch with her.");
   const snapshot = controller.getSnapshot();
   assert.equal(snapshot.screen, "report");
   assert.equal(snapshot.exam.status, "completed");
   assert.equal(snapshot.report.dimensions.pronunciation.status, "not_assessed");
   assert.equal(/\b[0-9](?:\.5)?\s*\/\s*9\b/.test(JSON.stringify(snapshot.report)), false);
+});
+
+test("full mock defaults to real timing and starts Introduction only after the opening response is done", async () => {
+  const callbacks = [];
+  let remotePaper;
+  const runtime = {
+    async start({ paperSnapshot }) { remotePaper = paperSnapshot; return { attempt_id: "att-real", scoring_status: "COLLECTING" }; },
+    examinerInstruction(text, onDone) { callbacks.push({ text, onDone }); },
+    openTurn() {}, questionAsked() {}, completeTurn() {},
+  };
+  const { controller } = createController({ runtime });
+  controller.selectMode("full_mock");
+  await controller.start();
+  assert.equal(remotePaper.timingProfile, "real_exam");
+  assert.equal(controller.getSnapshot().exam.status, "opening");
+  assert.equal(controller.getSnapshot().timer, null);
+  callbacks.shift().onDone();
+  const snapshot = controller.getSnapshot();
+  assert.equal(snapshot.exam.status, "introduction");
+  assert.equal(snapshot.timer.kind, "introduction_answer");
+  assert.equal(snapshot.timer.totalSeconds, 60);
+});
+
+test("full mock accelerated toggle freezes the accelerated timing profile", async () => {
+  let remotePaper;
+  const runtime = {
+    async start({ paperSnapshot }) { remotePaper = paperSnapshot; return { attempt_id: "att-fast", scoring_status: "COLLECTING" }; },
+    examinerInstruction() {}, openTurn() {}, questionAsked() {}, completeTurn() {},
+  };
+  const { controller } = createController({ runtime });
+  controller.selectMode("full_mock");
+  controller.setPreflight({ acceleratedDemo: true });
+  await controller.start();
+  assert.equal(remotePaper.timingProfile, "accelerated_demo");
+  assert.equal(remotePaper.timing.introductionMaxSeconds, 15);
+  assert.equal(controller.getSnapshot().sessionPolicy.acceleratedDemo, true);
+});
+
+test("Part 2 displays the card but the examiner only speaks preparation and start scripts", async () => {
+  const { controller, speech } = createController();
+  controller.selectMode("practice_part", "part2");
+  await controller.start();
+  const cardText = controller.getSnapshot().paper.parts.part2.topicSentence;
+  assert.match(speech[0], /one minute to think and prepare/i);
+  assert.equal(speech[0].includes(cardText), false);
+  controller.expirePreparationForTest();
+  assert.match(speech[1], /You may begin speaking now/i);
+  assert.equal(speech[1].includes(cardText), false);
 });
 
 test("feedback refuses to assess pronunciation from transcript-only evidence", () => {
@@ -99,4 +145,33 @@ test("feedback refuses to assess pronunciation from transcript-only evidence", (
   });
   assert.equal(report.dimensions.pronunciation.status, "not_assessed");
   assert.match(report.dimensions.pronunciation.evidence, /未保存可分析的原始音频/);
+});
+
+test("remote start failure returns to preflight instead of showing a fake listening session", async () => {
+  const runtime = {
+    async start() { throw new Error("Internal Server Error"); },
+    async abandon() {},
+  };
+  const { controller } = createController({ runtime });
+  controller.selectMode("full_mock");
+  await controller.start();
+  const snapshot = controller.getSnapshot();
+  assert.equal(snapshot.screen, "preflight");
+  assert.equal(snapshot.exam, null);
+  assert.match(snapshot.error, /Internal Server Error/);
+});
+
+test("an empty ASR result stays empty and is never replaced with a fabricated answer", async () => {
+  let completedTranscript = "not-called";
+  const runtime = {
+    async start() { return { attempt_id: "att-empty", scoring_status: "COLLECTING" }; },
+    questionAsked() {},
+    completeTurn(transcript) { completedTranscript = transcript; },
+  };
+  const { controller } = createController({ runtime });
+  controller.selectMode("practice_part", "part1");
+  await controller.start();
+  controller.submitAnswer("");
+  assert.equal(completedTranscript, "");
+  assert.equal(controller.getSnapshot().answers[0].transcript, "");
 });

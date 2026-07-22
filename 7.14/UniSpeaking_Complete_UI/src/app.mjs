@@ -9,14 +9,16 @@ import { renderProfile } from "./views/profile.mjs";
 import { renderAuth } from "./views/auth.mjs";
 import { renderMembership } from "./views/membership.mjs";
 import { renderCustomSceneGenerating, renderCustomScenePreview } from "./views/custom_scene.mjs";
-import { renderIelts } from "./views/ielts.mjs";
+import { renderIelts, voicePresentation } from "./views/ielts.mjs";
 import { createIeltsDemoController } from "./ielts/demo-controller.mjs";
-import { createSpeechRecognitionAdapter } from "./ielts/speech-recognition-adapter.mjs";
 import { createVoiceAnswerController } from "./ielts/voice-answer-controller.mjs";
+import { createIeltsApi } from "./services/ielts-api.mjs";
+import { createPcmScoringStreamer } from "./ielts/pcm-scoring-streamer.mjs";
+import { createIeltsRealtimeSpeechAdapter, createIeltsSessionRuntime } from "./ielts/ielts-session-runtime.mjs";
 import { createRealtimeApi } from "./services/realtime-api.mjs";
 import { createRealtimeClient } from "./realtime/realtime-client.mjs";
 import { applyRealtimeEvent, createRealtimeState } from "./realtime/realtime-state.mjs";
-import { SUPABASE_PUBLIC_CONFIG } from "./runtime-config.mjs";
+import { IELTS_BACKEND_URL, SUPABASE_PUBLIC_CONFIG } from "./runtime-config.mjs";
 
 const root = document.getElementById("app-root");
 const shell = document.getElementById("app-shell");
@@ -29,16 +31,23 @@ function readSaved() {
 }
 const store = createStore(createInitialState(readSaved()));
 
-function speakIeltsText(text) {
-  if (!("speechSynthesis" in window) || !("SpeechSynthesisUtterance" in window)) return;
-  window.speechSynthesis.cancel();
-  const utterance = new SpeechSynthesisUtterance(text);
-  utterance.lang = "en-GB";
-  utterance.rate = 0.94;
-  utterance.pitch = 0.98;
-  window.speechSynthesis.speak(utterance);
-}
-speakIeltsText.cancel = () => window.speechSynthesis?.cancel();
+const ieltsApi = createIeltsApi({ baseUrl: IELTS_BACKEND_URL });
+const pcmStreamer = createPcmScoringStreamer({
+  createAudioContext: (options) => new (window.AudioContext || window.webkitAudioContext)(options),
+  createWebSocket: (url) => new WebSocket(url),
+  onEvent: () => {},
+});
+let ieltsSpeechAdapter = null;
+let voiceAnswerController = null;
+const ieltsRuntime = createIeltsSessionRuntime({
+  api: ieltsApi,
+  streamer: pcmStreamer,
+  mediaDevices: navigator.mediaDevices,
+  createPeerConnection: () => new RTCPeerConnection({ iceServers: [] }),
+  createAudio: () => new Audio(),
+  wsBaseUrl: IELTS_BACKEND_URL.replace(/^http/, "ws"),
+  onTranscript: (event) => ieltsSpeechAdapter?.receive(event),
+});
 
 const ieltsController = createIeltsDemoController({
   async loadJson(name) {
@@ -47,20 +56,29 @@ const ieltsController = createIeltsDemoController({
     return response.json();
   },
   storage: localStorage,
-  speak: speakIeltsText,
-  demoPrepSeconds: 10,
+  // Examiner speech and ASR are supplied by Qwen Realtime in the IELTS runtime.
+  speak: () => {},
+  runtime: ieltsRuntime,
+  onAnswerTimeLimit() {
+    if (!voiceAnswerController) return "";
+    const transcript = voiceAnswerController.finish();
+    queueMicrotask(() => voiceAnswerController?.reset());
+    return transcript;
+  },
+  onTimer(snapshot) {
+    if (parseRoute(location.hash).name === "ielts") updateIeltsTimingView(snapshot);
+  },
   onChange() {
     if (parseRoute(location.hash).name === "ielts") render();
   },
 });
-const voiceAnswerController = createVoiceAnswerController({
-  createAdapter: (handlers) => createSpeechRecognitionAdapter({
-    ...handlers,
-    windowRef: window,
-    mediaDevices: navigator.mediaDevices,
-  }),
+voiceAnswerController = createVoiceAnswerController({
+  createAdapter: (handlers) => {
+    ieltsSpeechAdapter = createIeltsRealtimeSpeechAdapter(ieltsRuntime, handlers);
+    return ieltsSpeechAdapter;
+  },
   onChange() {
-    if (parseRoute(location.hash).name === "ielts") render();
+    if (parseRoute(location.hash).name === "ielts") updateIeltsVoiceView();
   },
 });
 const realtimeApi = createRealtimeApi({
@@ -158,6 +176,67 @@ function restoreIeltsVoiceFocus(focusState) {
   transcript.focus({ preventScroll: true });
   transcript.setSelectionRange(focusState.start, focusState.end, focusState.direction || "none");
   return true;
+}
+
+function updateIeltsVoiceView() {
+  const session = ieltsController.getSnapshot();
+  const panel = root.querySelector(".ielts-voice-panel");
+  if (session.screen !== "session" || session.exam?.status === "part2_preparing" || !panel) {
+    render();
+    return;
+  }
+  const voice = voiceAnswerController.getSnapshot();
+  const presentation = voicePresentation(voice);
+  panel.className = `ielts-voice-panel panel is-${voice.status}`;
+
+  const elapsed = panel.querySelector("header time");
+  if (elapsed) elapsed.textContent = presentation.elapsedText;
+
+  const microphone = panel.querySelector(".ielts-mic-button");
+  if (microphone) {
+    microphone.className = `ielts-mic-button is-${voice.status}`;
+    microphone.dataset.action = presentation.action;
+    microphone.setAttribute("aria-label", presentation.hint);
+    microphone.disabled = Boolean(presentation.disabled);
+    const label = microphone.querySelector("b");
+    if (label) label.textContent = presentation.label;
+  }
+
+  const status = panel.querySelector(".ielts-voice-status");
+  if (status) status.textContent = presentation.statusMessage;
+  const finish = panel.querySelector("[data-action='ielts-voice-finish']");
+  if (finish) finish.disabled = presentation.finishDisabled;
+  const transcript = panel.querySelector("[data-action='ielts-voice-transcript']");
+  if (transcript && transcript.value !== voice.finalTranscript) transcript.value = voice.finalTranscript;
+
+  const transcriptContainer = panel.querySelector(".ielts-transcript");
+  let interim = transcriptContainer?.querySelector("small");
+  if (voice.interimTranscript) {
+    if (!interim && transcriptContainer) {
+      interim = document.createElement("small");
+      transcriptContainer.append(interim);
+    }
+    if (interim) interim.textContent = voice.interimTranscript;
+  } else {
+    interim?.remove();
+  }
+}
+
+function updateIeltsTimingView(snapshot) {
+  if (snapshot.screen !== "session") return;
+  const timer = root.querySelector(".ielts-session-tools > time");
+  if (timer) {
+    const seconds = snapshot.timer?.remainingSeconds;
+    timer.textContent = seconds == null ? "LIVE"
+      : `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+  }
+  const part3 = root.querySelector(".ielts-part3-timing");
+  if (part3 && snapshot.part3Timer) {
+    const format = (value) => `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(value % 60).padStart(2, "0")}`;
+    const heading = part3.querySelector("strong");
+    if (heading) heading.textContent = `Part 3 总计时 ${format(snapshot.part3Timer.elapsedSeconds)}`;
+    part3.classList.toggle("is-soft-limit", Boolean(snapshot.part3Timer.softLimitReached));
+  }
 }
 
 function render() {
@@ -295,6 +374,10 @@ document.addEventListener("click", (event) => {
   if (action === "ielts-toggle-recording") {
     const current = ieltsController.getSnapshot().preflight.recordingEnabled;
     ieltsController.setPreflight({ recordingEnabled: !current }); return;
+  }
+  if (action === "ielts-toggle-accelerated") {
+    const current = ieltsController.getSnapshot().preflight.acceleratedDemo;
+    ieltsController.setPreflight({ acceleratedDemo: !current }); return;
   }
   if (action === "ielts-start") { voiceAnswerController.reset(); ieltsController.start(); return; }
   if (action === "ielts-toggle-captions") { ieltsController.toggleCaptions(); return; }

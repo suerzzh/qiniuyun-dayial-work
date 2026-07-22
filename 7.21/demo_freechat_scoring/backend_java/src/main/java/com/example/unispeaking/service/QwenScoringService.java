@@ -3,6 +3,8 @@ package com.example.unispeaking.service;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.example.unispeaking.service.ielts.IeltsPromptCatalog;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +21,25 @@ import java.util.regex.Pattern;
 
 @Service
 public class QwenScoringService {
+    private IeltsPromptCatalog ieltsPrompts;
+
+    public QwenScoringService() {}
+
+    @Autowired
+    public QwenScoringService(IeltsPromptCatalog ieltsPrompts) {
+        this.ieltsPrompts = ieltsPrompts;
+    }
     @Value("${dashscope.api.key}")
     private String apiKey;
+
+    @Value("${qwen.scoring.model:qwen-plus}")
+    private String scoringModel;
+
+    @Value("${qwen.ielts.judge.model:qwen-plus}")
+    private String ieltsJudgeModel;
+
+    @Value("${qwen.compatible.endpoint:https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions}")
+    private String compatibleEndpoint;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final HttpClient httpClient = HttpClient.newBuilder()
@@ -111,14 +130,52 @@ You design concise English scenario-learning material for Chinese learners. Retu
         });
     }
 
+    public CompletableFuture<Map<String, Object>> evaluateIeltsLanguageEvidence(Map<String, Object> structuredInput) {
+        try {
+            String user = objectMapper.writeValueAsString(structuredInput == null ? Map.of() : structuredInput);
+            return callJson(ieltsPrompt("language"), user, configured(scoringModel))
+                    .thenApply(json -> objectMapper.convertValue(json, new TypeReference<>() {}));
+        } catch (Exception error) {
+            return CompletableFuture.failedFuture(error);
+        }
+    }
+
+    public CompletableFuture<Map<String, Object>> evaluateIeltsJudge(Map<String, Object> structuredInput) {
+        try {
+            String user = objectMapper.writeValueAsString(structuredInput == null ? Map.of() : structuredInput);
+            return callJson(ieltsPrompt("judge"), user, configured(ieltsJudgeModel))
+                    .thenApply(json -> objectMapper.convertValue(json, new TypeReference<>() {}));
+        } catch (Exception error) {
+            return CompletableFuture.failedFuture(error);
+        }
+    }
+
+    public CompletableFuture<Map<String, Object>> evaluateIelts(Map<String, Object> structuredInput) {
+        return evaluateIeltsLanguageEvidence(structuredInput).thenCompose(language -> {
+            Map<String, Object> combined = new LinkedHashMap<>(structuredInput == null ? Map.of() : structuredInput);
+            combined.put("language_evidence", language);
+            return evaluateIeltsJudge(combined);
+        });
+    }
+
+    Map<String, Object> parseIeltsJsonForTest(String rawJson) throws Exception {
+        JsonNode json = objectMapper.readTree(rawJson);
+        if (json == null || !json.isObject()) throw new IllegalArgumentException("Qwen IELTS response must be a JSON object");
+        return objectMapper.convertValue(json, new TypeReference<>() {});
+    }
+
     private CompletableFuture<JsonNode> callJson(String systemPrompt, String userContent) {
+        return callJson(systemPrompt, userContent, configured(scoringModel));
+    }
+
+    private CompletableFuture<JsonNode> callJson(String systemPrompt, String userContent, String model) {
         if (apiKey == null || apiKey.isBlank() || "your_api_key_here".equals(apiKey)) {
             return CompletableFuture.failedFuture(
                     new IllegalStateException("DASHSCOPE_API_KEY is not configured"));
         }
         try {
             Map<String, Object> body = new LinkedHashMap<>();
-            body.put("model", "qwen-plus");
+            body.put("model", model);
             body.put("messages", List.of(
                     Map.of("role", "system", "content", systemPrompt),
                     Map.of("role", "user", "content", userContent)
@@ -126,7 +183,7 @@ You design concise English scenario-learning material for Chinese learners. Retu
             body.put("response_format", Map.of("type", "json_object"));
             body.put("temperature", 0.1);
             HttpRequest request = HttpRequest.newBuilder()
-                    .uri(URI.create("https://dashscope.aliyuncs.com/compatible-mode/v1/chat/completions"))
+                    .uri(URI.create(configured(compatibleEndpoint)))
                     .timeout(Duration.ofSeconds(30))
                     .header("Content-Type", "application/json")
                     .header("Authorization", "Bearer " + apiKey)
@@ -149,6 +206,15 @@ You design concise English scenario-learning material for Chinese learners. Retu
         } catch (Exception error) {
             return CompletableFuture.failedFuture(error);
         }
+    }
+
+    private String configured(String value) {
+        return value == null || value.isBlank() ? "qwen-plus" : value.trim();
+    }
+
+    private String ieltsPrompt(String kind) {
+        if (ieltsPrompts == null) throw new IllegalStateException("IELTS prompt catalog is not configured");
+        return "judge".equals(kind) ? ieltsPrompts.judge() : ieltsPrompts.languageEvidence();
     }
 
     private Map<String, Object> validateReference(String raw, JsonNode json) {

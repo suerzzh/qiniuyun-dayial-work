@@ -24,6 +24,12 @@ function requireVersion(value, label) {
   return value;
 }
 
+function requirePositive(value, label) {
+  const number = Number(value);
+  if (!Number.isFinite(number) || number <= 0) throw new Error(`${label} must be positive`);
+  return number;
+}
+
 function createIdRegistry() {
   const ids = new Set();
   return (value, label) => {
@@ -39,32 +45,46 @@ function normalizeQuestion(question, registerId, label) {
   return {
     questionId: registerId(question.question_id, `${label}.question_id`),
     version: requireVersion(question.version, `${label}.version`),
+    order: requirePositive(question.order, `${label}.order`),
     renderedText: requireText(question.text, `${label}.text`),
-    probes: Array.isArray(question.probes)
-      ? question.probes.map((probe, index) => requireText(probe, `${label}.probes[${index}]`))
-      : [],
+    rawText: typeof question.raw_text === "string" ? question.raw_text : question.text,
+    eligible: question.eligible !== false,
+    needsReview: Boolean(question.needs_review),
+    warnings: Array.isArray(question.warnings) ? [...question.warnings] : [],
+    sourcePageStart: question.source_page_start ?? null,
+    sourcePageEnd: question.source_page_end ?? null,
+  };
+}
+
+function normalizeTiming(value, label) {
+  requireObject(value, label);
+  return {
+    introductionMaxSeconds: requirePositive(value.introduction_max_seconds, `${label}.introduction_max_seconds`),
+    part1AnswerMaxSeconds: requirePositive(value.part1_answer_max_seconds, `${label}.part1_answer_max_seconds`),
+    part2PrepSeconds: requirePositive(value.part2_prep_seconds, `${label}.part2_prep_seconds`),
+    part2AnswerMaxSeconds: requirePositive(value.part2_answer_max_seconds, `${label}.part2_answer_max_seconds`),
+    part3AnswerMaxSeconds: requirePositive(value.part3_answer_max_seconds, `${label}.part3_answer_max_seconds`),
+    part3SoftLimitSeconds: requirePositive(value.part3_soft_limit_seconds, `${label}.part3_soft_limit_seconds`),
+    part3HardLimitSeconds: requirePositive(value.part3_hard_limit_seconds, `${label}.part3_hard_limit_seconds`),
   };
 }
 
 function normalizeManifest(manifest) {
   requireObject(manifest, "manifest");
   requireObject(manifest.files, "manifest.files");
-  const defaults = requireObject(manifest.defaults || {}, "manifest.defaults");
+  const defaults = requireObject(manifest.defaults, "manifest.defaults");
   return {
     bankVersion: requireText(manifest.bank_version, "manifest.bank_version"),
     schemaVersion: requireVersion(manifest.schema_version, "manifest.schema_version"),
     locale: typeof manifest.locale === "string" ? manifest.locale : "en-GB",
     files: {
       part1: requireText(manifest.files.part1, "manifest.files.part1"),
-      part2: requireText(manifest.files.part2, "manifest.files.part2"),
-      part3: requireText(manifest.files.part3, "manifest.files.part3"),
+      part2Part3: requireText(manifest.files.part2_part3, "manifest.files.part2_part3"),
     },
     config: {
       recentSessionsToAvoid: Number(defaults.recent_completed_sessions_to_avoid || 5),
-      part1TargetSeconds: Number(defaults.part1_target_seconds || 270),
-      part2PrepSeconds: Number(defaults.part2_prep_seconds || 60),
-      part2AnswerMaxSeconds: Number(defaults.part2_answer_max_seconds || 120),
-      part3TargetSeconds: Number(defaults.part3_target_seconds || 270),
+      realExam: normalizeTiming(defaults.real_exam, "manifest.defaults.real_exam"),
+      acceleratedDemo: normalizeTiming(defaults.accelerated_demo, "manifest.defaults.accelerated_demo"),
     },
   };
 }
@@ -74,71 +94,75 @@ export function validateQuestionBank(source) {
   const manifest = normalizeManifest(source.manifest);
   const registerId = createIdRegistry();
 
-  const part1Groups = requireArray(source.part1?.groups, "part1.groups", 2).map((group, groupIndex) => {
+  const part1Groups = requireArray(source.part1?.groups, "part1.groups").map((group, groupIndex) => {
     const label = `part1.groups[${groupIndex}]`;
     requireObject(group, label);
     const groupId = registerId(group.group_id, `${label}.group_id`);
-    const questions = requireArray(group.questions, `${label}.questions`, 2)
-      .map((question, index) => normalizeQuestion(question, registerId, `${label}.questions[${index}]`));
+    const questions = requireArray(group.questions, `${label}.questions`)
+      .map((item, index) => normalizeQuestion(item, registerId, `${label}.questions[${index}]`))
+      .sort((a, b) => a.order - b.order);
     return {
       groupId,
       version: requireVersion(group.version, `${label}.version`),
       status: requireText(group.status, `${label}.status`),
+      eligible: group.eligible !== false,
       topic: requireText(group.topic, `${label}.topic`),
+      sequence: requirePositive(group.sequence, `${label}.sequence`),
       trainingLevel: requireText(group.training_level, `${label}.training_level`),
+      needsReview: Boolean(group.needs_review),
+      warnings: Array.isArray(group.warnings) ? [...group.warnings] : [],
       questions,
     };
   });
 
-  const part2Cards = requireArray(source.part2?.cards, "part2.cards").map((card, cardIndex) => {
-    const label = `part2.cards[${cardIndex}]`;
-    requireObject(card, label);
-    const cardId = registerId(card.card_id, `${label}.card_id`);
-    const bullets = requireArray(card.you_should_say, `${label}.you_should_say`, 3)
-      .map((bullet, index) => requireText(bullet, `${label}.you_should_say[${index}]`));
-    const roundingOffQuestions = requireArray(card.rounding_off_questions, `${label}.rounding_off_questions`)
-      .map((question, index) => normalizeQuestion(question, registerId, `${label}.rounding_off_questions[${index}]`));
-    return {
-      cardId,
-      version: requireVersion(card.version, `${label}.version`),
-      status: requireText(card.status, `${label}.status`),
-      topicCluster: requireText(card.topic_cluster, `${label}.topic_cluster`),
-      trainingLevel: requireText(card.training_level, `${label}.training_level`),
-      topicSentence: requireText(card.topic_sentence, `${label}.topic_sentence`),
-      youShouldSay: bullets,
-      explain: requireText(card.explain, `${label}.explain`),
-      roundingOffQuestions,
-    };
-  });
+  const part2Part3Bundles = requireArray(source.part2Part3?.bundles, "part2_part3.bundles")
+    .map((bundle, bundleIndex) => {
+      const label = `part2_part3.bundles[${bundleIndex}]`;
+      requireObject(bundle, label);
+      const topicId = registerId(bundle.topic_id, `${label}.topic_id`);
+      const part2 = requireObject(bundle.part2, `${label}.part2`);
+      const cardId = requireText(part2.card_id, `${label}.part2.card_id`);
+      if (cardId !== topicId) throw new Error(`${label}.part2.card_id must equal atomic topic_id ${topicId}`);
+      const cuePoints = requireArray(part2.cue_points, `${label}.part2.cue_points`, 3)
+        .map((cue, index) => {
+          requireObject(cue, `${label}.part2.cue_points[${index}]`);
+          return {
+            cueId: registerId(cue.cue_id, `${label}.part2.cue_points[${index}].cue_id`),
+            order: requirePositive(cue.order, `${label}.part2.cue_points[${index}].order`),
+            text: requireText(cue.text, `${label}.part2.cue_points[${index}].text`),
+            needsReview: Boolean(cue.needs_review),
+            warnings: Array.isArray(cue.warnings) ? [...cue.warnings] : [],
+          };
+        }).sort((a, b) => a.order - b.order);
+      const part3Questions = requireArray(bundle.part3?.questions, `${label}.part3.questions`)
+        .map((item, index) => {
+          const question = normalizeQuestion(item, registerId, `${label}.part3.questions[${index}]`);
+          if (!question.questionId.startsWith(`${topicId}_p3_`)) {
+            throw new Error(`Part 3 question ${question.questionId} does not belong to ${topicId}`);
+          }
+          return question;
+        }).sort((a, b) => a.order - b.order);
+      return {
+        topicId,
+        version: requireVersion(bundle.version, `${label}.version`),
+        status: requireText(bundle.status, `${label}.status`),
+        eligible: bundle.eligible !== false,
+        title: requireText(bundle.title, `${label}.title`),
+        sequence: requirePositive(bundle.sequence, `${label}.sequence`),
+        needsReview: Boolean(bundle.needs_review),
+        warnings: Array.isArray(bundle.warnings) ? [...bundle.warnings] : [],
+        cardId,
+        topicSentence: requireText(part2.topic_sentence, `${label}.part2.topic_sentence`),
+        cuePoints,
+        part3Questions,
+      };
+    });
 
-  const part3Groups = requireArray(source.part3?.groups, "part3.groups").map((group, groupIndex) => {
-    const label = `part3.groups[${groupIndex}]`;
-    requireObject(group, label);
-    const groupId = registerId(group.group_id, `${label}.group_id`);
-    const questions = requireArray(group.questions, `${label}.questions`, 2)
-      .map((question, index) => normalizeQuestion(question, registerId, `${label}.questions[${index}]`));
-    return {
-      groupId,
-      version: requireVersion(group.version, `${label}.version`),
-      status: requireText(group.status, `${label}.status`),
-      topicCluster: requireText(group.topic_cluster, `${label}.topic_cluster`),
-      trainingLevel: requireText(group.training_level, `${label}.training_level`),
-      questions,
-    };
-  });
-
-  const activePart1 = part1Groups.filter((group) => group.status === "active");
-  const activePart2 = part2Cards.filter((card) => card.status === "active");
-  const activePart3 = part3Groups.filter((group) => group.status === "active");
-  if (activePart1.length < 2) throw new Error("IELTS question bank requires at least two active Part 1 groups");
-  if (!activePart2.length) throw new Error("IELTS question bank requires an active Part 2 card");
-  if (!activePart3.length) throw new Error("IELTS question bank requires an active Part 3 group");
-
-  for (const card of activePart2) {
-    if (!activePart3.some((group) => group.topicCluster === card.topicCluster)) {
-      throw new Error(`No active Part 3 topic_cluster matches ${card.topicCluster}`);
-    }
-  }
+  const activePart1 = part1Groups.filter((group) => group.status === "active" && group.eligible
+    && group.questions.filter((question) => question.eligible).length >= 4);
+  const activeBundles = part2Part3Bundles.filter((bundle) => bundle.status === "active" && bundle.eligible);
+  if (!activePart1.length) throw new Error("IELTS question bank requires an active Part 1 group with four usable questions");
+  if (!activeBundles.length) throw new Error("IELTS question bank requires an active atomic Part 2/3 bundle");
 
   return {
     bankVersion: manifest.bankVersion,
@@ -146,8 +170,7 @@ export function validateQuestionBank(source) {
     locale: manifest.locale,
     config: manifest.config,
     part1Groups: activePart1,
-    part2Cards: activePart2,
-    part3Groups: activePart3,
+    part2Part3Bundles: activeBundles,
   };
 }
 
@@ -155,10 +178,9 @@ export async function loadQuestionBank(loadJson, manifestPath = "manifest.json")
   if (typeof loadJson !== "function") throw new Error("loadJson must be a function");
   const manifest = await loadJson(manifestPath);
   const normalizedManifest = normalizeManifest(manifest);
-  const [part1, part2, part3] = await Promise.all([
+  const [part1, part2Part3] = await Promise.all([
     loadJson(normalizedManifest.files.part1),
-    loadJson(normalizedManifest.files.part2),
-    loadJson(normalizedManifest.files.part3),
+    loadJson(normalizedManifest.files.part2Part3),
   ]);
-  return validateQuestionBank({ manifest, part1, part2, part3 });
+  return validateQuestionBank({ manifest, part1, part2Part3 });
 }

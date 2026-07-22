@@ -100,3 +100,11 @@ test("fatal recognition errors preserve text and switch to fallback", async () =
   assert.equal(snapshot.status, "fallback");
   assert.equal(snapshot.finalTranscript, "Preserved words");
 });
+
+test("finishing preserves the latest Qwen interim text so the spoken tail is not dropped", async () => {
+  const fixture = createFixture();
+  await fixture.controller.start();
+  fixture.adapter.emitFinal("I enjoy learning");
+  fixture.adapter.emitInterim("because it is practical");
+  assert.equal(fixture.controller.finish(), "I enjoy learning because it is practical");
+});

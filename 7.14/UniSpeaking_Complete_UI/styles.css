@@ -3092,6 +3092,8 @@ header.page-heading .eyebrow:empty {
 .ielts-session-head{flex:0 0 auto;padding:0 4px}
 .ielts-session-head>div:first-child{display:flex;align-items:center;gap:12px}
 .ielts-session-head p{margin:0}.ielts-session-head p strong,.ielts-session-head p small{display:block}.ielts-session-head p strong{font-size:15px}.ielts-session-head p small{color:var(--muted);font-size:10px}
+.ielts-part3-timing{display:flex;flex-direction:column;gap:2px;padding-left:12px;border-left:1px solid var(--line);font-variant-numeric:tabular-nums}
+.ielts-part3-timing strong{font-size:11px}.ielts-part3-timing span{color:var(--muted);font-size:9px}
 .ielts-session-tools{display:flex;align-items:center;gap:8px}
 .ielts-session-tools time{min-width:70px;font-variant-numeric:tabular-nums;font-size:20px;font-weight:850;text-align:center}
 .ielts-session-tools button{min-height:44px;padding:0 13px;border:1px solid var(--line);border-radius:9px;background:#fff;font-size:11px;font-weight:750;cursor:pointer}

@@ -12,51 +12,59 @@ const readJson = async (name) => JSON.parse(await readFile(join(root, "backend/i
 const bank = validateQuestionBank({
   manifest: await readJson("manifest.json"),
   part1: await readJson("part1.json"),
-  part2: await readJson("part2.json"),
-  part3: await readJson("part3.json"),
+  part2Part3: await readJson("part2_part3.json"),
 });
 
 const options = {
   mode: "full_mock",
   recentQuestionIds: [],
   random: () => 0,
-  now: () => new Date("2026-07-20T08:00:00.000Z"),
+  now: () => new Date("2026-07-21T08:00:00.000Z"),
 };
 
-test("links Part 3 to the selected Part 2 topic cluster", () => {
+test("freezes one atomic Part 2/3 source topic and never mixes its questions", () => {
   const paper = assemblePaper(bank, options);
-  assert.equal(paper.parts.part3.topicCluster, paper.parts.part2.topicCluster);
-  assert.equal(paper.parts.part1.questions.length, 2);
-  assert.equal(paper.parts.part2.roundingOffQuestions.length, 1);
-  assert.equal(paper.parts.part3.questions.length, 2);
+  assert.equal(paper.part2Part3TopicId, paper.parts.part2.topicId);
+  assert.equal(paper.parts.part3.topicId, paper.parts.part2.topicId);
+  assert.ok(paper.parts.part3.questions.length >= 3);
+  assert.ok(paper.parts.part3.questions.every((question) =>
+    question.questionId.startsWith(`${paper.part2Part3TopicId}_p3_`)));
+  assert.equal(Object.hasOwn(paper.parts.part2, "roundingOffQuestions"), false);
 });
 
-test("avoids recent cards and questions while fresh candidates remain", () => {
-  const paper = assemblePaper(bank, {
-    ...options,
-    recentQuestionIds: ["p2_person_001", "p1_home_001_q1", "p3_people_001_q1"],
-  });
-  assert.notEqual(paper.parts.part2.cardId, "p2_person_001");
-  const usedIds = [
-    ...paper.parts.part1.questions.map((item) => item.questionId),
-    paper.parts.part2.cardId,
-    ...paper.parts.part3.questions.map((item) => item.questionId),
-  ];
-  assert.equal(usedIds.includes("p1_home_001_q1"), false);
+test("Part 1 selects four questions from one topic and preserves source order", () => {
+  const paper = assemblePaper(bank, options);
+  assert.equal(paper.parts.part1.questions.length, 4);
+  assert.equal(new Set(paper.parts.part1.questions.map((item) => item.groupId)).size, 1);
+  const orders = paper.parts.part1.questions.map((item) => item.order);
+  assert.deepEqual(orders, [...orders].sort((a, b) => a - b));
 });
 
-test("stores rendered text, versions and assembly policy in an immutable snapshot", () => {
+test("Part 1 can select five ordered questions", () => {
+  const paper = assemblePaper(bank, { ...options, random: () => 0.999999 });
+  assert.equal(paper.parts.part1.questions.length, 5);
+  assert.equal(new Set(paper.parts.part1.questions.map((item) => item.groupId)).size, 1);
+  const orders = paper.parts.part1.questions.map((item) => item.order);
+  assert.deepEqual(orders, [...orders].sort((a, b) => a - b));
+});
+
+test("stores the selected timing profile and immutable production durations", () => {
   const paper = assemblePaper(bank, options);
-  assert.equal(paper.bankVersion, "2026.07.20-demo.1");
-  assert.equal(paper.assemblyPolicy.profile, "accelerated_demo");
-  assert.match(paper.paperId, /^paper_20260720T080000/);
-  assert.ok(paper.parts.part1.questions.every((item) => item.renderedText && item.version === 1));
+  assert.equal(paper.timingProfile, "real_exam");
+  assert.equal(paper.timing.introductionMaxSeconds, 60);
+  assert.equal(paper.timing.part3HardLimitSeconds, 300);
+  assert.equal(paper.assemblyPolicy.profile, "real_exam");
   assert.throws(() => { paper.parts.part1.questions.push({}); }, TypeError);
+
+  const accelerated = assemblePaper(bank, { ...options, timingProfile: "accelerated_demo" });
+  assert.equal(accelerated.timing.part2PrepSeconds, 10);
+  assert.equal(accelerated.timing.part3HardLimitSeconds, 75);
 });
 
-test("Part 2 practice assembles only the cue-card flow", () => {
+test("Part 2 practice assembles only the cue-card flow from an atomic bundle", () => {
   const paper = assemblePaper(bank, { ...options, mode: "practice_part", selectedPart: "part2" });
   assert.equal(paper.parts.part1, null);
   assert.ok(paper.parts.part2.topicSentence);
+  assert.ok(paper.part2Part3TopicId);
   assert.equal(paper.parts.part3, null);
 });

@@ -89,7 +89,7 @@ test("mobile controls use 44px hit areas without enlarging switch tracks", async
 test("IELTS demo keeps the cue card first and exposes responsive controls", async () => {
   const [view, css] = await Promise.all([read("src/views/ielts.mjs"), read("styles.css")]);
   assert.match(view, /ielts-cue-card/);
-  assert.match(view, /DEMO 加速模式/);
+  assert.match(view, /ielts-toggle-accelerated/);
   assert.match(css, /\.ielts-cue-card\{/);
   assert.match(css, /\.ielts-mode-card:focus-visible/);
   assert.match(css, /\.ielts-session-tools button\{[^}]*min-height:44px/);
@@ -100,11 +100,11 @@ test("README documents the local IELTS Demo boundary", async () => {
   const readme = await read("README.md");
   assert.match(readme, /## IELTS Speaking Demo/);
   assert.match(readme, /http:\/\/localhost:8080\/#\/ielts/);
-  assert.match(readme, /speech synthesis/i);
-  assert.match(readme, /does not call the production Realtime provider/i);
-  assert.match(readme, /Web Speech API/i);
-  assert.match(readme, /microphone permission is requested only after/i);
-  assert.match(readme, /raw audio is not uploaded or saved/i);
+  assert.match(readme, /Qwen Realtime/);
+  assert.match(readme, /只申请一次麦克风 MediaStream/);
+  assert.match(readme, /Java 进程内/);
+  assert.match(readme, /read_sentence/);
+  assert.match(readme, /不直接生成 IELTS Band/);
 });
 
 test("stale Part 2 note events are ignored after preparation expires", async () => {
@@ -117,7 +117,9 @@ test("stale Part 2 note events are ignored after preparation expires", async () 
 
 test("IELTS microphone actions are wired through an isolated voice controller", async () => {
   const app = await read("src/app.mjs");
-  assert.match(app, /import \{ createSpeechRecognitionAdapter \}/);
+  assert.match(app, /createIeltsRealtimeSpeechAdapter, createIeltsSessionRuntime/);
+  assert.doesNotMatch(app, /createSpeechRecognitionAdapter/);
+  assert.match(app, /onTranscript: \(event\) => ieltsSpeechAdapter\?\.receive\(event\)/);
   assert.match(app, /import \{ createVoiceAnswerController \}/);
   assert.match(app, /renderIelts\(ieltsController\.getSnapshot\(\), voiceAnswerController\.getSnapshot\(\)\)/);
   for (const action of ["ielts-voice-start", "ielts-voice-pause", "ielts-voice-resume", "ielts-voice-finish"]) {

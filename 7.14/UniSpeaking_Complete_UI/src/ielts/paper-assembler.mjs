@@ -7,8 +7,7 @@ function deepFreeze(value) {
 
 function pick(items, random) {
   if (!items.length) throw new Error("IELTS paper assembly has no compatible candidates");
-  const index = Math.min(items.length - 1, Math.floor(random() * items.length));
-  return items[index];
+  return items[Math.min(items.length - 1, Math.floor(random() * items.length))];
 }
 
 function preferFresh(items, recent, idOf) {
@@ -32,70 +31,74 @@ function snapshotQuestion(question, extra = {}) {
   return {
     questionId: question.questionId,
     version: question.version,
+    order: question.order,
     renderedText: question.renderedText,
-    probes: [...(question.probes || [])],
+    rawText: question.rawText,
+    needsReview: question.needsReview,
+    warnings: [...(question.warnings || [])],
     ...extra,
   };
 }
 
-function selectQuestions(group, count, recent, random) {
-  const preferred = group.questions.filter((question) => !recent.has(question.questionId));
-  const candidates = preferred.length >= count ? preferred : group.questions;
-  return selectDistinct(candidates, Math.min(count, candidates.length), random)
+function createPart1(bank, recent, random) {
+  const targetCount = random() < 0.5 ? 4 : 5;
+  const eligible = bank.part1Groups.filter((group) =>
+    group.questions.filter((question) => question.eligible).length >= targetCount);
+  const groupSelection = preferFresh(eligible, recent, (group) => group.groupId);
+  const group = pick(groupSelection.items, random);
+  const usable = group.questions.filter((question) => question.eligible);
+  const preferred = usable.filter((question) => !recent.has(question.questionId));
+  const pool = preferred.length >= targetCount ? preferred : usable;
+  const questions = selectDistinct(pool, targetCount, random)
+    .sort((a, b) => a.order - b.order)
     .map((question) => snapshotQuestion(question, { groupId: group.groupId, topic: group.topic }));
-}
-
-function createPart1(bank, recent, random, practiceOnly) {
-  const eligibleGroups = bank.part1Groups.filter((group) =>
-    !recent.has(group.groupId) || group.questions.some((question) => !recent.has(question.questionId)));
-  const groupPool = eligibleGroups.length >= (practiceOnly ? 1 : 2) ? eligibleGroups : bank.part1Groups;
-  const groups = selectDistinct(groupPool, practiceOnly ? 1 : 2, random);
   return {
-    groups: groups.map((group) => ({
+    groups: [{
       groupId: group.groupId,
       version: group.version,
       topic: group.topic,
+      sequence: group.sequence,
       trainingLevel: group.trainingLevel,
+    }],
+    questions,
+    targetQuestionCount: targetCount,
+    historyRelaxed: groupSelection.relaxed || preferred.length < targetCount,
+  };
+}
+
+function selectBundle(bank, recent, random) {
+  const selection = preferFresh(bank.part2Part3Bundles, recent, (bundle) => bundle.topicId);
+  return { bundle: pick(selection.items, random), historyRelaxed: selection.relaxed };
+}
+
+function createPart2(bundle, timing) {
+  return {
+    topicId: bundle.topicId,
+    cardId: bundle.cardId,
+    version: bundle.version,
+    title: bundle.title,
+    topicSentence: bundle.topicSentence,
+    cuePoints: bundle.cuePoints.map((cue) => ({ ...cue })),
+    youShouldSay: bundle.cuePoints.map((cue) => cue.text),
+    prepSeconds: timing.part2PrepSeconds,
+    answerMaxSeconds: timing.part2AnswerMaxSeconds,
+  };
+}
+
+function createPart3(bundle, timing) {
+  return {
+    topicId: bundle.topicId,
+    groupId: bundle.topicId,
+    version: bundle.version,
+    title: bundle.title,
+    questions: bundle.part3Questions.map((question) => snapshotQuestion(question, {
+      groupId: bundle.topicId,
+      topicId: bundle.topicId,
+      topic: bundle.title,
     })),
-    questions: groups.flatMap((group) => selectQuestions(group, practiceOnly ? 2 : 1, recent, random)),
-    targetSeconds: bank.config.part1TargetSeconds,
-  };
-}
-
-function createPart2(bank, recent, random) {
-  const cardSelection = preferFresh(bank.part2Cards, recent, (card) => card.cardId);
-  const card = pick(cardSelection.items, random);
-  const roundingSelection = preferFresh(card.roundingOffQuestions, recent, (question) => question.questionId);
-  return {
-    cardId: card.cardId,
-    version: card.version,
-    topicCluster: card.topicCluster,
-    trainingLevel: card.trainingLevel,
-    topicSentence: card.topicSentence,
-    youShouldSay: [...card.youShouldSay],
-    explain: card.explain,
-    roundingOffQuestions: [snapshotQuestion(pick(roundingSelection.items, random), { parentCardId: card.cardId })],
-    prepSeconds: bank.config.part2PrepSeconds,
-    answerMaxSeconds: bank.config.part2AnswerMaxSeconds,
-    historyRelaxed: cardSelection.relaxed || roundingSelection.relaxed,
-  };
-}
-
-function createPart3(bank, part2, recent, random) {
-  const compatible = part2
-    ? bank.part3Groups.filter((group) => group.topicCluster === part2.topicCluster)
-    : bank.part3Groups;
-  if (!compatible.length) throw new Error(`No Part 3 group matches topic_cluster ${part2?.topicCluster || "any"}`);
-  const groupSelection = preferFresh(compatible, recent, (group) => group.groupId);
-  const group = pick(groupSelection.items, random);
-  return {
-    groupId: group.groupId,
-    version: group.version,
-    topicCluster: group.topicCluster,
-    trainingLevel: group.trainingLevel,
-    questions: selectQuestions(group, 2, recent, random),
-    targetSeconds: bank.config.part3TargetSeconds,
-    historyRelaxed: groupSelection.relaxed,
+    answerMaxSeconds: timing.part3AnswerMaxSeconds,
+    softLimitSeconds: timing.part3SoftLimitSeconds,
+    hardLimitSeconds: timing.part3HardLimitSeconds,
   };
 }
 
@@ -104,8 +107,8 @@ function timestampId(now) {
 }
 
 export function assemblePaper(bank, options = {}) {
-  if (!bank?.part1Groups || !bank?.part2Cards || !bank?.part3Groups) {
-    throw new Error("A validated IELTS question bank is required");
+  if (!bank?.part1Groups || !bank?.part2Part3Bundles) {
+    throw new Error("A validated atomic IELTS question bank is required");
   }
   const mode = options.mode || "full_mock";
   const selectedPart = options.selectedPart || null;
@@ -113,17 +116,21 @@ export function assemblePaper(bank, options = {}) {
   if (mode === "practice_part" && !new Set(["part1", "part2", "part3"]).has(selectedPart)) {
     throw new Error("Part practice requires selectedPart part1, part2 or part3");
   }
-
+  const timingProfile = options.timingProfile || "real_exam";
+  if (!new Set(["real_exam", "accelerated_demo"]).has(timingProfile)) {
+    throw new Error(`Unsupported IELTS timing profile: ${timingProfile}`);
+  }
+  const timing = timingProfile === "accelerated_demo" ? bank.config.acceleratedDemo : bank.config.realExam;
   const random = options.random || Math.random;
   const now = options.now || (() => new Date());
   const recent = new Set(options.recentQuestionIds || []);
   const include = (part) => mode === "full_mock" || selectedPart === part;
-  const part2 = include("part2") ? createPart2(bank, recent, random) : null;
-  const parts = {
-    part1: include("part1") ? createPart1(bank, recent, random, mode === "practice_part") : null,
-    part2,
-    part3: include("part3") ? createPart3(bank, mode === "full_mock" ? part2 : null, recent, random) : null,
-  };
+
+  const needsBundle = include("part2") || include("part3");
+  const selected = needsBundle ? selectBundle(bank, recent, random) : null;
+  const part1 = include("part1") ? createPart1(bank, recent, random) : null;
+  const part2 = include("part2") ? createPart2(selected.bundle, timing) : null;
+  const part3 = include("part3") ? createPart3(selected.bundle, timing) : null;
 
   const snapshot = {
     paperId: `paper_${timestampId(now)}`,
@@ -132,18 +139,18 @@ export function assemblePaper(bank, options = {}) {
     mode,
     selectedPart,
     createdAt: now().toISOString(),
-    parts,
+    promptVersion: options.promptVersion || null,
+    timingProfile,
+    timing: { ...timing },
+    part2Part3TopicId: selected?.bundle.topicId || null,
+    parts: { part1, part2, part3 },
     assemblyPolicy: {
-      profile: "accelerated_demo",
+      profile: timingProfile,
+      part1Policy: "single_topic_random_subset_source_order",
+      part2Part3Policy: "atomic_source_topic_bundle",
       recentCompletedSessionsToAvoid: bank.config.recentSessionsToAvoid,
       recentCandidateCount: recent.size,
-      historyRelaxed: Boolean(parts.part2?.historyRelaxed || parts.part3?.historyRelaxed),
-      productionDurations: {
-        part1TargetSeconds: bank.config.part1TargetSeconds,
-        part2PrepSeconds: bank.config.part2PrepSeconds,
-        part2AnswerMaxSeconds: bank.config.part2AnswerMaxSeconds,
-        part3TargetSeconds: bank.config.part3TargetSeconds,
-      },
+      historyRelaxed: Boolean(part1?.historyRelaxed || selected?.historyRelaxed),
     },
   };
   return deepFreeze(snapshot);

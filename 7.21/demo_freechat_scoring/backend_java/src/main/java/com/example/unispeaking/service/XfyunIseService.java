@@ -87,6 +87,9 @@ public class XfyunIseService {
                                         byte[] decodedXml = Base64.getDecoder().decode(xmlBase64);
                                         String xmlStr = new String(decodedXml, StandardCharsets.UTF_8);
                                         Map<String, Object> scoreResult = parseIseXml(xmlStr);
+                                        scoreResult.put("raw_provider_result", xmlStr);
+                                        scoreResult.put("provider", "XFYUN_ISE");
+                                        scoreResult.put("provider_mode", "read_sentence");
                                         future.complete(scoreResult);
                                         webSocket.sendClose(WebSocket.NORMAL_CLOSURE, "Finished");
                                     }
@@ -361,6 +364,7 @@ public class XfyunIseService {
             }
         } catch (Exception e) {
             System.err.println("Failed to parse ISE XML: " + e.getMessage());
+            result.put("parse_error", e.getMessage());
         }
         return result;
     }

@@ -4,7 +4,7 @@ import { readFile } from "node:fs/promises";
 import { dirname, join } from "node:path";
 import { fileURLToPath } from "node:url";
 
-import { renderIelts } from "../src/views/ielts.mjs";
+import { renderIelts, voicePresentation } from "../src/views/ielts.mjs";
 
 const projectRoot = join(dirname(fileURLToPath(import.meta.url)), "..");
 
@@ -20,11 +20,15 @@ const baseSession = {
   screen: "session",
   error: null,
   paper: {
+    timingProfile: "accelerated_demo",
+    timing: { introductionMaxSeconds: 15, part1AnswerMaxSeconds: 20, part2PrepSeconds: 10,
+      part2AnswerMaxSeconds: 45, part3AnswerMaxSeconds: 20,
+      part3SoftLimitSeconds: 60, part3HardLimitSeconds: 75 },
     assemblyPolicy: { profile: "accelerated_demo" },
     parts: {
       part1: { questions: [{ questionId: "p1q1", renderedText: "Where do you live?" }] },
       part2: cueCard,
-      part3: { topicCluster: "people", questions: [{ questionId: "p3q1", renderedText: "Who influences young people?" }] },
+      part3: { topicId: "p23_people", questions: [{ questionId: "p23_people_p3_q01", renderedText: "Who influences young people?" }] },
     },
   },
   exam: {
@@ -61,6 +65,26 @@ test("IELTS home exposes Part 1, Part 2, Part 3 and full mock entries", () => {
   }
 });
 
+test("full mock preflight defaults to real timing and exposes an explicit Demo acceleration toggle", () => {
+  const html = renderIelts({ screen: "preflight", loading: false, error: null,
+    selection: { mode: "full_mock", selectedPart: null },
+    preflight: { captionsEnabled: false, recordingEnabled: false, acceleratedDemo: false } });
+  assert.match(html, /data-action="ielts-toggle-accelerated"/);
+  assert.match(html, /aria-pressed="false"/);
+  assert.match(html, /默认使用真实考试计时/);
+});
+
+test("Introduction renders as a candidate turn after the fixed examiner opening", () => {
+  const snapshot = structuredClone(baseSession);
+  snapshot.exam.status = "introduction";
+  snapshot.exam.currentPart = "introduction";
+  snapshot.timer = { kind: "introduction_answer", remainingSeconds: 15, totalSeconds: 15 };
+  const html = renderIelts(snapshot);
+  assert.match(html, /自我介绍/);
+  assert.match(html, /00:15/);
+  assert.match(html, /data-action="ielts-voice-start"/);
+});
+
 test("Part 2 answering renders the complete cue card and locked notes", () => {
   const snapshot = structuredClone(baseSession);
   snapshot.exam.status = "part2_answering";
@@ -87,6 +111,19 @@ test("Part 2 preparation keeps notes editable and shows the accelerated countdow
   assert.match(html, /<textarea[^>]+data-action="ielts-update-notes"/);
   assert.doesNotMatch(html, /data-action="ielts-update-notes"[^>]+readonly/);
   assert.doesNotMatch(html, /ielts-mic-button/);
+});
+
+test("Part 3 displays its overall soft and hard timing progress", () => {
+  const snapshot = structuredClone(baseSession);
+  snapshot.exam.status = "part3_answering";
+  snapshot.exam.currentPart = "part3";
+  snapshot.part3Timer = { elapsedSeconds: 42, softLimitSeconds: 60,
+    hardLimitSeconds: 75, softLimitReached: false };
+  const html = renderIelts(snapshot);
+  assert.match(html, /Part 3 总计时/);
+  assert.match(html, /00:42/);
+  assert.match(html, /软结束 01:00/);
+  assert.match(html, /硬结束 01:15/);
 });
 
 test("idle answer renders a microphone and an independent end-turn action", () => {
@@ -131,6 +168,16 @@ test("full mock session has no pause, retry or skip controls", () => {
   assert.match(html, /结束本轮回答/);
 });
 
+test("live IELTS session does not replay the full-page entry animation on transcript updates", () => {
+  const html = renderIelts(baseSession, voiceSnapshot({ status: "listening", interimTranscript: "I am speaking" }));
+  assert.doesNotMatch(html, /ielts-session view-enter/);
+});
+
+test("live voice presentation re-enables end-turn after a finalizing state resets", () => {
+  assert.equal(voicePresentation(voiceSnapshot({ status: "finalizing" })).finishDisabled, true);
+  assert.equal(voicePresentation(voiceSnapshot({ status: "idle" })).finishDisabled, false);
+});
+
 test("report uses evidence feedback without a numeric IELTS score", () => {
   const html = renderIelts({
     screen: "report",
@@ -163,4 +210,45 @@ test("application wires the scene entry, IELTS route and controller actions", as
     "ielts-select-mode", "ielts-toggle-recording", "ielts-start", "ielts-toggle-captions",
     "ielts-retry", "ielts-next", "ielts-exit", "ielts-restart",
   ]) assert.match(app, new RegExp(`action === "${action}"`));
+});
+
+test("application patches live voice fields without replacing the whole IELTS page", async () => {
+  const app = await readFile(join(projectRoot, "src/app.mjs"), "utf8");
+  assert.match(app, /function updateIeltsVoiceView\(/);
+  assert.match(app, /onChange\(\) \{\s*if \(parseRoute\(location\.hash\)\.name === "ielts"\) updateIeltsVoiceView\(\);/);
+  assert.match(app, /onEvent: \(\) => \{\}/);
+});
+
+test("strict full mock keeps raw transcript read-only and exposes no interim scoring", () => {
+  const html = renderIelts(baseSession, voiceSnapshot({ finalTranscript: "I has lived here." }));
+  assert.match(html, /Qwen Realtime 原始转写/);
+  assert.match(html, /data-action="ielts-voice-transcript"[^>]+readonly/);
+  assert.doesNotMatch(html, /corrected_expression|suggested_expressions|Band [0-9]/);
+});
+
+test("final report renders partial nullable IELTS bands without zero filling", () => {
+  const html = renderIelts({ ...baseSession, screen: "report", scoringStatus: "PARTIAL", report: {
+    scoringStatus: "PARTIAL", overallBand: null, bandRange: [6, 6.5], confidence: 0.7,
+    fc: { band: 6.5, positiveEvidence: ["clear sequence"], limitingEvidence: ["some pauses"] },
+    pronunciation: { band: null, unavailableReason: "ISE unavailable" },
+    disclaimer: "AI training assessment only", dataQualityWarnings: ["ISE failed"],
+  } });
+  assert.match(html, /未生成完整 Overall/);
+  assert.match(html, /Band 6.5/);
+  assert.match(html, /ISE failed/);
+  assert.doesNotMatch(html, /Overall 0/);
+});
+
+test("final report always renders all four IELTS dimensions with Chinese evaluation labels", () => {
+  const html = renderIelts({ ...baseSession, screen: "report", scoringStatus: "PARTIAL", report: {
+    scoringStatus: "PARTIAL", overallBand: null,
+    fc: { band: 6, positiveEvidence: ["表达连贯"], limitingEvidence: ["存在停顿"] },
+    disclaimer: "仅供训练参考",
+  } });
+  for (const label of ["流利度与连贯性", "词汇资源", "语法多样性与准确性", "发音（Pronunciation）"]) {
+    assert.match(html, new RegExp(label));
+  }
+  assert.match(html, /优势证据/);
+  assert.match(html, /限制因素/);
+  assert.doesNotMatch(html, /Positive evidence|Limiting evidence/);
 });

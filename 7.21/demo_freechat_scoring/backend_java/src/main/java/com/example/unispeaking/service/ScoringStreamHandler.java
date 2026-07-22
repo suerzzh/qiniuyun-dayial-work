@@ -1,6 +1,7 @@
 package com.example.unispeaking.service;
 
 import com.example.unispeaking.model.SessionState;
+import com.example.unispeaking.service.audio.PcmAudioCapture;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import org.springframework.stereotype.Component;
@@ -20,9 +21,6 @@ public class ScoringStreamHandler extends BinaryWebSocketHandler {
     private static final int BYTES_PER_MS = 32; // 16kHz * 16-bit mono
     private static final int PRE_ROLL_MS = 500;
     private static final int POST_ROLL_MS = 700;
-    private static final int PRE_ROLL_BYTES = PRE_ROLL_MS * BYTES_PER_MS;
-    private static final int POST_ROLL_BYTES = POST_ROLL_MS * BYTES_PER_MS;
-    private static final int RING_CAPACITY_BYTES = 5_000 * BYTES_PER_MS;
 
     private final ObjectMapper objectMapper = new ObjectMapper();
     private final SessionRegistry sessionRegistry;
@@ -412,7 +410,7 @@ public class ScoringStreamHandler extends BinaryWebSocketHandler {
         private final SessionState state;
         private final WebSocketSession socket;
         private final Map<String, TurnBuffer> turns = new ConcurrentHashMap<>();
-        private byte[] ring = new byte[0];
+        private final PcmAudioCapture capture = new PcmAudioCapture(PRE_ROLL_MS, POST_ROLL_MS, 5_000);
         private TurnBuffer active;
         private int sequence;
 
@@ -422,31 +420,22 @@ public class ScoringStreamHandler extends BinaryWebSocketHandler {
         }
 
         private synchronized void appendPcm(byte[] pcm) {
-            byte[] combined = new byte[Math.min(RING_CAPACITY_BYTES, ring.length + pcm.length)];
-            int oldToKeep = Math.min(ring.length, combined.length - Math.min(pcm.length, combined.length));
-            int pcmToKeep = combined.length - oldToKeep;
-            System.arraycopy(ring, ring.length - oldToKeep, combined, 0, oldToKeep);
-            System.arraycopy(pcm, pcm.length - pcmToKeep, combined, oldToKeep, pcmToKeep);
-            ring = combined;
-            if (active != null) {
-                active.audio.writeBytes(pcm);
-                if (active.stopped) {
-                    active.tailRemaining -= pcm.length;
-                    if (active.tailRemaining <= 0) {
-                        active.audioReady = true;
-                        active = null;
-                    }
-                }
-            }
+            capture.append(pcm);
+            turns.values().stream().filter(turn -> turn.stopped && !turn.audioReady)
+                    .filter(turn -> capture.isReady(turn.turnId))
+                    .forEach(turn -> {
+                        turn.audio.writeBytes(capture.audio(turn.turnId));
+                        turn.audioReady = true;
+                        if (active == turn) active = null;
+                    });
             tryStartReadyTurns();
         }
 
         private synchronized void startTurn(String turnId, String realtimeItemId) {
             if (turnId == null || turnId.isBlank()) return;
             TurnBuffer turn = new TurnBuffer(turnId, realtimeItemId, ++sequence);
-            int preBytes = Math.min(PRE_ROLL_BYTES, ring.length);
-            turn.audio.write(ring, ring.length - preBytes, preBytes);
             turns.put(turnId, turn);
+            capture.start(turnId);
             active = turn;
             sendQuietly(socket, Map.of("type", "turn.accepted", "turn_id", turnId));
         }
@@ -455,7 +444,7 @@ public class ScoringStreamHandler extends BinaryWebSocketHandler {
             TurnBuffer turn = turns.get(turnId);
             if (turn == null) return;
             turn.stopped = true;
-            turn.tailRemaining = POST_ROLL_BYTES;
+            capture.requestFinish(turnId);
         }
 
         private synchronized void completeTranscript(String turnId, String text) {
@@ -467,13 +456,14 @@ public class ScoringStreamHandler extends BinaryWebSocketHandler {
         }
 
         private synchronized void finishStream() {
-            if (active != null) {
-                active.audioReady = true;
-                active = null;
-            }
+            capture.finishAll();
             turns.values().forEach(turn -> {
-                if (turn.stopped) turn.audioReady = true;
+                if (!turn.audioReady) {
+                    turn.audio.writeBytes(capture.audio(turn.turnId));
+                    turn.audioReady = true;
+                }
             });
+            active = null;
             tryStartReadyTurns();
         }
 
@@ -496,7 +486,6 @@ public class ScoringStreamHandler extends BinaryWebSocketHandler {
         private boolean stopped;
         private boolean audioReady;
         private boolean scoringStarted;
-        private int tailRemaining;
 
         private TurnBuffer(String turnId, String realtimeItemId, int turnIndex) {
             this.turnId = turnId;
