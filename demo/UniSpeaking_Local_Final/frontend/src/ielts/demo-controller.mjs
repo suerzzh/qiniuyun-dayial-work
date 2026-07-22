@@ -336,8 +336,16 @@ export function createIeltsDemoController(dependencies) {
       snapshot.exam = transitionExam(snapshot.exam, { type: "TOGGLE_CAPTIONS" });
       snapshot.captionsUsed ||= snapshot.exam.captionsEnabled; publish();
     },
-    retry() { clearStageTimer(); dispatch({ type: "RETRY" }); },
-    next() { clearStageTimer(); dispatch({ type: "NEXT" }); },
+    retry() {
+      clearStageTimer();
+      if (snapshot.exam?.mode === "practice_part") dependencies.runtime?.completeTurn?.("", "PRACTICE_RETRY");
+      dispatch({ type: "RETRY" });
+    },
+    next() {
+      clearStageTimer();
+      if (snapshot.exam?.mode === "practice_part") dependencies.runtime?.completeTurn?.("", "PRACTICE_SKIP");
+      dispatch({ type: "NEXT" });
+    },
     exit() {
       if (!snapshot.exam) return controller.openHome();
       dependencies.runtime?.abandon?.().catch?.(() => {});

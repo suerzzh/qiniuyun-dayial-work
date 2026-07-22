@@ -131,6 +131,7 @@ export function createIeltsSessionRuntime({
   let candidateSpeaking = false;
   let realtimeConfigured = false;
   let attemptGeneration = 0;
+  let transportStopPromise = null;
   const turns = new Map();
   const itemTurns = new Map();
   const pendingExaminerEvents = [];
@@ -273,8 +274,19 @@ export function createIeltsSessionRuntime({
     },
   });
 
+  const stopTransports = () => {
+    if (!transportStopPromise) {
+      clearExaminerRequests();
+      pendingExaminerEvents.length = 0;
+      realtimeConfigured = false;
+      transportStopPromise = Promise.allSettled([realtime.stop(), streamer.stop()]);
+    }
+    return transportStopPromise;
+  };
+
   return {
     async start({ mode, paperSnapshot }) {
+      transportStopPromise = null;
       realtimeConfigured = false;
       pendingExaminerEvents.length = 0;
       clearExaminerRequests();
@@ -283,7 +295,7 @@ export function createIeltsSessionRuntime({
       try {
         await realtime.start();
       } catch (error) {
-        try { await streamer.stop(); } catch { /* preserve the original transport error */ }
+        await stopTransports();
         try {
           if (attempt?.attempt_id) await api.abandon(attempt.attempt_id);
         } catch { /* attempt cleanup is best effort */ }
@@ -338,13 +350,16 @@ export function createIeltsSessionRuntime({
       const terminal = new Set(["COMPLETE", "PARTIAL", "UNSCORABLE"]);
       for (let i = 0; i < 120; i += 1) {
         const report = await api.report(attemptId);
-        if (terminal.has(report?.scoringStatus || report?.scoring_status)) return report;
+        if (terminal.has(report?.scoringStatus || report?.scoring_status)) {
+          await stopTransports();
+          return report;
+        }
         await wait(1000);
       }
       return { scoring_status: "FINALIZING", attempt_id: attemptId };
     },
-    async abandon() { attemptGeneration += 1; clearExaminerRequests(); if (attempt) await api.abandon(attempt.attempt_id); await realtime.stop(); await streamer.stop(); },
-    async stop() { attemptGeneration += 1; clearExaminerRequests(); await realtime.stop(); await streamer.stop(); },
+    async abandon() { attemptGeneration += 1; if (attempt) await api.abandon(attempt.attempt_id); await stopTransports(); },
+    async stop() { attemptGeneration += 1; await stopTransports(); },
     getAttemptId: () => attempt?.attempt_id || null,
   };
 }

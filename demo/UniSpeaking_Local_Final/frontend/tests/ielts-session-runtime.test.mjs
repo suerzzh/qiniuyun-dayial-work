@@ -271,6 +271,25 @@ test("IELTS finalization keeps polling beyond the old fifteen-second ceiling", a
   assert.equal(fixture.reportCalls(), 32);
 });
 
+test("IELTS terminal report immediately tears down every transport exactly once", async () => {
+  const fixture = transportHarness({
+    finalize: async () => ({}),
+    report: async () => ({ scoring_status: "COMPLETE", overallBand: 6.5 }),
+  });
+  await fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} });
+
+  const report = await fixture.runtime.finalize();
+  assert.equal(report.scoring_status, "COMPLETE");
+  assert.deepEqual(fixture.cleanup, {
+    trackStops: 1, channelCloses: 1, peerCloses: 1, streamerStops: 1,
+  });
+
+  await fixture.runtime.stop();
+  assert.deepEqual(fixture.cleanup, {
+    trackStops: 1, channelCloses: 1, peerCloses: 1, streamerStops: 1,
+  });
+});
+
 test("IELTS examiner waits for Qwen session.updated before asking the first question", async () => {
   const fixture = runtimeFixture();
   await fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} });

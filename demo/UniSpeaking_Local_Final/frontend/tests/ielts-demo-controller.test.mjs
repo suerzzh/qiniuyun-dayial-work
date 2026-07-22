@@ -187,6 +187,42 @@ test("an empty ASR result stays empty and is never replaced with a fabricated an
   assert.equal(controller.getSnapshot().answers[0].transcript, "");
 });
 
+test("Part practice retry completes the old scoring turn before opening its replacement", async () => {
+  const events = [];
+  const runtime = {
+    async start() { return { attempt_id: "att-retry", scoring_status: "COLLECTING" }; },
+    questionAsked({ questionId }) { events.push(`opened:${questionId}`); },
+    completeTurn(transcript, reason) { events.push(`completed:${transcript}:${reason}`); },
+  };
+  const { controller } = createController({ runtime });
+  controller.selectMode("practice_part", "part1");
+  await controller.start();
+  events.length = 0;
+
+  controller.retry();
+
+  assert.equal(events[0], "completed::PRACTICE_RETRY");
+  assert.match(events[1], /^opened:/);
+});
+
+test("Part practice next completes the skipped scoring turn before opening the next one", async () => {
+  const events = [];
+  const runtime = {
+    async start() { return { attempt_id: "att-next", scoring_status: "COLLECTING" }; },
+    questionAsked({ questionId }) { events.push(`opened:${questionId}`); },
+    completeTurn(transcript, reason) { events.push(`completed:${transcript}:${reason}`); },
+  };
+  const { controller } = createController({ runtime });
+  controller.selectMode("practice_part", "part1");
+  await controller.start();
+  events.length = 0;
+
+  controller.next();
+
+  assert.equal(events[0], "completed::PRACTICE_SKIP");
+  assert.match(events[1], /^opened:/);
+});
+
 test("dispose returns the runtime stop promise and does not settle before local teardown", async () => {
   const stopped = deferred();
   const runtime = { stop: () => stopped.promise };
