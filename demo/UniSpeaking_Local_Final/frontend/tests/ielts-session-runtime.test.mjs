@@ -4,7 +4,22 @@ import { createIeltsSessionRuntime } from "../src/ielts/ielts-session-runtime.mj
 
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 
-function transportHarness({ channel, peer, exchangeSdp, abandon, createAudio = () => null, runtimeOptions = {} } = {}) {
+async function withBrowserOrigin(origin, callback) {
+  const descriptor = Object.getOwnPropertyDescriptor(globalThis, "location");
+  Object.defineProperty(globalThis, "location", {
+    configurable: true,
+    value: { origin },
+  });
+  try {
+    return await callback();
+  } finally {
+    if (descriptor) Object.defineProperty(globalThis, "location", descriptor);
+    else delete globalThis.location;
+  }
+}
+
+function transportHarness({ channel, peer, exchangeSdp, abandon, createAudio = () => null,
+  scoringWsUrl = "/ws", streamer, runtimeOptions = {} } = {}) {
   const cleanup = { trackStops: 0, channelCloses: 0, peerCloses: 0, streamerStops: 0 };
   const abandonedAttemptIds = [];
   const track = { id: "mic", stop() { cleanup.trackStops += 1; } };
@@ -24,24 +39,42 @@ function transportHarness({ channel, peer, exchangeSdp, abandon, createAudio = (
   };
   const runtime = createIeltsSessionRuntime({
     api: {
-      createAttempt: async () => ({ attempt_id: "att-transport", scoring_ws_url: "/ws", realtime_session_config: {} }),
+      createAttempt: async () => ({ attempt_id: "att-transport", scoring_ws_url: scoringWsUrl, realtime_session_config: {} }),
       exchangeSdp: exchangeSdp || (async () => "answer"),
       async abandon(attemptId) {
         abandonedAttemptIds.push(attemptId);
         return abandon?.(attemptId);
       },
     },
-    streamer: {
+    streamer: streamer || {
       attach: async () => {}, control() {},
       async stop() { cleanup.streamerStops += 1; },
     },
     mediaDevices: { getUserMedia: async () => stream },
     createPeerConnection: () => activePeer,
     createAudio,
+    wsBaseUrl: "ws://127.0.0.1:8080",
     ...runtimeOptions,
   });
   return { runtime, cleanup, abandonedAttemptIds, track, stream, channel: activeChannel, peer: activePeer };
 }
+
+test("IELTS runtime resolves relative scoring WebSocket URLs from the Vite HTTPS origin", async () => {
+  let attachedUrl = null;
+  await withBrowserOrigin("https://vite.local:8080", async () => {
+    const fixture = transportHarness({
+      scoringWsUrl: "/api/ielts/scoring-stream?attempt_id=att-transport",
+      streamer: {
+        attach: async (_stream, url) => { attachedUrl = url; },
+        control() {},
+        async stop() {},
+      },
+      runtimeOptions: { wsBaseUrl: undefined },
+    });
+    await fixture.runtime.start({ mode: "full_mock", paperSnapshot: {} });
+  });
+  assert.equal(attachedUrl, "wss://vite.local:8080/api/ielts/scoring-stream?attempt_id=att-transport");
+});
 
 test("IELTS transport waits for ICE gathering before exchanging SDP", async () => {
   let exchangeCalls = 0;
@@ -146,7 +179,7 @@ test("IELTS runtime authorizes one microphone stream and feeds it to Realtime an
   };
   const runtime = createIeltsSessionRuntime({ api, streamer,
     mediaDevices: { getUserMedia: async () => { permissionCalls += 1; return stream; } },
-    createPeerConnection: () => peer, createAudio: () => null,
+    createPeerConnection: () => peer, createAudio: () => null, wsBaseUrl: "ws://127.0.0.1:8080",
   });
   await runtime.start({ mode: "full_mock", paperSnapshot: {} });
   assert.equal(permissionCalls, 1);
@@ -183,7 +216,7 @@ function runtimeFixture({ reports = [{ scoring_status: "COMPLETE" }] } = {}) {
   const runtime = createIeltsSessionRuntime({ api,
     streamer: { attach: async () => {}, control: (event) => controls.push(event), stop: async () => {} },
     mediaDevices: { getUserMedia: async () => stream }, createPeerConnection: () => peer,
-    createAudio: () => null, wait: async () => {},
+    createAudio: () => null, wait: async () => {}, wsBaseUrl: "ws://127.0.0.1:8080",
   });
   return { runtime, channel, controls, reportCalls: () => reportCalls };
 }
@@ -205,7 +238,7 @@ test("IELTS runtime streams Qwen confirmed and tentative ASR text before complet
       setLocalDescription: async function (offer) { this.localDescription = offer; },
       setRemoteDescription: async () => {}, close() {},
     }),
-    createAudio: () => null, onTranscript: (event) => transcriptEvents.push(event),
+    createAudio: () => null, onTranscript: (event) => transcriptEvents.push(event), wsBaseUrl: "ws://127.0.0.1:8080",
   });
   await runtime.start({ mode: "practice_part", paperSnapshot: {} });
   runtime.questionAsked({ part: 1, questionId: "q1", questionText: "Do you study?" });
@@ -272,6 +305,7 @@ test("IELTS runtime times out a missing examiner response without corrupting the
     scheduleTimeout(callback) { scheduled.push(callback); return scheduled.length; },
     cancelTimeout() {},
     onStatus: (event) => statuses.push(event),
+    wsBaseUrl: "ws://127.0.0.1:8080",
   });
   let firstCompleted = 0;
   let secondCompleted = 0;

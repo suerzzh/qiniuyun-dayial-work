@@ -21,7 +21,9 @@ test("the hook owns one client and releases it on unmount", async () => {
   assert.match(source, /createRealtimeClient/);
   assert.match(source, /clientRef/);
   assert.match(source, /stop\(\{\s*silent:\s*true/);
-  assert.match(source, /VITE_REALTIME_API_BASE/);
+  assert.match(source, /createRealtimeApi\(\)/);
+  assert.doesNotMatch(source, /VITE_REALTIME_API_BASE/);
+  assert.doesNotMatch(source, /VITE_SUPABASE_PUBLISHABLE_KEY/);
   assert.equal(source.includes("DASHSCOPE_API_KEY"), false);
   assert.equal(source.includes("SUPABASE_SERVICE_ROLE_KEY"), false);
 });

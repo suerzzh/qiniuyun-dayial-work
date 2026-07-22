@@ -1,4 +1,5 @@
 import { createExaminerPromptCatalog } from "./examiner-prompt-catalog.mjs";
+import { resolveWsBase } from "../services/local-service-config.mjs";
 
 const id = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
@@ -113,7 +114,7 @@ function createIeltsRealtimeBridge({
 }
 
 export function createIeltsSessionRuntime({
-  api, streamer, mediaDevices, createPeerConnection, createAudio, wsBaseUrl = "ws://127.0.0.1:8000",
+  api, streamer, mediaDevices, createPeerConnection, createAudio, wsBaseUrl = resolveWsBase(),
   onTranscript = () => {}, onStatus = () => {}, wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms)),
   examinerResponseTimeoutMs = 30_000,
   scheduleTimeout = (callback, ms) => globalThis.setTimeout(callback, ms),

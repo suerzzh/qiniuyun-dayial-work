@@ -11,7 +11,6 @@ import { createRealtimeClient } from "../realtime/realtime-client.mjs";
 import { createRealtimeApi } from "../services/realtime-api.mjs";
 
 const CONVERSATION_STORAGE_KEY = "unispeaking-free-chat-conversation-id";
-const DEFAULT_API_BASE = "http://127.0.0.1:8000";
 
 /**
  * @param {ReturnType<typeof createRealtimeState>} state
@@ -70,9 +69,7 @@ export function useRealtimeSession({ scenarioId = "", prompt = "" } = {}) {
   );
 
   if (!clientRef.current) {
-    const apiBase = import.meta.env.VITE_REALTIME_API_BASE || DEFAULT_API_BASE;
-    const publicKey = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || "";
-    const api = createRealtimeApi({ baseUrl: apiBase, publicKey });
+    const api = createRealtimeApi();
     const mediaDevices = {
       /** @param {MediaStreamConstraints} constraints */
       getUserMedia: async (constraints) => {
