@@ -1,5 +1,5 @@
 import assert from "node:assert/strict";
-import { access, chmod, copyFile, mkdir, mkdtemp, readFile, readdir, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
+import { access, chmod, copyFile, mkdir, mkdtemp, open, readFile, readdir, realpath, rm, stat, symlink, writeFile } from "node:fs/promises";
 import { constants } from "node:fs";
 import { execFile, spawn } from "node:child_process";
 import { dirname, join, resolve } from "node:path";
@@ -56,6 +56,7 @@ async function createScriptHarness() {
   const backend = join(root, "backend");
   const fakeBin = join(root, "fake-bin");
   const ledger = join(root, "processes.log");
+  const publicationGate = join(root, "publication-gate.cjs");
   await Promise.all([mkdir(scripts), mkdir(frontend), mkdir(backend), mkdir(fakeBin)]);
   await Promise.all([
     copyFile(projectPath("scripts", "start-local.sh"), join(scripts, "start-local.sh")),
@@ -71,9 +72,12 @@ wait "$child"
 `;
   const fakeLsof = `#!/bin/zsh
 for argument in "$@"; do
-  if [[ -n "\${FAKE_OCCUPIED_PORT:-}" && "$argument" == "-iTCP:\${FAKE_OCCUPIED_PORT}" ]]; then
-    print -- 424242
-    exit 0
+  if [[ "$argument" == -iTCP:* ]]; then
+    if [[ -n "\${FAKE_OCCUPIED_PORT:-}" && "$argument" == "-iTCP:\${FAKE_OCCUPIED_PORT}" ]]; then
+      print -- 424242
+      exit 0
+    fi
+    exit 1
   fi
 done
 exec /usr/sbin/lsof "$@"
@@ -83,6 +87,20 @@ exec /usr/sbin/lsof "$@"
     writeFile(join(backend, "mvnw"), service),
     writeFile(join(fakeBin, "curl"), "#!/bin/zsh\n[[ \"${FAKE_CURL_FAIL:-0}\" == 1 ]] && exit 22\nexit 0\n"),
     writeFile(join(fakeBin, "lsof"), fakeLsof),
+    writeFile(publicationGate, `const fs = require("node:fs");
+const originalOpenSync = fs.openSync;
+fs.openSync = function gatedOpenSync(target, flags, ...rest) {
+  if (process.env.FAKE_WAIT_BEFORE_PID_OPEN === "1" && typeof target === "string"
+      && target.endsWith("/frontend.pid") && (flags & fs.constants.O_EXCL) !== 0) {
+    const deadline = Date.now() + 2_000;
+    while (Date.now() < deadline) {
+      try { if (fs.statSync(process.env.FAKE_LEDGER).size > 0) break; } catch {}
+      Atomics.wait(new Int32Array(new SharedArrayBuffer(4)), 0, 0, 10);
+    }
+  }
+  return originalOpenSync.call(fs, target, flags, ...rest);
+};
+`),
   ]);
   const executables = [
     join(scripts, "start-local.sh"), join(scripts, "stop-local.sh"),
@@ -95,6 +113,7 @@ exec /usr/sbin/lsof "$@"
     stop: join(scripts, "stop-local.sh"),
     frontend,
     ledger,
+    publicationGate,
     env: { PATH: `${fakeBin}:${process.env.PATH}`, FAKE_LEDGER: ledger },
   };
 }
@@ -173,6 +192,9 @@ test("local scripts expose only project-owned PID and log targets", async () => 
   assert.match(startSource, /\.unref\(\)/);
   assert.match(startSource, /fsyncSync/);
   assert.match(startSource, /process\.kill\(-pid/);
+  assert.match(startSource, /fs\.openSync\(pidPath,[\s\S]*?O_EXCL/);
+  assert.match(startSource, /O_NONBLOCK/);
+  assert.doesNotMatch(startSource, /fs\.linkSync|temporaryPidPath/);
   for (const target of ["frontend.pid", "backend.pid", "frontend.log", "backend.log"]) {
     assert.match(startSource, new RegExp(`\\.run[/\"'}$A-Za-z_{-]*${target.replace(".", "\\.")}`));
   }
@@ -198,7 +220,30 @@ test("start refuses an occupied service port without launching children", { conc
   await assert.rejects(access(join(harness.root, ".run", "frontend.pid")), { code: "ENOENT" });
 });
 
-test("failed PID publication never follows a symlink or leaves its detached group", { concurrency: false }, async (t) => {
+test("start rejects a FIFO log target without blocking or spawning", { concurrency: false }, async (t) => {
+  const harness = await createScriptHarness();
+  const runDir = join(harness.root, ".run");
+  const logPath = join(runDir, "frontend.log");
+  await mkdir(runDir);
+  await execFileAsync("mkfifo", [logPath]);
+  const fifoReader = await open(logPath, constants.O_RDONLY | constants.O_NONBLOCK);
+  t.after(async () => {
+    await fifoReader.close();
+    await terminateTestPids(await ledgerPids(harness.ledger));
+    await rm(harness.root, { recursive: true, force: true });
+  });
+
+  const startedAt = Date.now();
+  const result = await run(harness.start, harness.env, 5_000);
+  const elapsed = Date.now() - startedAt;
+  assert.notEqual(result.code, "ETIMEDOUT", "opening a FIFO log must never block");
+  assert.notEqual(result.code, 0);
+  assert.ok(elapsed < 3_500, `FIFO rejection took ${elapsed}ms`);
+  assert.deepEqual(await ledgerPids(harness.ledger), []);
+  await assert.rejects(access(join(runDir, "frontend.pid")), { code: "ENOENT" });
+});
+
+test("start refuses a symlink PID target before spawning", { concurrency: false }, async (t) => {
   const harness = await createScriptHarness();
   const runDir = join(harness.root, ".run");
   const sentinel = join(harness.root, "sentinel");
@@ -213,7 +258,31 @@ test("failed PID publication never follows a symlink or leaves its detached grou
   const result = await run(harness.start, harness.env);
   const pids = await ledgerPids(harness.ledger);
   assert.notEqual(result.code, 0);
+  assert.deepEqual(pids, []);
   assert.equal(await readFile(sentinel, "utf8"), "sentinel");
+  assert.deepEqual((await readdir(runDir)).filter((name) => name.endsWith(".tmp")), []);
+});
+
+test("PID publication conflict after spawn preserves the existing file and kills the new group", { concurrency: false }, async (t) => {
+  const harness = await createScriptHarness();
+  const runDir = join(harness.root, ".run");
+  const pidFile = join(runDir, "frontend.pid");
+  await mkdir(runDir);
+  await writeFile(pidFile, "sentinel\n");
+  t.after(async () => {
+    await terminateTestPids(await ledgerPids(harness.ledger));
+    await rm(harness.root, { recursive: true, force: true });
+  });
+
+  const result = await run(harness.start, {
+    ...harness.env,
+    FAKE_WAIT_BEFORE_PID_OPEN: "1",
+    NODE_OPTIONS: `--require=${harness.publicationGate}`,
+  });
+  const pids = await ledgerPids(harness.ledger);
+  assert.notEqual(result.code, 0);
+  assert.ok(pids.length >= 2, "the publication failure must happen after the service group starts");
+  assert.equal(await readFile(pidFile, "utf8"), "sentinel\n");
   await waitUntil(() => pids.every((pid) => !isAlive(pid)));
   assert.deepEqual((await readdir(runDir)).filter((name) => name.endsWith(".tmp")), []);
 });

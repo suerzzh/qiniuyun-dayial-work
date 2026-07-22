@@ -50,6 +50,7 @@ assert_port_available() {
 assert_port_available 8000 || exit 1
 assert_port_available 8080 || exit 1
 
+umask 077
 if [[ -L "$RUN_DIR" ]]; then
   print -u2 -- "运行目录不能是符号链接：$RUN_DIR"
   exit 1
@@ -59,7 +60,6 @@ if [[ ! -d "$RUN_DIR" ]]; then
   print -u2 -- "无法创建安全运行目录：$RUN_DIR"
   exit 1
 fi
-umask 077
 
 launch_detached() {
   local working_dir="$1"
@@ -73,8 +73,8 @@ const fs = require("node:fs");
 const path = require("node:path");
 
 const [workingDirectory, logPath, pidPath, command, ...args] = process.argv.slice(2);
-const noFollow = fs.constants.O_NOFOLLOW || 0;
-const temporaryPidPath = `${pidPath}.${process.pid}.${Date.now()}.tmp`;
+const runDirectory = path.dirname(pidPath);
+const noFollow = fs.constants.O_NOFOLLOW;
 
 function groupAlive(pid) {
   try { process.kill(-pid, 0); return true; } catch (error) {
@@ -98,6 +98,11 @@ async function terminateGroup(pid) {
 }
 
 async function main() {
+  const runDirectoryStat = fs.lstatSync(runDirectory);
+  if (!runDirectoryStat.isDirectory() || runDirectoryStat.uid !== process.getuid()
+      || (runDirectoryStat.mode & 0o022) !== 0) {
+    throw new Error(`unsafe runtime directory: ${runDirectory}`);
+  }
   for (const target of [logPath, pidPath]) {
     try {
       if (fs.lstatSync(target).isSymbolicLink()) throw new Error(`unsafe symbolic-link target: ${target}`);
@@ -105,7 +110,16 @@ async function main() {
       if (error.code !== "ENOENT") throw error;
     }
   }
-  const logFd = fs.openSync(logPath, fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC | noFollow, 0o600);
+  let logFd = fs.openSync(logPath,
+    fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_TRUNC
+      | fs.constants.O_NONBLOCK | noFollow, 0o600);
+  const logStat = fs.fstatSync(logFd);
+  if (!logStat.isFile() || logStat.uid !== process.getuid() || (logStat.mode & 0o077) !== 0) {
+    const unsafeLogFd = logFd;
+    logFd = undefined;
+    try { fs.closeSync(unsafeLogFd); } catch {}
+    throw new Error(`unsafe log file: ${logPath}`);
+  }
   const child = spawn(command, args, {
     cwd: workingDirectory,
     detached: true,
@@ -116,44 +130,55 @@ async function main() {
     child.once("error", rejectPromise);
   });
   let pidIdentity;
-  let published = false;
+  let pidFd;
   const syncRunDirectory = () => {
-    const directoryFd = fs.openSync(path.dirname(pidPath), fs.constants.O_RDONLY);
+    const directoryFd = fs.openSync(runDirectory, fs.constants.O_RDONLY | noFollow);
     try { fs.fsyncSync(directoryFd); } finally { fs.closeSync(directoryFd); }
   };
-  const unlinkIfOwned = (target) => {
+  const unlinkPidIfOwned = () => {
     if (!pidIdentity) return;
     try {
-      const observed = fs.lstatSync(target);
-      if (observed.dev === pidIdentity.dev && observed.ino === pidIdentity.ino) fs.unlinkSync(target);
+      const observed = fs.lstatSync(pidPath);
+      if (observed.dev === pidIdentity.dev && observed.ino === pidIdentity.ino) fs.unlinkSync(pidPath);
     } catch (error) {
       if (error.code !== "ENOENT") throw error;
     }
   };
   try {
+    const parentLogFd = logFd;
+    logFd = undefined;
+    fs.closeSync(parentLogFd);
     const payload = Buffer.from(`${child.pid}\n`);
-    const pidFd = fs.openSync(temporaryPidPath,
+    pidFd = fs.openSync(pidPath,
       fs.constants.O_WRONLY | fs.constants.O_CREAT | fs.constants.O_EXCL | noFollow, 0o600);
-    try {
-      pidIdentity = fs.fstatSync(pidFd);
-      if (fs.writeSync(pidFd, payload) !== payload.length) throw new Error("incomplete PID write");
-      fs.fsyncSync(pidFd);
-    } finally {
-      fs.closeSync(pidFd);
-    }
-    fs.linkSync(temporaryPidPath, pidPath);
-    published = true;
-    syncRunDirectory();
-    fs.unlinkSync(temporaryPidPath);
+    pidIdentity = fs.fstatSync(pidFd);
+    if (!pidIdentity.isFile() || pidIdentity.uid !== process.getuid()
+        || (pidIdentity.mode & 0o077) !== 0) throw new Error(`unsafe PID file: ${pidPath}`);
+    if (fs.writeSync(pidFd, payload) !== payload.length) throw new Error("incomplete PID write");
+    fs.fsyncSync(pidFd);
+    const publishedPidFd = pidFd;
+    pidFd = undefined;
+    fs.closeSync(publishedPidFd);
     syncRunDirectory();
   } catch (error) {
-    await terminateGroup(child.pid);
-    if (published) unlinkIfOwned(pidPath);
-    unlinkIfOwned(temporaryPidPath);
-    try { syncRunDirectory(); } catch {}
-    throw error;
-  } finally {
-    fs.closeSync(logFd);
+    const failures = [error];
+    const attempt = (operation) => {
+      try { operation(); } catch (cleanupError) { failures.push(cleanupError); }
+    };
+    if (logFd !== undefined) {
+      const cleanupLogFd = logFd;
+      logFd = undefined;
+      attempt(() => fs.closeSync(cleanupLogFd));
+    }
+    if (pidFd !== undefined) {
+      const cleanupPidFd = pidFd;
+      pidFd = undefined;
+      attempt(() => fs.closeSync(cleanupPidFd));
+    }
+    try { await terminateGroup(child.pid); } catch (cleanupError) { failures.push(cleanupError); }
+    attempt(unlinkPidIfOwned);
+    attempt(syncRunDirectory);
+    throw new AggregateError(failures, failures.map((failure) => failure.message).join("; "));
   }
   child.unref();
   process.stdout.write(`${child.pid}\n`);
