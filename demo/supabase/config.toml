@@ -1,5 +1,0 @@
-project_id = "unispeaking"
-
-[functions.realtime-gateway]
-verify_jwt = false
-static_files = ["./functions/realtime-gateway/clara_restaurant_child_en.txt"]
