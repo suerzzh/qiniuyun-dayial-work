@@ -353,16 +353,19 @@ test("IELTS runtime opens an Introduction turn on the shared PCM stream but mark
   assert.equal(opened.scoring_eligible, false);
 });
 
-test("IELTS runtime finalizes and polls the Attempt that was current before its first await", async () => {
+test("IELTS runtime suppresses an old finalizer before it can write to a replacement stream", async () => {
   const postRoll = deferred();
   const finalizedAttemptIds = [];
   const reportedAttemptIds = [];
-  const controls = [];
+  const attachments = [];
+  const deliveries = [];
+  let activeScoringSocket = null;
   let nextAttempt = 0;
   const fixture = transportHarness({
     createAttempt: async () => {
       nextAttempt += 1;
-      return { attempt_id: `att-${nextAttempt}`, scoring_ws_url: "/ws", realtime_session_config: {} };
+      return { attempt_id: `att-${nextAttempt}`, scoring_ws_url: `/ws?attempt=att-${nextAttempt}`,
+        realtime_session_config: {} };
     },
     finalize: async (attemptId) => { finalizedAttemptIds.push(attemptId); },
     report: async (attemptId) => {
@@ -370,8 +373,11 @@ test("IELTS runtime finalizes and polls the Attempt that was current before its 
       return { attempt_id: attemptId, scoring_status: "COMPLETE" };
     },
     streamer: {
-      attach: async () => {},
-      control: (event) => controls.push(event),
+      attach: async (_stream, url) => {
+        activeScoringSocket = url;
+        attachments.push(url);
+      },
+      control: (event) => deliveries.push({ socket: activeScoringSocket, event }),
       stop: async () => {},
     },
     runtimeOptions: {
@@ -382,14 +388,23 @@ test("IELTS runtime finalizes and polls the Attempt that was current before its 
   await fixture.runtime.start({ mode: "practice_part", paperSnapshot: {} });
   const finalizingOldAttempt = fixture.runtime.finalize();
   await flush();
+  await fixture.runtime.stop();
   await fixture.runtime.start({ mode: "practice_part", paperSnapshot: {} });
   assert.equal(fixture.runtime.getAttemptId(), "att-2");
+  assert.deepEqual(attachments, [
+    "ws://127.0.0.1:8080/ws?attempt=att-1",
+    "ws://127.0.0.1:8080/ws?attempt=att-2",
+  ]);
 
   postRoll.resolve();
   const reportResult = await finalizingOldAttempt;
 
-  assert.deepEqual(finalizedAttemptIds, ["att-1"]);
-  assert.deepEqual(reportedAttemptIds, ["att-1"]);
+  assert.equal(reportResult.ignored, true);
+  assert.equal(reportResult.superseded, true);
   assert.equal(reportResult.attempt_id, "att-1");
-  assert.equal(controls.find((event) => event.type === "stream.end").attempt_id, "att-1");
+  assert.deepEqual(finalizedAttemptIds, []);
+  assert.deepEqual(reportedAttemptIds, []);
+  assert.equal(deliveries.some(({ socket, event }) => (
+    socket.endsWith("attempt=att-2") && event.type === "stream.end"
+  )), false);
 });

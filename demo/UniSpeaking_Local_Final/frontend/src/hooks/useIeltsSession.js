@@ -448,7 +448,7 @@ export function useIeltsSession(options = {}) {
     toggleCaptions: (/** @type {any[]} */ ...args) => callController("toggleCaptions", ...args),
     retry: (/** @type {any[]} */ ...args) => callController("retry", ...args),
     next: (/** @type {any[]} */ ...args) => callController("next", ...args),
-    exit: (/** @type {any[]} */ ...args) => callController("exit", ...args),
+    exit: restart,
     restart,
     retryReport,
   }), [callController, restart, retryReport, start]);

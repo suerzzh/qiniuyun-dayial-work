@@ -130,6 +130,7 @@ export function createIeltsSessionRuntime({
   let remoteAudio = null;
   let candidateSpeaking = false;
   let realtimeConfigured = false;
+  let attemptGeneration = 0;
   const turns = new Map();
   const itemTurns = new Map();
   const pendingExaminerEvents = [];
@@ -278,6 +279,7 @@ export function createIeltsSessionRuntime({
       pendingExaminerEvents.length = 0;
       clearExaminerRequests();
       attempt = await api.createAttempt({ mode, paper_snapshot: paperSnapshot, client_exam_state_version: 1 });
+      attemptGeneration += 1;
       try {
         await realtime.start();
       } catch (error) {
@@ -325,8 +327,12 @@ export function createIeltsSessionRuntime({
     async finalize() {
       const attemptId = attempt?.attempt_id;
       if (!attemptId) throw new Error("IELTS attempt has not started");
+      const finalizeGeneration = attemptGeneration;
       // Keep the shared PCM stream alive for the configured 700 ms post-roll.
       await wait(750);
+      if (attemptGeneration !== finalizeGeneration) {
+        return { scoring_status: "SUPERSEDED", attempt_id: attemptId, superseded: true, ignored: true };
+      }
       scoringEvent("stream.end", { attempt_id: attemptId });
       await api.finalize(attemptId);
       const terminal = new Set(["COMPLETE", "PARTIAL", "UNSCORABLE"]);
@@ -337,8 +343,8 @@ export function createIeltsSessionRuntime({
       }
       return { scoring_status: "FINALIZING", attempt_id: attemptId };
     },
-    async abandon() { clearExaminerRequests(); if (attempt) await api.abandon(attempt.attempt_id); await realtime.stop(); await streamer.stop(); },
-    async stop() { clearExaminerRequests(); await realtime.stop(); await streamer.stop(); },
+    async abandon() { attemptGeneration += 1; clearExaminerRequests(); if (attempt) await api.abandon(attempt.attempt_id); await realtime.stop(); await streamer.stop(); },
+    async stop() { attemptGeneration += 1; clearExaminerRequests(); await realtime.stop(); await streamer.stop(); },
     getAttemptId: () => attempt?.attempt_id || null,
   };
 }

@@ -244,6 +244,64 @@ describe("useIeltsSession resource ownership", () => {
     ]);
   });
 
+  it("shares one teardown for Exit plus immediate Restart and cannot stop the replacement session late", async () => {
+    const fixture = createFixture();
+    const oldServerAbandon = deferred();
+    const stopSessions = [];
+    let activeSession = "old";
+    let serverCleanupCalls = 0;
+    fixture.runtime.stop.mockImplementation(async () => {
+      stopSessions.push(activeSession);
+    });
+    fixture.api.abandon.mockImplementation(async () => {
+      serverCleanupCalls += 1;
+      if (serverCleanupCalls === 1) await oldServerAbandon.promise;
+    });
+    fixture.runtime.abandon.mockImplementation(async () => {
+      await fixture.api.abandon("attempt-existing");
+      await fixture.runtime.stop();
+    });
+    fixture.controller.exit.mockImplementation(() => {
+      void fixture.runtime.abandon();
+    });
+    fixture.controller.start.mockImplementation(async () => {
+      activeSession = "new";
+      fixture.setAttemptId("attempt-new");
+      return "new-session-started";
+    });
+    const { result } = renderHook(() => useIeltsSession(fixture.options));
+
+    let exiting;
+    let restarting;
+    let startingReplacement;
+    act(() => {
+      exiting = result.current.actions.exit();
+      restarting = result.current.actions.restart();
+      startingReplacement = Promise.resolve(restarting)
+        .then(() => result.current.actions.start());
+    });
+
+    await waitFor(() => expect(fixture.runtime.stop).toHaveBeenCalled());
+    await act(async () => { await Promise.resolve(); });
+    const startsBeforeOldCleanupSettled = fixture.controller.start.mock.calls.length;
+
+    oldServerAbandon.resolve();
+    await act(async () => {
+      await startingReplacement;
+      await Promise.resolve();
+    });
+
+    expect(stopSessions).toEqual(["old"]);
+    expect(startsBeforeOldCleanupSettled).toBe(0);
+    expect(exiting).toBe(restarting);
+    expect(fixture.controller.exit).not.toHaveBeenCalled();
+    expect(fixture.runtime.abandon).not.toHaveBeenCalled();
+    expect(fixture.controller.dispose).toHaveBeenCalledTimes(1);
+    expect(fixture.api.abandon).toHaveBeenCalledTimes(1);
+    expect(fixture.controller.restart).toHaveBeenCalledTimes(1);
+    expect(fixture.controller.start).toHaveBeenCalledTimes(1);
+  });
+
   it("does not publish a report continuation after unmount cleanup begins", async () => {
     const fixture = createFixture();
     const pendingReport = deferred();
