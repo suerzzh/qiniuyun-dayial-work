@@ -13,12 +13,12 @@
             "state": {
               "type": "markdown",
               "state": {
-                "file": "7.10/大模型性能测试执行手册.md",
+                "file": "7.22/自由聊天伪代码.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "大模型性能测试执行手册"
+              "title": "自由聊天伪代码"
             }
           }
         ]
@@ -31,14 +31,10 @@
             "id": "8c92aadf82fb4af3",
             "type": "leaf",
             "state": {
-              "type": "markdown",
-              "state": {
-                "file": "UniSpeaking产品计划书_v2.md",
-                "mode": "source",
-                "source": false
-              },
+              "type": "empty",
+              "state": {},
               "icon": "lucide-file",
-              "title": "UniSpeaking产品计划书_v2"
+              "title": "新标签页"
             }
           }
         ]
@@ -206,6 +202,10 @@
   },
   "active": "8c92aadf82fb4af3",
   "lastOpenFiles": [
+    "7.22/自由聊天伪代码.md",
+    "7.22/雅思模拟模块伪代码.md",
+    "UniSpeaking产品计划书_v2.md",
+    "7.10/大模型性能测试执行手册.md",
     "7.13/Core Business Components Naming Tree.docx",
     "7.13/Core Business Components Structure.docx",
     "7.13/UniSpeaking Core Business Components Specification.docx",
@@ -214,7 +214,6 @@
     "7.13/UniSpeaking全栈项目空骨架与目录规范.md",
     "7.10/大模型测试结果记录表.md",
     "7.10/提示词.md",
-    "7.10/大模型性能测试执行手册.md",
     "表格.md",
     "未命名.md",
     "7.10/demo测试/UniSpeaking/data/latency_report.json",
@@ -223,7 +222,6 @@
     "7.10/demo测试/UniSpeaking/backend/__pycache__/latency_report.cpython-311.pyc",
     "7.10/demo测试/UniSpeaking/backend/__pycache__/business_logic.cpython-311.pyc",
     "7.10/demo测试/UniSpeaking/backend/__pycache__/app.cpython-311.pyc",
-    "7.10/demo测试/UniSpeaking/backend/__pycache__/latency_report.cpython-314.pyc",
     "7.10/demo测试/UniSpeaking/data/latency_report.md",
     "7.10/demo测试/UniSpeaking/README.md",
     "7.10/测试用例初稿.md",
@@ -240,8 +238,6 @@
     "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/ms/readme.md",
     "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/ms/license.md",
     "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/debug/README.md",
-    "7.9/demo/realtime-voice-demo/node_modules/finalhandler/node_modules/debug/CHANGELOG.md",
-    "7.9/demo/realtime-voice-demo/node_modules/express/node_modules/ms/readme.md",
     "7.9/demo/realtime-voice-demo/node_modules/concurrently/docs/demo.gif",
     "7.8/个人主页原型图.svg",
     "7.8/个人主页客户端原型图.png",

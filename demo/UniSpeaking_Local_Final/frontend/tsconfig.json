@@ -1,0 +1,24 @@
+{
+  "compilerOptions": {
+    "allowJs": true,
+    "checkJs": true,
+    "noEmit": true,
+    "strict": true,
+    "target": "ES2022",
+    "module": "ESNext",
+    "moduleResolution": "Bundler",
+    "jsx": "react-jsx",
+    "types": ["vite/client"],
+    "lib": ["ES2022", "DOM", "DOM.Iterable"],
+    "skipLibCheck": true
+  },
+  "include": [
+    "src/router.mjs",
+    "src/ielts/report-model.mjs",
+    "src/components/ielts/**/*.jsx",
+    "src/views/IeltsView.jsx",
+    "src/realtime/**/*.mjs",
+    "src/services/**/*.mjs",
+    "src/hooks/**/*.js"
+  ]
+}

@@ -1,0 +1,38 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="theme-color" content="#faf9f5" />
+    <meta name="description" content="UniSpeaking 完整 UI 本地交互原型" />
+    <title>UniSpeaking · Complete UI</title>
+    <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Crect width='64' height='64' rx='14' fill='%23e8462d'/%3E%3Ccircle cx='41' cy='23' r='10' fill='%23fff'/%3E%3C/svg%3E" />
+    <link rel="stylesheet" href="./styles.css?v=20260713-2" />
+  </head>
+  <body>
+    <a class="skip-link" href="#app-root">跳到主要内容</a>
+    <div class="app-shell" id="app-shell">
+      <header class="topbar">
+        <a class="brand" href="#/conversation" aria-label="UniSpeaking 自由对话">
+          <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+          <span>UniSpeaking</span>
+        </a>
+        <button class="mobile-nav-toggle" type="button" data-action="toggle-nav" aria-label="展开导航" aria-expanded="false">
+          <span></span><span></span>
+        </button>
+        <nav class="global-nav" aria-label="全局导航">
+          <a href="#/conversation" data-global="conversation">自由对话</a>
+          <a href="#/scenes" data-global="scenes">场景训练</a>
+          <a href="#/review" data-global="review">复习</a>
+          <a href="#/membership" data-global="membership">会员权益</a>
+        </nav>
+        <a class="user-entry" id="user-nav-entry" href="#/profile/overview" data-global="profile" aria-label="进入个人中心">
+          <span class="user-avatar">Y</span><span>Yufan</span>
+        </a>
+      </header>
+      <main id="app-root" class="app-root" tabindex="-1" aria-live="polite"></main>
+    </div>
+    <div id="toast" class="toast" role="status" aria-live="polite"></div>
+    <script type="module" src="./src/app.mjs"></script>
+  </body>
+</html>

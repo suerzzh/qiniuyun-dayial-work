@@ -1,0 +1,218 @@
+{
+  "main": {
+    "id": "1a59b840c7683c5c",
+    "type": "split",
+    "children": [
+      {
+        "id": "3f12f89b3e542310",
+        "type": "tabs",
+        "dimension": 83.93574297188755,
+        "children": [
+          {
+            "id": "bbbf51797686d6f4",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "雅思模拟模块伪代码1.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "雅思模拟模块伪代码1"
+            }
+          }
+        ]
+      },
+      {
+        "id": "257b656363ba4d46",
+        "type": "tabs",
+        "dimension": 16.06425702811245,
+        "children": [
+          {
+            "id": "052f125374542fcd",
+            "type": "leaf",
+            "state": {
+              "type": "markdown",
+              "state": {
+                "file": "雅思模拟模块伪代码_带注释版.md",
+                "mode": "source",
+                "source": false
+              },
+              "icon": "lucide-file",
+              "title": "雅思模拟模块伪代码_带注释版"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "vertical"
+  },
+  "left": {
+    "id": "956a5ccccc14dd3b",
+    "type": "split",
+    "children": [
+      {
+        "id": "752f0c718c39ddbf",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "533996ea1bb395e7",
+            "type": "leaf",
+            "state": {
+              "type": "file-explorer",
+              "state": {
+                "sortOrder": "alphabetical",
+                "autoReveal": false
+              },
+              "icon": "lucide-folder-closed",
+              "title": "文件列表"
+            }
+          },
+          {
+            "id": "b0128eb6d65c4ace",
+            "type": "leaf",
+            "state": {
+              "type": "search",
+              "state": {
+                "query": "",
+                "matchingCase": false,
+                "explainSearch": false,
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical"
+              },
+              "icon": "lucide-search",
+              "title": "搜索"
+            }
+          },
+          {
+            "id": "86a820ee785222aa",
+            "type": "leaf",
+            "state": {
+              "type": "bookmarks",
+              "state": {},
+              "icon": "lucide-bookmark",
+              "title": "书签"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300
+  },
+  "right": {
+    "id": "a3d9d9047acc3024",
+    "type": "split",
+    "children": [
+      {
+        "id": "b8b0607e3e5ed43a",
+        "type": "tabs",
+        "children": [
+          {
+            "id": "296b36d461dbe835",
+            "type": "leaf",
+            "state": {
+              "type": "backlink",
+              "state": {
+                "file": "雅思模拟模块伪代码1.md",
+                "collapseAll": false,
+                "extraContext": false,
+                "sortOrder": "alphabetical",
+                "showSearch": false,
+                "searchQuery": "",
+                "backlinkCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-coming-in",
+              "title": "雅思模拟模块伪代码1 的反向链接列表"
+            }
+          },
+          {
+            "id": "82e46094723f9a3e",
+            "type": "leaf",
+            "state": {
+              "type": "outgoing-link",
+              "state": {
+                "file": "雅思模拟模块伪代码1.md",
+                "linksCollapsed": false,
+                "unlinkedCollapsed": true
+              },
+              "icon": "links-going-out",
+              "title": "雅思模拟模块伪代码1 的出链列表"
+            }
+          },
+          {
+            "id": "3a1ee6fba2fcaa23",
+            "type": "leaf",
+            "state": {
+              "type": "tag",
+              "state": {
+                "sortOrder": "frequency",
+                "useHierarchy": true,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-tags",
+              "title": "标签"
+            }
+          },
+          {
+            "id": "98933140bd99a434",
+            "type": "leaf",
+            "state": {
+              "type": "all-properties",
+              "state": {
+                "sortOrder": "frequency",
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-archive",
+              "title": "添加笔记属性"
+            }
+          },
+          {
+            "id": "a3a67f314b4e9d9e",
+            "type": "leaf",
+            "state": {
+              "type": "outline",
+              "state": {
+                "file": "雅思模拟模块伪代码1.md",
+                "followCursor": false,
+                "showSearch": false,
+                "searchQuery": ""
+              },
+              "icon": "lucide-list",
+              "title": "雅思模拟模块伪代码1 的大纲"
+            }
+          }
+        ]
+      }
+    ],
+    "direction": "horizontal",
+    "width": 300,
+    "collapsed": true
+  },
+  "left-ribbon": {
+    "hiddenItems": {
+      "switcher:打开快速切换": false,
+      "graph:查看关系图谱": false,
+      "canvas:新建白板": false,
+      "daily-notes:打开/创建今天的日记": false,
+      "templates:插入模板": false,
+      "command-palette:打开命令面板": false,
+      "bases:新建数据库": false
+    }
+  },
+  "active": "bbbf51797686d6f4",
+  "lastOpenFiles": [
+    "UniSpeaking架构设计.md",
+    "雅思模拟模块伪代码_带注释版.md",
+    "雅思模拟模块伪代码1.md",
+    "自由聊天伪代码.md",
+    "雅思口语模块调用流程与组件关系说明.pdf",
+    "雅思口语模块调用流程与组件关系说明.docx",
+    "雅思模拟模块整体框架_基于自由聊天框架改造版.md"
+  ]
+}
