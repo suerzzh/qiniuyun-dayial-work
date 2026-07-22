@@ -831,6 +831,10 @@ git commit -m "feat: integrate IELTS into UniSpeaking product navigation"
 - Create: `scripts/start-local.sh`
 - Create: `scripts/stop-local.sh`
 - Create: `README.md`
+- Delete: `frontend/README.md`
+- Modify: `frontend/src/services/realtime-api.mjs`
+- Modify: `frontend/package.json`
+- Modify: `frontend/package-lock.json`
 - Test: `frontend/tests/local-project-contract.test.mjs`
 
 **Interfaces:**
@@ -848,7 +852,7 @@ jsonPath("$.qwenScoringConfigured").isBoolean()
 jsonPath("$.xfyunConfigured").isBoolean()
 ```
 
-Node contract assertions check that `.env.example`, both scripts, and README exist; `.env.example` contains all eight documented variable names; and no file contains Supabase service-role or Vercel configuration.
+Node contract assertions check that `.env.example`, both scripts, and README exist; `.env.example` contains all eight documented variable names; the frontend declares a Node runtime compatible with Vite 8/jsdom 29; the obsolete frontend README is gone; and no active runtime/documentation file contains Supabase service-role or Vercel configuration.
 
 - [ ] **Step 2: Run and verify RED**
 
@@ -894,11 +898,21 @@ XFYUN_APISECRET=
 
 `stop-local.sh` must validate each PID is numeric and that its command line belongs to this project before sending `TERM`. It must never use `pkill`, port-wide kills, globs, or an unresolved environment variable as a target.
 
-- [ ] **Step 6: Write the README**
+- [ ] **Step 6: Remove obsolete deployment-era frontend metadata**
 
-Document Java 21, Node/npm, `.env` setup, one-command start/stop, URL `http://127.0.0.1:8080/#/ielts`, external provider requirements, memory-only data, test commands, report disclaimer, and source-directory preservation.
+Delete `frontend/README.md`, which still describes the former Supabase/Vercel/Python topology. Remove the ignored `baseUrl` and `publicKey` options from the JSDoc/API signature in `frontend/src/services/realtime-api.mjs`. Add this supported Node range to both `frontend/package.json` and the root package entry in `frontend/package-lock.json`:
 
-- [ ] **Step 7: Run tests, exercise scripts, and commit**
+```json
+"engines": {
+  "node": "^20.19.0 || ^22.13.0 || >=24.0.0"
+}
+```
+
+- [ ] **Step 7: Write the README**
+
+Document Java 21, Vite 8, the supported Node range, npm, `.env` setup, one-command start/stop, URL `http://127.0.0.1:8080/#/ielts`, external provider requirements, memory-only data, test commands, report disclaimer, and source-directory preservation.
+
+- [ ] **Step 8: Run tests, exercise scripts, and commit**
 
 ```bash
 cd backend && ./mvnw test
@@ -909,7 +923,8 @@ zsh -n scripts/start-local.sh scripts/stop-local.sh
 curl -fsS http://127.0.0.1:8000/health
 curl -fsS http://127.0.0.1:8080/#/ielts
 ./scripts/stop-local.sh
-git add .env.example .gitignore README.md scripts backend/src frontend/tests
+git add .env.example .gitignore README.md scripts backend/src frontend/src/services/realtime-api.mjs frontend/package.json frontend/package-lock.json frontend/tests
+git add -u frontend/README.md
 git commit -m "chore: add safe local runtime and documentation"
 ```
 
