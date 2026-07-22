@@ -44,6 +44,24 @@ test("source contains all routes and excludes banned product patterns", async ()
     assert.equal(source.includes(banned), false, `unexpected banned copy: ${banned}`);
 });
 
+test("IELTS is rendered as a direct scene destination", async () => {
+  const app = await read("src/App.jsx");
+  const scenes = await read("src/views/ScenesView.jsx");
+  const css = await read("styles.css");
+  const ieltsModule = scenes.slice(
+    scenes.indexOf("IELTS 雅思口语特训"),
+    scenes.indexOf("英文面试特训"),
+  );
+
+  assert.match(ieltsModule, /#\/ielts/);
+  assert.doesNotMatch(ieltsModule, /#\/membership/);
+  assert.match(app, /import IeltsView from "\.\/views\/IeltsView"/);
+  assert.match(app, /<IeltsView\s*\/>/);
+  assert.match(css, /\.ielts-page/);
+  assert.match(css, /\.ielts-radar/);
+  assert.match(css, /@media\s*\(max-width:\s*760px\)\s*\{[\s\S]*?\.ielts-/);
+});
+
 test("simulation ends with an in-context radar score modal", async () => {
   const training = await read("src/views/TrainingView.jsx");
   assert.match(training, /score-modal/);

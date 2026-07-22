@@ -1,6 +1,7 @@
 const ROUTES = [
   { name: "conversation", pattern: /^#\/conversation\/?$/ },
   { name: "scenes", pattern: /^#\/scenes\/?$/ },
+  { name: "ielts", pattern: /^#\/ielts\/?$/ },
   { name: "review", pattern: /^#\/review\/?$/ },
   { name: "review-detail", pattern: /^#\/review\/([^/]+)\/?$/, keys: ["scene"] },
   { name: "training", pattern: /^#\/training\/([^/]+)\/(words|sentences|simulation)(?:\?.*)?$/, keys: ["scene", "stage"] },
@@ -38,7 +39,7 @@ export function routeHref(name, params = {}) {
 
 /** @param {string} routeName */
 export function globalSection(routeName) {
-  if (["training", "scenes", "custom-scene-generating", "custom-scene-preview"].includes(routeName)) return "scenes";
+  if (["training", "scenes", "ielts", "custom-scene-generating", "custom-scene-preview"].includes(routeName)) return "scenes";
   if (["review", "review-detail"].includes(routeName)) return "review";
   if (["profile", "membership"].includes(routeName)) return "profile";
   if (routeName === "auth") return "auth";

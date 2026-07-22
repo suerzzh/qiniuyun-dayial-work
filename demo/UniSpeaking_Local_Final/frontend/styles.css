@@ -3251,3 +3251,667 @@ header.page-heading .eyebrow:empty {
     flex-direction: column;
   }
 }
+
+/* IELTS Speaking: route-local product surfaces and responsive exam/report layouts. */
+.ielts-page {
+  height: 100%;
+  overflow-x: hidden;
+  overflow-y: auto;
+  padding: 24px 30px 40px;
+  background:
+    radial-gradient(circle at 82% 0, rgba(30, 127, 191, 0.08), transparent 30%),
+    var(--bg);
+  overscroll-behavior: contain;
+}
+
+.ielts-page > main {
+  width: min(100%, 1180px);
+  margin: 0 auto;
+}
+
+.ielts-page button {
+  min-height: 44px;
+  padding: 0 16px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+  font-weight: 760;
+  cursor: pointer;
+  transition: border-color 0.18s ease, background 0.18s ease, transform 0.14s ease;
+}
+
+.ielts-page button:hover:not(:disabled) {
+  border-color: var(--ink);
+  background: var(--soft);
+}
+
+.ielts-page button:active:not(:disabled) {
+  transform: translateY(1px);
+}
+
+.ielts-page button:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.ielts-home,
+.ielts-preflight,
+.ielts-exam-stage,
+.ielts-report-view {
+  display: grid;
+  gap: 18px;
+}
+
+.ielts-home > header,
+.ielts-report-summary {
+  padding: 30px 34px;
+  border-radius: 22px;
+  background: var(--ink);
+  color: #fff;
+  box-shadow: 0 16px 42px rgba(32, 33, 30, 0.12);
+}
+
+.ielts-home > header .eyebrow,
+.ielts-exam-stage > header .eyebrow {
+  color: #f3a077;
+}
+
+.ielts-home > header h1,
+.ielts-report-summary h1 {
+  margin: 6px 0 8px;
+  font-size: clamp(30px, 4vw, 48px);
+  line-height: 1.08;
+  letter-spacing: -0.05em;
+}
+
+.ielts-home > header > p:last-child,
+.ielts-report-summary p {
+  margin-bottom: 0;
+  color: rgba(255, 255, 255, 0.72);
+}
+
+.ielts-home {
+  grid-template-columns: minmax(0, 0.8fr) minmax(0, 1.2fr);
+}
+
+.ielts-home > header {
+  grid-column: 1 / -1;
+}
+
+.ielts-home > section,
+.ielts-preflight > section,
+.ielts-exam-stage > section,
+.ielts-part2-card,
+.ielts-radar-section,
+.ielts-official-card,
+.ielts-task-achievement,
+.ielts-part-summaries,
+.ielts-report-warnings,
+.ielts-report-disclaimer {
+  padding: 22px 24px;
+  border: 1px solid var(--line);
+  border-radius: 18px;
+  background: #fff;
+  box-shadow: var(--shadow);
+}
+
+.ielts-home > section h2,
+.ielts-preflight > section h2,
+.ielts-exam-stage > section h2,
+.ielts-official-dimensions > h2,
+.ielts-task-achievement h2,
+.ielts-part-summaries h2,
+.ielts-report-warnings h2,
+.ielts-report-disclaimer h2 {
+  margin-bottom: 7px;
+  font-size: 19px;
+  letter-spacing: -0.03em;
+}
+
+.ielts-home > section > p,
+.ielts-preflight > section > p,
+.ielts-exam-stage > section > p,
+.ielts-report-view section > p,
+.ielts-report-view aside > p {
+  color: var(--muted);
+}
+
+.ielts-home > section > button {
+  width: 100%;
+  margin-top: 14px;
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.ielts-mode-grid {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.ielts-mode-grid button {
+  display: grid;
+  min-height: 104px;
+  align-content: center;
+  gap: 5px;
+  padding: 16px;
+  text-align: left;
+}
+
+.ielts-mode-grid button strong,
+.ielts-mode-grid button span {
+  display: block;
+}
+
+.ielts-mode-grid button span {
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 500;
+}
+
+.ielts-preflight {
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.ielts-preflight > header,
+.ielts-preflight > footer {
+  grid-column: 1 / -1;
+}
+
+.ielts-preflight > header,
+.ielts-exam-stage > header {
+  padding: 4px 2px 14px;
+  border-bottom: 1px solid var(--line);
+}
+
+.ielts-preflight > header h1,
+.ielts-exam-stage > header h1 {
+  margin: 5px 0;
+  font-size: 30px;
+  letter-spacing: -0.045em;
+}
+
+.ielts-preflight > section label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-height: 44px;
+  border-top: 1px solid var(--line);
+}
+
+.ielts-preflight input {
+  width: 18px;
+  height: 18px;
+  accent-color: var(--accent);
+}
+
+.ielts-preflight ul,
+.ielts-report-warnings ul {
+  margin: 12px 0 0;
+  padding-left: 20px;
+  color: #8a382d;
+}
+
+.ielts-preflight > footer,
+.ielts-exam-actions,
+.ielts-report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+  padding-top: 2px;
+}
+
+.ielts-preflight > footer button:last-child,
+.ielts-exam-actions button:nth-last-child(2),
+.ielts-report-actions button:first-child {
+  border-color: var(--ink);
+  background: var(--ink);
+  color: #fff;
+}
+
+.ielts-exam-stage {
+  grid-template-columns: minmax(0, 1.35fr) minmax(300px, 0.65fr);
+}
+
+.ielts-exam-stage > header,
+.ielts-exam-actions,
+.ielts-exam-stage > .ielts-part2-card {
+  grid-column: 1 / -1;
+}
+
+.ielts-exam-stage > header {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 5px 18px;
+}
+
+.ielts-exam-stage > header .eyebrow,
+.ielts-exam-stage > header h1 {
+  width: 100%;
+}
+
+.ielts-exam-stage > header p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.ielts-exam-stage > header p[role="timer"],
+.ielts-part2-card + section output {
+  font-variant-numeric: tabular-nums;
+}
+
+.ielts-exam-stage > header p[role="timer"] {
+  margin-left: auto;
+  padding: 5px 10px;
+  border-radius: 999px;
+  background: #fff0ea;
+  color: var(--accent);
+  font-size: 12px;
+  font-weight: 800;
+}
+
+.ielts-exam-stage output {
+  display: block;
+  min-height: 116px;
+  margin-top: 12px;
+  padding: 16px;
+  border: 1px solid #e7e7e2;
+  border-radius: 12px;
+  background: #fafaf7;
+  color: var(--body);
+  line-height: 1.7;
+}
+
+.ielts-exam-stage ol {
+  max-height: 190px;
+  margin: 12px 0 0;
+  padding-left: 22px;
+  overflow-y: auto;
+}
+
+.ielts-exam-stage li {
+  margin-bottom: 8px;
+  color: var(--body);
+}
+
+.ielts-part2-card {
+  position: relative;
+  overflow: hidden;
+  border-color: rgba(30, 127, 191, 0.3);
+  background: linear-gradient(145deg, #fff 0%, #f1f8fc 100%);
+}
+
+.ielts-part2-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 auto 0 0;
+  width: 5px;
+  background: var(--blue);
+}
+
+.ielts-part2-card header p {
+  margin-bottom: 4px;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+}
+
+.ielts-part2-card h2 {
+  margin-bottom: 12px;
+}
+
+.ielts-cue-topic {
+  font-size: 20px;
+  font-weight: 750;
+  line-height: 1.45;
+}
+
+.ielts-part2-card li::marker {
+  color: var(--blue);
+}
+
+.ielts-part2-card label {
+  display: grid;
+  gap: 7px;
+  margin-top: 18px;
+  font-size: 11px;
+  font-weight: 800;
+}
+
+.ielts-part2-card textarea {
+  min-height: 92px;
+  resize: vertical;
+  padding: 12px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: #fff;
+  color: var(--ink);
+}
+
+.ielts-part2-card textarea:disabled {
+  background: #efefeb;
+  color: var(--quiet);
+}
+
+.ielts-report-view {
+  grid-template-columns: minmax(320px, 0.72fr) minmax(0, 1.28fr);
+}
+
+.ielts-report-summary,
+.ielts-official-dimensions,
+.ielts-part-summaries,
+.ielts-report-warnings,
+.ielts-report-disclaimer,
+.ielts-report-actions {
+  grid-column: 1 / -1;
+}
+
+.ielts-report-summary {
+  display: grid;
+  grid-template-columns: 1fr auto auto;
+  align-items: end;
+  gap: 8px 24px;
+}
+
+.ielts-report-summary > p:first-child,
+.ielts-report-summary h1 {
+  grid-column: 1;
+}
+
+.ielts-report-summary > p:nth-of-type(2),
+.ielts-report-summary > p:nth-of-type(3) {
+  margin-bottom: 6px;
+  font-variant-numeric: tabular-nums;
+}
+
+.ielts-radar-section {
+  display: grid;
+  place-items: center;
+  align-content: start;
+  min-width: 0;
+  color: var(--blue);
+}
+
+.ielts-radar-section > header,
+.ielts-radar-section > p {
+  width: 100%;
+  color: var(--ink);
+}
+
+.ielts-radar-section > header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.ielts-radar-section > header p {
+  margin: 0;
+  padding: 4px 9px;
+  border-radius: 999px;
+  background: #edf5f9;
+  color: var(--blue);
+  font-size: 10px;
+  font-weight: 800;
+}
+
+.ielts-radar {
+  width: min(100%, 370px);
+  height: auto;
+  margin: 4px auto;
+  overflow: visible;
+}
+
+.ielts-radar-labels text {
+  fill: var(--body);
+  font-size: 9px;
+}
+
+.ielts-task-achievement {
+  border-color: rgba(232, 70, 45, 0.24);
+  background: linear-gradient(145deg, #fff 0%, #fff6f1 100%);
+}
+
+.ielts-task-achievement > p:first-child {
+  margin-bottom: 5px;
+  color: var(--accent);
+  font-size: 10px;
+  font-weight: 800;
+  letter-spacing: 0.1em;
+}
+
+.ielts-task-score,
+.ielts-band-value {
+  margin: 12px 0;
+  color: var(--accent);
+  font-size: 30px;
+  font-weight: 850;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: -0.04em;
+}
+
+.ielts-official-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 12px;
+}
+
+.ielts-official-card {
+  min-width: 0;
+}
+
+.ielts-official-card header > p:first-child {
+  margin-bottom: 4px;
+  color: var(--blue);
+  font-size: 9px;
+  font-weight: 800;
+  letter-spacing: 0.08em;
+}
+
+.ielts-official-card header h3 {
+  margin: 0;
+  font-size: 17px;
+}
+
+.ielts-official-card header > p:last-child,
+.ielts-official-card > p:not(.ielts-band-value) {
+  color: var(--muted);
+  font-size: 11px;
+}
+
+.ielts-evidence-group {
+  margin-top: 14px;
+  padding-top: 12px;
+  border-top: 1px solid var(--line);
+}
+
+.ielts-evidence-group h3,
+.ielts-evidence-group h4 {
+  margin: 0 0 7px;
+  font-size: 11px;
+}
+
+.ielts-evidence-group ul {
+  margin: 0;
+  padding-left: 18px;
+  color: var(--body);
+  font-size: 11px;
+}
+
+.ielts-evidence-group p {
+  margin: 0;
+  color: var(--quiet);
+  font-size: 11px;
+}
+
+.ielts-part-summaries dl {
+  display: grid;
+  gap: 8px;
+  margin: 12px 0 0;
+}
+
+.ielts-part-summaries dl > div {
+  display: grid;
+  grid-template-columns: 72px 1fr;
+  gap: 12px;
+  padding: 10px 0;
+  border-top: 1px solid var(--line);
+}
+
+.ielts-part-summaries dt {
+  color: var(--accent);
+  font-weight: 800;
+}
+
+.ielts-part-summaries dd {
+  margin: 0;
+  color: var(--body);
+}
+
+.ielts-report-warnings {
+  border-color: rgba(232, 70, 45, 0.28);
+  background: #fff8f5;
+}
+
+.ielts-report-disclaimer {
+  background: var(--soft);
+}
+
+.ielts-report-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 9px;
+}
+
+.ielts-recovery-state {
+  display: grid;
+  min-height: 420px;
+  place-content: center;
+  justify-items: center;
+  gap: 18px;
+  padding: 30px;
+  border: 1px solid var(--line);
+  border-radius: 20px;
+  background: #fff;
+  text-align: center;
+}
+
+.ielts-recovery-state h1 {
+  margin-bottom: 7px;
+  font-size: 26px;
+}
+
+.ielts-recovery-state p {
+  margin: 0;
+  color: var(--muted);
+}
+
+.ielts-recovery-state > div:last-child {
+  display: flex;
+  gap: 9px;
+}
+
+@media (max-width: 760px) {
+  .ielts-page {
+    min-height: calc(100dvh - 58px);
+    padding: 16px 14px 28px;
+    overflow: visible;
+  }
+
+  .ielts-home,
+  .ielts-preflight,
+  .ielts-exam-stage,
+  .ielts-report-view {
+    grid-template-columns: 1fr;
+    gap: 12px;
+  }
+
+  .ielts-home > header,
+  .ielts-report-summary {
+    padding: 24px 20px;
+    border-radius: 18px;
+  }
+
+  .ielts-home > header h1,
+  .ielts-report-summary h1 {
+    font-size: 31px;
+  }
+
+  .ielts-home > section,
+  .ielts-preflight > section,
+  .ielts-exam-stage > section,
+  .ielts-part2-card,
+  .ielts-radar-section,
+  .ielts-official-card,
+  .ielts-task-achievement,
+  .ielts-part-summaries,
+  .ielts-report-warnings,
+  .ielts-report-disclaimer {
+    padding: 18px;
+    border-radius: 14px;
+  }
+
+  .ielts-mode-grid,
+  .ielts-official-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .ielts-mode-grid button {
+    min-height: 82px;
+  }
+
+  .ielts-preflight > header,
+  .ielts-preflight > footer,
+  .ielts-exam-stage > header,
+  .ielts-exam-actions,
+  .ielts-exam-stage > .ielts-part2-card,
+  .ielts-report-summary,
+  .ielts-official-dimensions,
+  .ielts-part-summaries,
+  .ielts-report-warnings,
+  .ielts-report-disclaimer,
+  .ielts-report-actions {
+    grid-column: auto;
+  }
+
+  .ielts-exam-stage > header p[role="timer"] {
+    width: max-content;
+    margin-left: 0;
+  }
+
+  .ielts-preflight > footer,
+  .ielts-exam-actions,
+  .ielts-report-actions {
+    display: grid;
+    grid-template-columns: 1fr;
+  }
+
+  .ielts-report-summary {
+    display: block;
+  }
+
+  .ielts-report-summary > p:nth-of-type(2),
+  .ielts-report-summary > p:nth-of-type(3) {
+    margin: 7px 0 0;
+  }
+
+  .ielts-radar {
+    width: min(100%, 320px);
+  }
+
+  .ielts-part-summaries dl > div {
+    grid-template-columns: 1fr;
+    gap: 3px;
+  }
+
+  .ielts-recovery-state {
+    min-height: 360px;
+    padding: 22px 16px;
+  }
+}

@@ -8,6 +8,7 @@ import ProfileView from "./views/ProfileView";
 import AuthView from "./views/AuthView";
 import MembershipView from "./views/MembershipView";
 import CustomSceneView from "./views/CustomSceneView";
+import IeltsView from "./views/IeltsView";
 import { globalSection, parseRoute } from "./router.mjs";
 
 const defaultState = {
@@ -224,6 +225,8 @@ export default function App() {
     switch (route.name) {
       case "scenes":
         return <ScenesView state={state} updateState={updateState} showToast={showToast} />;
+      case "ielts":
+        return <div className="ielts-page"><IeltsView /></div>;
       case "training":
         return <TrainingView stage={route.params.stage} scene={route.params.scene} state={state} updateState={updateState} showToast={showToast} />;
       case "review":

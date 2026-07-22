@@ -1,7 +1,7 @@
 import test from "node:test";
 import assert from "node:assert/strict";
 
-import { parseRoute, routeHref } from "../src/router.mjs";
+import { globalSection, parseRoute, routeHref } from "../src/router.mjs";
 
 test("parses the four global destinations", () => {
   assert.deepEqual(parseRoute("#/conversation"), { name: "conversation", params: {}, invalid: false });
@@ -22,6 +22,12 @@ test("parses the three cafe training stages", () => {
   });
   assert.equal(routeHref("training", { scene: "cafe", stage: "simulation" }), "#/training/cafe/simulation");
   assert.equal(parseRoute("#/training/cafe/diagnostic").invalid, true);
+});
+
+test("maps IELTS to a direct scene route", () => {
+  assert.deepEqual(parseRoute("#/ielts"), { name: "ielts", params: {}, invalid: false });
+  assert.equal(routeHref("ielts"), "#/ielts");
+  assert.equal(globalSection("ielts"), "scenes");
 });
 
 test("falls back safely for an unknown route", () => {

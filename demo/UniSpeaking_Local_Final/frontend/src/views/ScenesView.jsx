@@ -92,7 +92,7 @@ export default function ScenesView({ state, updateState, showToast }) {
                     <h3>IELTS 雅思口语特训</h3>
                     <p>还原真实考官追问，精准评估 CEFR 等级</p>
                   </div>
-                  <button className="outline-btn" type="button" onClick={() => window.location.hash = "#/membership"}>
+                  <button className="outline-btn" type="button" onClick={() => window.location.hash = "#/ielts"}>
                     进入
                   </button>
                 </div>
