@@ -1,6 +1,6 @@
 const eventId = (prefix) => `${prefix}_${Date.now()}_${Math.random().toString(36).slice(2, 8)}`;
 
-export function createRealtimeClient({ api, mediaDevices, createPeerConnection, createAudio = () => typeof Audio === "undefined" ? null : new Audio(), onEvent = () => {} }) {
+export function createRealtimeClient({ api, mediaDevices, createPeerConnection, createAudio = () => typeof Audio === "undefined" ? null : new Audio(), onEvent = () => {}, onMediaStream = () => {}, autoGreet = true }) {
   let sessionId = null;
   let sessionConfig = null;
   let peer = null;
@@ -22,7 +22,7 @@ export function createRealtimeClient({ api, mediaDevices, createPeerConnection, 
     emit(event);
     if (["conversation.item.input_audio_transcription.completed", "response.audio_transcript.done", "response.text.done"].includes(event.type)) api.rememberEvent?.(sessionId, event).catch(() => {});
     if (event.type === "session.created") send({ event_id: eventId("config"), type: "session.update", session: sessionConfig });
-    if (event.type === "session.updated" && !greetingRequested) {
+    if (event.type === "session.updated" && autoGreet && !greetingRequested) {
       greetingRequested = true;
       send({ event_id: eventId("greeting"), type: "response.create" });
     }
@@ -58,6 +58,7 @@ export function createRealtimeClient({ api, mediaDevices, createPeerConnection, 
       sessionConfig = backend.session_config || {};
       peer = createPeerConnection();
       stream = await mediaDevices.getUserMedia({ audio: true });
+      await onMediaStream(stream);
       for (const track of stream.getAudioTracks()) peer.addTrack(track, stream);
       peer.ontrack = (event) => {
         const audio = createAudio();
@@ -117,5 +118,5 @@ export function createRealtimeClient({ api, mediaDevices, createPeerConnection, 
     emit({ type: "local.ended" });
   }
 
-  return { start, stop, sendText, setMuted, getSessionId: () => sessionId, isActive: () => Boolean(peer) };
+  return { start, stop, sendText, sendEvent: send, setMuted, getSessionId: () => sessionId, isActive: () => Boolean(peer) };
 }

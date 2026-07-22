@@ -1,0 +1,62 @@
+<style>
+  #part2-notes-choice .layout-options { display: grid; gap: 18px; }
+  #part2-notes-choice .mock-screen { margin-top: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-primary); color: var(--text-primary); }
+  #part2-notes-choice .mock-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  #part2-notes-choice .mock-top strong { font-size: 13px; }
+  #part2-notes-choice .timer { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
+  #part2-notes-choice .cue-card { margin-top: 12px; padding: 14px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border); }
+  #part2-notes-choice .cue-card h4 { margin: 0 0 10px; font-size: 15px; line-height: 1.4; }
+  #part2-notes-choice .cue-card p { margin: 6px 0; font-size: 12px; color: var(--text-secondary); }
+  #part2-notes-choice .cue-card ul { margin: 8px 0 8px 18px; padding: 0; font-size: 12px; line-height: 1.5; }
+  #part2-notes-choice .bottom-row { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(170px, .65fr); gap: 12px; margin-top: 12px; }
+  #part2-notes-choice .notes, #part2-notes-choice .voice { min-height: 90px; padding: 12px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border); }
+  #part2-notes-choice .notes span, #part2-notes-choice .voice span { display: block; margin-bottom: 8px; font-size: 11px; color: var(--text-secondary); }
+  #part2-notes-choice .note-line { height: 18px; border-bottom: 1px dashed var(--border); color: var(--text-primary); font-size: 11px; }
+  #part2-notes-choice .notes.locked { background: var(--bg-tertiary); }
+  #part2-notes-choice .voice { display: grid; place-items: center; text-align: center; }
+  #part2-notes-choice .orb { width: 42px; height: 42px; border-radius: 50%; background: var(--accent); opacity: .8; margin: 6px auto; }
+  #part2-notes-choice .phase { display: inline-block; margin-bottom: 6px; font-size: 11px; color: var(--accent); font-weight: 600; }
+  #part2-notes-choice .recommend { color: var(--accent); font-weight: 600; }
+  @media (max-width: 720px) { #part2-notes-choice .bottom-row { grid-template-columns: 1fr; } }
+</style>
+
+<div id="part2-notes-choice">
+  <h2>准备结束后，数字笔记如何处理？</h2>
+  <p class="subtitle">沿用你选择的 B 方案：全宽题卡始终可见，笔记和回答状态位于下方。</p>
+
+  <div class="options layout-options">
+    <div class="option" data-choice="a" onclick="toggleSelect(this)">
+      <div class="letter">A</div>
+      <div class="content">
+        <h3>准备时可写，回答时锁定 <span class="recommend">推荐</span></h3>
+        <p>模拟纸质笔记：60 秒内编辑，回答开始后继续显示但不可修改，减少打字干扰。</p>
+        <div class="mock-screen" aria-label="回答阶段笔记锁定示意">
+          <div class="mock-top"><strong>IELTS Speaking · Part 2</strong><span class="timer">回答时间 01:36</span></div>
+          <section class="cue-card"><span class="phase">正在回答</span><h4>Describe a place you would like to visit.</h4><p>You should say:</p><ul><li>where it is</li><li>how you know about it</li><li>who you would go there with</li></ul><p><strong>and explain why you would like to visit this place.</strong></p></section>
+          <div class="bottom-row"><aside class="notes locked"><span>准备笔记 · 已锁定</span><div class="note-line">Kyoto · spring</div><div class="note-line">friend recommendation</div><div class="note-line">history + food</div></aside><div class="voice"><span>正在录制回答</span><div class="orb"></div><strong>请继续作答</strong></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="option" data-choice="b" onclick="toggleSelect(this)">
+      <div class="letter">B</div>
+      <div class="content">
+        <h3>回答过程中仍可编辑</h3>
+        <p>更方便补充想法，但用户可能边打字边说，偏离真实考试状态并影响口语表现。</p>
+        <div class="mock-screen" aria-label="回答阶段笔记仍可编辑示意">
+          <div class="mock-top"><strong>IELTS Speaking · Part 2</strong><span class="timer">回答时间 01:36</span></div>
+          <section class="cue-card"><span class="phase">正在回答</span><h4>Describe a place you would like to visit.</h4><p>You should say:</p><ul><li>where it is</li><li>how you know about it</li><li>who you would go there with</li></ul><p><strong>and explain why you would like to visit this place.</strong></p></section>
+          <div class="bottom-row"><aside class="notes"><span>准备笔记 · 可继续编辑</span><div class="note-line">Kyoto · spring</div><div class="note-line">friend recommendation</div><div class="note-line">history + food |</div></aside><div class="voice"><span>正在录制回答</span><div class="orb"></div><strong>请继续作答</strong></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="option" data-choice="c" onclick="toggleSelect(this)">
+      <div class="letter">C</div>
+      <div class="content">
+        <h3>不提供数字笔记</h3>
+        <p>用户自行使用纸笔，最接近线下考试，但网页训练的完整性和可用性较弱。</p>
+      </div>
+    </div>
+  </div>
+</div>

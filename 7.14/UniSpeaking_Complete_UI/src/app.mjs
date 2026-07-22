@@ -9,10 +9,16 @@ import { renderProfile } from "./views/profile.mjs";
 import { renderAuth } from "./views/auth.mjs";
 import { renderMembership } from "./views/membership.mjs";
 import { renderCustomSceneGenerating, renderCustomScenePreview } from "./views/custom_scene.mjs";
+import { renderIelts, voicePresentation } from "./views/ielts.mjs";
+import { createIeltsDemoController } from "./ielts/demo-controller.mjs";
+import { createVoiceAnswerController } from "./ielts/voice-answer-controller.mjs";
+import { createIeltsApi } from "./services/ielts-api.mjs";
+import { createPcmScoringStreamer } from "./ielts/pcm-scoring-streamer.mjs";
+import { createIeltsRealtimeSpeechAdapter, createIeltsSessionRuntime } from "./ielts/ielts-session-runtime.mjs";
 import { createRealtimeApi } from "./services/realtime-api.mjs";
 import { createRealtimeClient } from "./realtime/realtime-client.mjs";
 import { applyRealtimeEvent, createRealtimeState } from "./realtime/realtime-state.mjs";
-import { SUPABASE_PUBLIC_CONFIG } from "./runtime-config.mjs";
+import { IELTS_BACKEND_URL, SUPABASE_PUBLIC_CONFIG } from "./runtime-config.mjs";
 
 const root = document.getElementById("app-root");
 const shell = document.getElementById("app-shell");
@@ -24,6 +30,57 @@ function readSaved() {
   catch { return {}; }
 }
 const store = createStore(createInitialState(readSaved()));
+
+const ieltsApi = createIeltsApi({ baseUrl: IELTS_BACKEND_URL });
+const pcmStreamer = createPcmScoringStreamer({
+  createAudioContext: (options) => new (window.AudioContext || window.webkitAudioContext)(options),
+  createWebSocket: (url) => new WebSocket(url),
+  onEvent: () => {},
+});
+let ieltsSpeechAdapter = null;
+let voiceAnswerController = null;
+const ieltsRuntime = createIeltsSessionRuntime({
+  api: ieltsApi,
+  streamer: pcmStreamer,
+  mediaDevices: navigator.mediaDevices,
+  createPeerConnection: () => new RTCPeerConnection({ iceServers: [] }),
+  createAudio: () => new Audio(),
+  wsBaseUrl: IELTS_BACKEND_URL.replace(/^http/, "ws"),
+  onTranscript: (event) => ieltsSpeechAdapter?.receive(event),
+});
+
+const ieltsController = createIeltsDemoController({
+  async loadJson(name) {
+    const response = await fetch(`./backend/ielts/question_bank/${name}`);
+    if (!response.ok) throw new Error(`题库加载失败：${name} (${response.status})`);
+    return response.json();
+  },
+  storage: localStorage,
+  // Examiner speech and ASR are supplied by Qwen Realtime in the IELTS runtime.
+  speak: () => {},
+  runtime: ieltsRuntime,
+  onAnswerTimeLimit() {
+    if (!voiceAnswerController) return "";
+    const transcript = voiceAnswerController.finish();
+    queueMicrotask(() => voiceAnswerController?.reset());
+    return transcript;
+  },
+  onTimer(snapshot) {
+    if (parseRoute(location.hash).name === "ielts") updateIeltsTimingView(snapshot);
+  },
+  onChange() {
+    if (parseRoute(location.hash).name === "ielts") render();
+  },
+});
+voiceAnswerController = createVoiceAnswerController({
+  createAdapter: (handlers) => {
+    ieltsSpeechAdapter = createIeltsRealtimeSpeechAdapter(ieltsRuntime, handlers);
+    return ieltsSpeechAdapter;
+  },
+  onChange() {
+    if (parseRoute(location.hash).name === "ielts") updateIeltsVoiceView();
+  },
+});
 const realtimeApi = createRealtimeApi({
   baseUrl: SUPABASE_PUBLIC_CONFIG.url,
   publishableKey: SUPABASE_PUBLIC_CONFIG.publishableKey,
@@ -87,8 +144,105 @@ function updateGlobalNav(route) {
   });
 }
 
+function captureIeltsNotesFocus(route) {
+  const active = document.activeElement;
+  if (route.name !== "ielts" || !active?.matches?.("[data-action='ielts-update-notes']")) return null;
+  return {
+    start: active.selectionStart,
+    end: active.selectionEnd,
+    direction: active.selectionDirection,
+  };
+}
+
+function restoreIeltsNotesFocus(focusState) {
+  if (!focusState) return false;
+  const notes = root.querySelector("[data-action='ielts-update-notes']:not([readonly])");
+  if (!notes) return false;
+  notes.focus({ preventScroll: true });
+  notes.setSelectionRange(focusState.start, focusState.end, focusState.direction || "none");
+  return true;
+}
+
+function captureIeltsVoiceFocus(route) {
+  const active = document.activeElement;
+  if (route.name !== "ielts" || !active?.matches?.("[data-action='ielts-voice-transcript']")) return null;
+  return { start: active.selectionStart, end: active.selectionEnd, direction: active.selectionDirection };
+}
+
+function restoreIeltsVoiceFocus(focusState) {
+  if (!focusState) return false;
+  const transcript = root.querySelector("[data-action='ielts-voice-transcript']");
+  if (!transcript) return false;
+  transcript.focus({ preventScroll: true });
+  transcript.setSelectionRange(focusState.start, focusState.end, focusState.direction || "none");
+  return true;
+}
+
+function updateIeltsVoiceView() {
+  const session = ieltsController.getSnapshot();
+  const panel = root.querySelector(".ielts-voice-panel");
+  if (session.screen !== "session" || session.exam?.status === "part2_preparing" || !panel) {
+    render();
+    return;
+  }
+  const voice = voiceAnswerController.getSnapshot();
+  const presentation = voicePresentation(voice);
+  panel.className = `ielts-voice-panel panel is-${voice.status}`;
+
+  const elapsed = panel.querySelector("header time");
+  if (elapsed) elapsed.textContent = presentation.elapsedText;
+
+  const microphone = panel.querySelector(".ielts-mic-button");
+  if (microphone) {
+    microphone.className = `ielts-mic-button is-${voice.status}`;
+    microphone.dataset.action = presentation.action;
+    microphone.setAttribute("aria-label", presentation.hint);
+    microphone.disabled = Boolean(presentation.disabled);
+    const label = microphone.querySelector("b");
+    if (label) label.textContent = presentation.label;
+  }
+
+  const status = panel.querySelector(".ielts-voice-status");
+  if (status) status.textContent = presentation.statusMessage;
+  const finish = panel.querySelector("[data-action='ielts-voice-finish']");
+  if (finish) finish.disabled = presentation.finishDisabled;
+  const transcript = panel.querySelector("[data-action='ielts-voice-transcript']");
+  if (transcript && transcript.value !== voice.finalTranscript) transcript.value = voice.finalTranscript;
+
+  const transcriptContainer = panel.querySelector(".ielts-transcript");
+  let interim = transcriptContainer?.querySelector("small");
+  if (voice.interimTranscript) {
+    if (!interim && transcriptContainer) {
+      interim = document.createElement("small");
+      transcriptContainer.append(interim);
+    }
+    if (interim) interim.textContent = voice.interimTranscript;
+  } else {
+    interim?.remove();
+  }
+}
+
+function updateIeltsTimingView(snapshot) {
+  if (snapshot.screen !== "session") return;
+  const timer = root.querySelector(".ielts-session-tools > time");
+  if (timer) {
+    const seconds = snapshot.timer?.remainingSeconds;
+    timer.textContent = seconds == null ? "LIVE"
+      : `${String(Math.floor(seconds / 60)).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+  }
+  const part3 = root.querySelector(".ielts-part3-timing");
+  if (part3 && snapshot.part3Timer) {
+    const format = (value) => `${String(Math.floor(value / 60)).padStart(2, "0")}:${String(value % 60).padStart(2, "0")}`;
+    const heading = part3.querySelector("strong");
+    if (heading) heading.textContent = `Part 3 总计时 ${format(snapshot.part3Timer.elapsedSeconds)}`;
+    part3.classList.toggle("is-soft-limit", Boolean(snapshot.part3Timer.softLimitReached));
+  }
+}
+
 function render() {
   const route = parseRoute(location.hash);
+  const ieltsNotesFocus = captureIeltsNotesFocus(route);
+  const ieltsVoiceFocus = captureIeltsVoiceFocus(route);
   if (route.invalid) {
     history.replaceState(null, "", "#/conversation");
     showToast("页面不存在，已返回自由对话");
@@ -112,7 +266,8 @@ function render() {
     }
   }
 
-  if (route.name === "scenes") root.innerHTML = renderScenes(state);
+  if (route.name === "ielts") root.innerHTML = renderIelts(ieltsController.getSnapshot(), voiceAnswerController.getSnapshot());
+  else if (route.name === "scenes") root.innerHTML = renderScenes(state);
   else if (route.name === "training") root.innerHTML = renderTraining(route.params.stage, state);
   else if (route.name === "review") root.innerHTML = renderReview(state);
   else if (route.name === "review-detail") root.innerHTML = renderReviewDetail(state);
@@ -144,7 +299,7 @@ function render() {
   else root.innerHTML = renderConversation(state);
 
   shell.classList.toggle("mobile-nav-open", state.mobileNavOpen);
-  root.focus({ preventScroll: true });
+  if (!restoreIeltsNotesFocus(ieltsNotesFocus) && !restoreIeltsVoiceFocus(ieltsVoiceFocus)) root.focus({ preventScroll: true });
 }
 
 function dirtySettings(patch) {
@@ -205,6 +360,46 @@ document.addEventListener("click", (event) => {
   
   const action = target.dataset.action;
   const state = store.getState();
+
+  if (action === "ielts-select-mode") {
+    voiceAnswerController.reset();
+    ieltsController.selectMode(target.dataset.mode, target.dataset.part || null);
+    return;
+  }
+  if (action === "ielts-home") { voiceAnswerController.reset(); ieltsController.openHome(); return; }
+  if (action === "ielts-toggle-preflight-captions") {
+    const current = ieltsController.getSnapshot().preflight.captionsEnabled;
+    ieltsController.setPreflight({ captionsEnabled: !current }); return;
+  }
+  if (action === "ielts-toggle-recording") {
+    const current = ieltsController.getSnapshot().preflight.recordingEnabled;
+    ieltsController.setPreflight({ recordingEnabled: !current }); return;
+  }
+  if (action === "ielts-toggle-accelerated") {
+    const current = ieltsController.getSnapshot().preflight.acceleratedDemo;
+    ieltsController.setPreflight({ acceleratedDemo: !current }); return;
+  }
+  if (action === "ielts-start") { voiceAnswerController.reset(); ieltsController.start(); return; }
+  if (action === "ielts-toggle-captions") { ieltsController.toggleCaptions(); return; }
+  if (action === "ielts-voice-start") { voiceAnswerController.start(); return; }
+  if (action === "ielts-voice-pause") { voiceAnswerController.pause(); return; }
+  if (action === "ielts-voice-resume") { voiceAnswerController.resume(); return; }
+  if (action === "ielts-voice-finish") {
+    const transcript = voiceAnswerController.finish();
+    ieltsController.submitAnswer(transcript);
+    voiceAnswerController.reset();
+    return;
+  }
+  if (action === "ielts-retry") { voiceAnswerController.reset(); ieltsController.retry(); return; }
+  if (action === "ielts-next") { voiceAnswerController.reset(); ieltsController.next(); return; }
+  if (action === "ielts-exit") {
+    if (window.confirm("退出后完整模考将标记为未完成，确定退出吗？")) {
+      voiceAnswerController.reset();
+      ieltsController.exit();
+    }
+    return;
+  }
+  if (action === "ielts-restart") { voiceAnswerController.reset(); ieltsController.restart(); return; }
   
   if (action === "toggle-nav") {
     const open = !state.mobileNavOpen; store.setState({ mobileNavOpen: open });
@@ -447,6 +642,13 @@ document.addEventListener("click", (event) => {
 
 document.addEventListener("submit", async (event) => {
   const action = event.target.dataset.action;
+
+  if (action === "ielts-submit-answer") {
+    event.preventDefault();
+    const value = new FormData(event.target).get("answer")?.toString() || "";
+    ieltsController.submitAnswer(value);
+    return;
+  }
   
   if (action === "send-text") {
     event.preventDefault();
@@ -497,6 +699,16 @@ document.addEventListener("keydown", (event) => {
 
 document.addEventListener("input", (event) => {
   const input = event.target;
+  if (input.matches("[data-action='ielts-voice-transcript']")) {
+    if (parseRoute(location.hash).name === "ielts") voiceAnswerController.updateTranscript(input.value);
+    return;
+  }
+  if (input.matches("[data-action='ielts-update-notes']")) {
+    if (ieltsController.getSnapshot().exam?.status === "part2_preparing") {
+      ieltsController.updateNotes(input.value);
+    }
+    return;
+  }
   if (!input.matches("[data-setting]")) return;
   const value = Number(input.value);
   dirtySettings({ [input.dataset.setting]: value });
@@ -505,6 +717,7 @@ document.addEventListener("input", (event) => {
 
 window.addEventListener("hashchange", () => {
   const route = parseRoute(location.hash);
+  if (route.name !== "ielts") voiceAnswerController.reset();
   if (route.name === "training") {
     store.setState({ activeAsset: 0, recording: false, playingId: "" });
   } else {
@@ -513,6 +726,8 @@ window.addEventListener("hashchange", () => {
   store.setState({ mobileNavOpen:false });
   render();
 });
+
+window.addEventListener("beforeunload", () => voiceAnswerController.dispose());
 if (!location.hash) location.hash = "#/conversation"; else {
   const route = parseRoute(location.hash);
   if (route.name === "training") {

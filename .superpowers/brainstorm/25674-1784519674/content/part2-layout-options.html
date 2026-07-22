@@ -1,0 +1,90 @@
+<style>
+  .layout-options { display: grid; gap: 18px; }
+  .mock-screen { margin-top: 14px; padding: 14px; border: 1px solid var(--border); border-radius: 12px; background: var(--bg-primary); color: var(--text-primary); }
+  .mock-top { display: flex; justify-content: space-between; gap: 12px; align-items: center; padding-bottom: 10px; border-bottom: 1px solid var(--border); }
+  .mock-top strong { font-size: 13px; }
+  .timer { font-variant-numeric: tabular-nums; color: var(--accent); font-weight: 600; }
+  .two-col { display: grid; grid-template-columns: minmax(0, 1.65fr) minmax(150px, .75fr); gap: 12px; margin-top: 12px; }
+  .examiner-col { display: grid; grid-template-columns: minmax(135px, .7fr) minmax(0, 1.3fr); gap: 12px; margin-top: 12px; }
+  .cue-card, .notes, .voice-panel { padding: 14px; border-radius: 10px; background: var(--bg-secondary); border: 1px solid var(--border); }
+  .cue-card h4 { margin: 0 0 10px; font-size: 15px; line-height: 1.4; }
+  .cue-card p { margin: 6px 0; font-size: 12px; color: var(--text-secondary); }
+  .cue-card ul { margin: 8px 0 8px 18px; padding: 0; font-size: 12px; line-height: 1.55; }
+  .notes { min-height: 112px; }
+  .notes span, .voice-panel span { display: block; margin-bottom: 8px; font-size: 11px; color: var(--text-secondary); }
+  .note-line { height: 18px; border-bottom: 1px dashed var(--border); }
+  .voice-panel { display: grid; place-items: center; text-align: center; min-height: 145px; }
+  .orb { width: 52px; height: 52px; border-radius: 50%; background: var(--accent); opacity: .8; margin: 10px auto; }
+  .full-card { margin-top: 12px; }
+  .bottom-row { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; margin-top: 12px; }
+  .phase-strip { display: flex; gap: 6px; margin-top: 10px; font-size: 10px; color: var(--text-secondary); }
+  .phase-strip b { color: var(--accent); }
+  .recommend { color: var(--accent); font-weight: 600; }
+  @media (max-width: 720px) {
+    .two-col, .examiner-col, .bottom-row { grid-template-columns: 1fr; }
+  }
+</style>
+
+<h2>Part 2 题卡页面采用哪种布局？</h2>
+<p class="subtitle">三种方案都会在 60 秒准备和 1–2 分钟回答期间持续展示完整 cue card。</p>
+
+<div class="options layout-options">
+  <div class="option" data-choice="a" onclick="toggleSelect(this)">
+    <div class="letter">A</div>
+    <div class="content">
+      <h3>题卡优先 · 左题卡右笔记 <span class="recommend">推荐</span></h3>
+      <p>题目始终占据视觉中心，计时和笔记作为辅助；最符合考试任务的注意力顺序。</p>
+      <div class="mock-screen" aria-label="方案 A 页面示意">
+        <div class="mock-top"><strong>IELTS Speaking · Part 2</strong><span class="timer">准备时间 00:42</span></div>
+        <div class="phase-strip"><span>Part 1</span><b>Part 2 · 准备</b><span>Part 3</span></div>
+        <div class="two-col">
+          <section class="cue-card">
+            <h4>Describe a place you would like to visit.</h4>
+            <p>You should say:</p>
+            <ul><li>where it is</li><li>how you know about it</li><li>who you would go there with</li></ul>
+            <p><strong>and explain why you would like to visit this place.</strong></p>
+          </section>
+          <aside class="notes"><span>准备笔记</span><div class="note-line"></div><div class="note-line"></div><div class="note-line"></div><div class="note-line"></div></aside>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="b" onclick="toggleSelect(this)">
+    <div class="letter">B</div>
+    <div class="content">
+      <h3>考试桌面 · 全宽题卡</h3>
+      <p>题卡阅读最舒服，笔记区在下方；适合桌面端，但页面纵向更长。</p>
+      <div class="mock-screen" aria-label="方案 B 页面示意">
+        <div class="mock-top"><strong>IELTS Speaking · Part 2</strong><span class="timer">准备时间 00:42</span></div>
+        <section class="cue-card full-card">
+          <h4>Describe a place you would like to visit.</h4>
+          <p>You should say:</p>
+          <ul><li>where it is</li><li>how you know about it</li><li>who you would go there with</li></ul>
+          <p><strong>and explain why you would like to visit this place.</strong></p>
+        </section>
+        <div class="bottom-row"><aside class="notes"><span>准备笔记</span><div class="note-line"></div><div class="note-line"></div><div class="note-line"></div></aside><div class="voice-panel"><span>麦克风将在准备结束后自动进入回答状态</span><div class="orb"></div></div></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="option" data-choice="c" onclick="toggleSelect(this)">
+    <div class="letter">C</div>
+    <div class="content">
+      <h3>考官对话优先 · 左考官右题卡</h3>
+      <p>保留强烈的实时交流感，但考官区域会挤压 cue card，不利于快速扫读全部要点。</p>
+      <div class="mock-screen" aria-label="方案 C 页面示意">
+        <div class="mock-top"><strong>IELTS Speaking · Part 2</strong><span class="timer">准备时间 00:42</span></div>
+        <div class="examiner-col">
+          <div class="voice-panel"><span>AI Examiner</span><div class="orb"></div><strong>You have one minute to prepare.</strong></div>
+          <section class="cue-card">
+            <h4>Describe a place you would like to visit.</h4>
+            <p>You should say:</p>
+            <ul><li>where it is</li><li>how you know about it</li><li>who you would go there with</li></ul>
+            <p><strong>and explain why you would like to visit this place.</strong></p>
+          </section>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>

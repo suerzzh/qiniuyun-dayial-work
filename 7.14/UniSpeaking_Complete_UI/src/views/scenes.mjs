@@ -50,9 +50,9 @@ export function renderScenes() {
               <div class="pro-module-item">
                 <div class="module-info">
                   <h3>IELTS 雅思口语特训</h3>
-                  <p>还原真实考官追问，精准评估 CEFR 等级</p>
+                  <p>还原 Part 1/2/3 流程，生成参考 IELTS 四维的练习反馈</p>
                 </div>
-                <button class="outline-btn" type="button">进入</button>
+                <a class="outline-btn" href="#/ielts">进入</a>
               </div>
               
               <div class="pro-module-item">
