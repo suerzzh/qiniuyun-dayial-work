@@ -13,6 +13,7 @@ import java.nio.ByteBuffer;
 import java.nio.charset.StandardCharsets;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 @Component
 public class IeltsScoringStreamHandler extends BinaryWebSocketHandler {
@@ -30,13 +31,16 @@ public class IeltsScoringStreamHandler extends BinaryWebSocketHandler {
             socket.close(CloseStatus.POLICY_VIOLATION.withReason("IELTS attempt unavailable"));
             return;
         }
-        streams.put(socket.getId(), new Context(attempt, socket));
+        Context context = new Context(attempt, socket);
+        streams.put(socket.getId(), context);
+        attempt.registerStreamInvalidator(context.invalidator);
+        if (!context.usable()) return;
         send(socket, Map.of("type", "stream.ready", "attempt_id", attemptId));
     }
 
     @Override protected void handleBinaryMessage(WebSocketSession socket, BinaryMessage message) {
         Context context = streams.get(socket.getId());
-        if (context == null) return;
+        if (context == null || !context.usable()) return;
         ByteBuffer payload = message.getPayload();
         byte[] pcm = new byte[payload.remaining()];
         payload.get(pcm);
@@ -45,7 +49,7 @@ public class IeltsScoringStreamHandler extends BinaryWebSocketHandler {
 
     @Override protected void handleTextMessage(WebSocketSession socket, TextMessage message) {
         Context context = streams.get(socket.getId());
-        if (context == null) return;
+        if (context == null || !context.usable()) return;
         try {
             JsonNode event = json.readTree(message.getPayload());
             String eventId = event.path("event_id").asText("");
@@ -67,7 +71,7 @@ public class IeltsScoringStreamHandler extends BinaryWebSocketHandler {
                 case "turn.completed", "part2.speaking_completed" -> context.complete(turnId, timestamp,
                         event.path("reason").asText("EXPLICIT_COMPLETE"));
                 case "part2.preparation_started" -> context.attempt.setCurrentPart("part2");
-                case "stream.end" -> context.assembler.finishStream();
+                case "stream.end" -> context.finishStream();
                 default -> send(socket, Map.of("type", "stream.warning", "message", "Unknown event: " + type));
             }
         } catch (Exception error) {
@@ -77,15 +81,43 @@ public class IeltsScoringStreamHandler extends BinaryWebSocketHandler {
 
     @Override public void afterConnectionClosed(WebSocketSession socket, CloseStatus status) {
         Context context = streams.remove(socket.getId());
-        if (context != null) context.assembler.finishStream();
+        if (context != null) context.connectionClosed();
     }
 
     private final class Context {
         private final IeltsAttempt attempt;
         private final WebSocketSession socket;
         private final IeltsTurnAssembler assembler = new IeltsTurnAssembler(500, 700, 5_000);
+        private final AtomicBoolean valid = new AtomicBoolean(true);
+        private final AtomicBoolean ended = new AtomicBoolean(false);
+        private final Runnable invalidator = this::invalidate;
         private Context(IeltsAttempt attempt, WebSocketSession socket) { this.attempt = attempt; this.socket = socket; }
+        private boolean usable() {
+            return valid.get() && !ended.get() && attempt.isActive()
+                    && registry.get(attempt.getAttemptId()) == attempt;
+        }
+        private void finishStream() {
+            if (!ended.compareAndSet(false, true)) return;
+            assembler.finishStream();
+            attempt.markStreamFinalized();
+        }
+        private void connectionClosed() {
+            finishStream();
+            if (valid.compareAndSet(true, false)) attempt.unregisterStreamInvalidator(invalidator);
+        }
+        private void invalidate() {
+            if (!valid.compareAndSet(true, false)) return;
+            streams.remove(socket.getId(), this);
+            attempt.unregisterStreamInvalidator(invalidator);
+            try {
+                if (socket.isOpen()) {
+                    socket.close(CloseStatus.POLICY_VIOLATION.withReason("IELTS attempt unavailable"));
+                }
+            } catch (Exception ignored) {
+            }
+        }
         private void open(JsonNode event, long timestamp) throws Exception {
+            if (!usable()) return;
             String turnId = event.path("turn_id").asText();
             int part = event.path("part").asInt(event.path("type").asText().startsWith("part2") ? 2 : 0);
             String questionId = event.path("question_id").asText(attempt.getQuestionId());
@@ -100,6 +132,7 @@ public class IeltsScoringStreamHandler extends BinaryWebSocketHandler {
             send(socket, Map.of("type", "turn.accepted", "attempt_id", attempt.getAttemptId(), "turn_id", turnId));
         }
         private void complete(String turnId, long timestamp, String reason) throws Exception {
+            if (!usable()) return;
             assembler.complete(turnId, timestamp, reason);
             send(socket, eventPolicy.turnScored(attempt.getMode(), attempt.getAttemptId(), turnId, Map.of()));
         }

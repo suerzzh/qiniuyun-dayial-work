@@ -25,20 +25,18 @@ public class IeltsScoringOrchestrator {
     }
 
     public CompletableFuture<IeltsReport> score(IeltsAttempt attempt) {
-        attempt.setScoringStatus(IeltsScoringStatus.SCORING);
+        if (!attempt.beginScoring()) return cancelledFuture();
         List<IeltsTurn> scoringTurns = scoringTurns(attempt);
         if (scoringTurns.isEmpty()) {
             IeltsReport report = unavailable(attempt, IeltsScoringStatus.UNSCORABLE,
                     List.of("没有可评分回答"), List.of());
-            attempt.setReport(report);
-            attempt.setScoringStatus(report.scoringStatus());
+            attempt.publishReport(report);
             return CompletableFuture.completedFuture(report);
         }
         if (scoringTurns.stream().noneMatch(turn -> !turn.rawTranscript().isBlank())) {
             IeltsReport report = unavailable(attempt, IeltsScoringStatus.UNSCORABLE,
                     List.of("没有有效 raw transcript，无法评分"), List.of());
-            attempt.setReport(report);
-            attempt.setScoringStatus(report.scoringStatus());
+            attempt.publishReport(report);
             return CompletableFuture.completedFuture(report);
         }
 
@@ -76,8 +74,7 @@ public class IeltsScoringOrchestrator {
                 return buildReport(attempt, judge, pronunciation, warnings);
             });
         }).thenApply(report -> {
-            attempt.setReport(report);
-            attempt.setScoringStatus(report.scoringStatus());
+            attempt.publishReport(report);
             return report;
         });
     }
@@ -201,7 +198,15 @@ public class IeltsScoringOrchestrator {
         return attempt.getTurns().stream()
                 .filter(IeltsTurn::scoringEligible)
                 .filter(turn -> turn.part() >= 1 && turn.part() <= 3)
+                .filter(IeltsTurn::completed)
+                .filter(turn -> !Set.of("PRACTICE_RETRY", "PRACTICE_SKIP").contains(turn.completionReason()))
                 .toList();
+    }
+
+    private static <T> CompletableFuture<T> cancelledFuture() {
+        CompletableFuture<T> future = new CompletableFuture<>();
+        future.cancel(false);
+        return future;
     }
 
     private IeltsReport unavailable(IeltsAttempt attempt, IeltsScoringStatus status,

@@ -216,6 +216,86 @@ class IeltsScoringOrchestratorTest {
         assertFalse(turns.stream().anyMatch(turn -> "introduction".equals(turn.get("question_id"))));
     }
 
+    @Test
+    void incompleteScoringEligibleTurnsAreExcludedFromEveryProviderInput() {
+        IeltsAttempt attempt = attempt();
+        IeltsTurn incomplete = new IeltsTurn("unfinished", 2, "q2", "Describe a person", true, 0);
+        incomplete.setRawTranscript("This partial transcript must not be scored.");
+        incomplete.setAudio(new byte[8_000]);
+        attempt.addTurn(incomplete);
+        AtomicReference<Map<String, Object>> qwenInput = new AtomicReference<>();
+        AtomicInteger iseCalls = new AtomicInteger();
+        IeltsTextScorer text = input -> {
+            qwenInput.set(input);
+            return CompletableFuture.completedFuture(validJudge());
+        };
+        PronunciationEvidenceProvider ise = turn -> {
+            iseCalls.incrementAndGet();
+            assertTrue(turn.completed());
+            return CompletableFuture.completedFuture(new PronunciationEvidence(
+                    "XFYUN_ISE", "read_sentence", "LOW", Map.of(), "raw", null));
+        };
+
+        new IeltsScoringOrchestrator(text, ise).score(attempt).join();
+
+        assertEquals(1, iseCalls.get());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> turns = (List<Map<String, Object>>) qwenInput.get().get("complete_exam_turns");
+        assertEquals(List.of("t1"), turns.stream().map(turn -> (String) turn.get("turn_id")).toList());
+    }
+
+    @Test
+    void practiceRetryAndSkipTurnsAreExplicitlyDiscardedFromScoring() {
+        IeltsAttempt attempt = attempt();
+        IeltsTurn retried = completedTurn("retried", "PRACTICE_RETRY");
+        IeltsTurn skipped = completedTurn("skipped", "PRACTICE_SKIP");
+        attempt.addTurn(retried);
+        attempt.addTurn(skipped);
+        AtomicReference<Map<String, Object>> qwenInput = new AtomicReference<>();
+        AtomicInteger iseCalls = new AtomicInteger();
+        IeltsTextScorer text = input -> {
+            qwenInput.set(input);
+            return CompletableFuture.completedFuture(validJudge());
+        };
+        PronunciationEvidenceProvider ise = turn -> {
+            iseCalls.incrementAndGet();
+            return CompletableFuture.completedFuture(new PronunciationEvidence(
+                    "XFYUN_ISE", "read_sentence", "LOW", Map.of(), "raw", null));
+        };
+
+        new IeltsScoringOrchestrator(text, ise).score(attempt).join();
+
+        assertEquals(1, iseCalls.get());
+        @SuppressWarnings("unchecked")
+        List<Map<String, Object>> turns = (List<Map<String, Object>>) qwenInput.get().get("complete_exam_turns");
+        assertEquals(List.of("t1"), turns.stream().map(turn -> (String) turn.get("turn_id")).toList());
+    }
+
+    @Test
+    void lateAsyncScoringCompletionCannotOverwriteAbandonedAttempt() {
+        CompletableFuture<Map<String, Object>> judge = new CompletableFuture<>();
+        IeltsTextScorer text = input -> judge;
+        PronunciationEvidenceProvider ise = turn -> CompletableFuture.completedFuture(
+                new PronunciationEvidence("XFYUN_ISE", "read_sentence", "LOW", Map.of(), "raw", null));
+        IeltsAttempt attempt = attempt();
+
+        CompletableFuture<IeltsReport> scoring = new IeltsScoringOrchestrator(text, ise).score(attempt);
+        attempt.setScoringStatus(IeltsScoringStatus.ABANDONED);
+        judge.complete(validJudge());
+        scoring.join();
+
+        assertEquals(IeltsScoringStatus.ABANDONED, attempt.getScoringStatus());
+        assertNull(attempt.getReport());
+    }
+
+    private static IeltsTurn completedTurn(String turnId, String reason) {
+        IeltsTurn turn = new IeltsTurn(turnId, 1, "q-" + turnId, "Question", false, 0);
+        turn.setRawTranscript("Old practice response");
+        turn.setAudio(new byte[8_000]);
+        turn.complete(1_000, reason);
+        return turn;
+    }
+
     private static Map<String, Object> validJudge() {
         return Map.of(
                 "fluency_coherence", dimension(6.5),
