@@ -464,10 +464,13 @@ git commit -m "feat: port IELTS exam runtime into React project"
 - Create: `frontend/src/services/local-service-config.mjs`
 - Modify: `frontend/src/services/realtime-api.mjs`
 - Modify: `frontend/src/services/ielts-api.mjs`
+- Modify: `frontend/src/ielts/ielts-session-runtime.mjs`
+- Modify: `frontend/src/hooks/useRealtimeSession.js`
 - Modify: `frontend/vite.config.js`
 - Test: `frontend/tests/local-service-config.test.mjs`
 - Test: `frontend/tests/realtime-api.test.mjs`
 - Test: `frontend/tests/ielts-api.test.mjs`
+- Test: `frontend/tests/ielts-session-runtime.test.mjs`
 
 **Interfaces:**
 - Produces: `resolveHttpBase(origin) -> string` and `resolveWsBase(origin) -> string`.
@@ -513,6 +516,8 @@ proxy: {
 ```
 
 Remove publishable-key behavior from the final realtime adapter. Keep the Java paths `/api/sessions`, `/api/realtime`, `/api/sessions/{id}/events`, `/api/sessions/{id}/quality`, and `DELETE /api/sessions/{id}`.
+
+Remove `VITE_REALTIME_API_BASE` and `VITE_SUPABASE_PUBLISHABLE_KEY` reads from `useRealtimeSession`; create the adapter without legacy deployment options. In `ielts-session-runtime.mjs`, resolve relative scoring WebSocket paths against `resolveWsBase()` so the browser uses `ws(s)://<current-vite-origin>/api/ielts/scoring-stream` and Vite performs the WebSocket proxying. Add a runtime test that captures the URL passed to `streamer.attach` and asserts it uses the supplied/current Vite WebSocket origin rather than port `8000`.
 
 - [ ] **Step 4: Run API contract tests and commit**
 
