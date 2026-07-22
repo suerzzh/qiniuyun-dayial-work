@@ -4,6 +4,16 @@ import { createIeltsSessionRuntime } from "../src/ielts/ielts-session-runtime.mj
 
 const flush = () => new Promise((resolve) => setImmediate(resolve));
 
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
+
 async function withBrowserOrigin(origin, callback) {
   const descriptor = Object.getOwnPropertyDescriptor(globalThis, "location");
   Object.defineProperty(globalThis, "location", {
@@ -18,8 +28,8 @@ async function withBrowserOrigin(origin, callback) {
   }
 }
 
-function transportHarness({ channel, peer, exchangeSdp, abandon, createAudio = () => null,
-  scoringWsUrl = "/ws", streamer, runtimeOptions = {} } = {}) {
+function transportHarness({ channel, peer, createAttempt, exchangeSdp, finalize, report, abandon,
+  createAudio = () => null, scoringWsUrl = "/ws", streamer, runtimeOptions = {} } = {}) {
   const cleanup = { trackStops: 0, channelCloses: 0, peerCloses: 0, streamerStops: 0 };
   const abandonedAttemptIds = [];
   const track = { id: "mic", stop() { cleanup.trackStops += 1; } };
@@ -39,8 +49,10 @@ function transportHarness({ channel, peer, exchangeSdp, abandon, createAudio = (
   };
   const runtime = createIeltsSessionRuntime({
     api: {
-      createAttempt: async () => ({ attempt_id: "att-transport", scoring_ws_url: scoringWsUrl, realtime_session_config: {} }),
+      createAttempt: createAttempt || (async () => ({ attempt_id: "att-transport", scoring_ws_url: scoringWsUrl, realtime_session_config: {} })),
       exchangeSdp: exchangeSdp || (async () => "answer"),
+      finalize,
+      report,
       async abandon(attemptId) {
         abandonedAttemptIds.push(attemptId);
         return abandon?.(attemptId);
@@ -339,4 +351,45 @@ test("IELTS runtime opens an Introduction turn on the shared PCM stream but mark
   assert.equal(opened.part, 0);
   assert.equal(opened.turn_type, "INTRODUCTION");
   assert.equal(opened.scoring_eligible, false);
+});
+
+test("IELTS runtime finalizes and polls the Attempt that was current before its first await", async () => {
+  const postRoll = deferred();
+  const finalizedAttemptIds = [];
+  const reportedAttemptIds = [];
+  const controls = [];
+  let nextAttempt = 0;
+  const fixture = transportHarness({
+    createAttempt: async () => {
+      nextAttempt += 1;
+      return { attempt_id: `att-${nextAttempt}`, scoring_ws_url: "/ws", realtime_session_config: {} };
+    },
+    finalize: async (attemptId) => { finalizedAttemptIds.push(attemptId); },
+    report: async (attemptId) => {
+      reportedAttemptIds.push(attemptId);
+      return { attempt_id: attemptId, scoring_status: "COMPLETE" };
+    },
+    streamer: {
+      attach: async () => {},
+      control: (event) => controls.push(event),
+      stop: async () => {},
+    },
+    runtimeOptions: {
+      wait: (ms) => (ms === 750 ? postRoll.promise : Promise.resolve()),
+    },
+  });
+
+  await fixture.runtime.start({ mode: "practice_part", paperSnapshot: {} });
+  const finalizingOldAttempt = fixture.runtime.finalize();
+  await flush();
+  await fixture.runtime.start({ mode: "practice_part", paperSnapshot: {} });
+  assert.equal(fixture.runtime.getAttemptId(), "att-2");
+
+  postRoll.resolve();
+  const reportResult = await finalizingOldAttempt;
+
+  assert.deepEqual(finalizedAttemptIds, ["att-1"]);
+  assert.deepEqual(reportedAttemptIds, ["att-1"]);
+  assert.equal(reportResult.attempt_id, "att-1");
+  assert.equal(controls.find((event) => event.type === "stream.end").attempt_id, "att-1");
 });

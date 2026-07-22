@@ -20,22 +20,24 @@ function deferred() {
 }
 
 function createFixture({ attemptId = "attempt-existing" } = {}) {
+  let currentAttemptId = attemptId;
   const runtime = {
     stop: vi.fn(async () => {}),
     startAnswer: vi.fn(),
-    getAttemptId: vi.fn(() => attemptId),
+    getAttemptId: vi.fn(() => currentAttemptId),
   };
   const api = {
     report: vi.fn(async (id) => ({ attempt_id: id, scoring_status: "COMPLETE" })),
     finalize: vi.fn(async () => {}),
     createAttempt: vi.fn(async () => ({ attempt_id: "attempt-new" })),
     abandon: vi.fn(async () => {}),
+    delete: vi.fn(async () => {}),
   };
   const streamer = { stop: vi.fn(async () => {}) };
   const controller = {
     getSnapshot: vi.fn(() => ({
       screen: "report",
-      attemptId,
+      attemptId: currentAttemptId,
       report: { scoring_status: "FINALIZING" },
       error: null,
     })),
@@ -66,7 +68,14 @@ function createFixture({ attemptId = "attempt-existing" } = {}) {
     checkHealth: vi.fn(async () => ({ status: "UP" })),
   };
 
-  return { api, controller, options, runtime, streamer };
+  return {
+    api,
+    controller,
+    options,
+    runtime,
+    streamer,
+    setAttemptId(value) { currentAttemptId = value; },
+  };
 }
 
 describe("useIeltsSession resource ownership", () => {
@@ -174,7 +183,7 @@ describe("useIeltsSession resource ownership", () => {
   });
 
   it("tears down again after an unresolved start settles following unmount", async () => {
-    const fixture = createFixture();
+    const fixture = createFixture({ attemptId: null });
     const pendingStart = deferred();
     fixture.controller.start.mockReturnValue(pendingStart.promise);
     const rendered = renderHook(() => useIeltsSession(fixture.options));
@@ -189,38 +198,50 @@ describe("useIeltsSession resource ownership", () => {
     });
     expect(fixture.runtime.abandon).not.toHaveBeenCalled();
 
+    fixture.setAttemptId("attempt-started-after-unmount");
     pendingStart.resolve("started-after-unmount");
     await starting;
 
     await waitFor(() => {
-      expect(fixture.runtime.abandon).toHaveBeenCalledTimes(1);
       expect(fixture.runtime.stop).toHaveBeenCalledTimes(2);
     });
-    expect(fixture.api.abandon).toHaveBeenCalledWith("attempt-existing");
+    expect(fixture.runtime.abandon).not.toHaveBeenCalled();
+    expect(fixture.api.abandon).toHaveBeenCalledWith("attempt-started-after-unmount");
   });
 
-  it("awaits old Attempt and transport teardown before returning home", async () => {
+  it("serializes local disposal before separately abandoning the old Attempt and returning home", async () => {
     const fixture = createFixture();
-    const teardown = deferred();
-    fixture.runtime.abandon.mockImplementation(async () => {
-      await fixture.api.abandon("attempt-existing");
-      await teardown.promise;
+    const localStop = deferred();
+    const calls = [];
+    fixture.runtime.stop.mockImplementation(async () => {
+      calls.push("local-stop:start");
+      await localStop.promise;
+      calls.push("local-stop:end");
     });
+    fixture.api.abandon.mockImplementation(async () => { calls.push("server-abandon"); });
+    fixture.controller.restart.mockImplementation(() => { calls.push("controller-restart"); });
     const { result } = renderHook(() => useIeltsSession(fixture.options));
 
     let restarting;
     act(() => { restarting = result.current.actions.restart(); });
 
-    expect(fixture.api.abandon).toHaveBeenCalledWith("attempt-existing");
+    await waitFor(() => expect(fixture.runtime.stop).toHaveBeenCalledOnce());
+    expect(fixture.runtime.abandon).not.toHaveBeenCalled();
+    expect(fixture.api.abandon).not.toHaveBeenCalled();
     expect(fixture.controller.restart).not.toHaveBeenCalled();
 
-    teardown.resolve();
+    localStop.resolve();
     await act(async () => { await restarting; });
 
     expect(fixture.runtime.stop).toHaveBeenCalledTimes(1);
+    expect(fixture.api.abandon).toHaveBeenCalledWith("attempt-existing");
     expect(fixture.controller.restart).toHaveBeenCalledTimes(1);
-    expect(fixture.controller.restart.mock.invocationCallOrder[0])
-      .toBeGreaterThan(fixture.runtime.stop.mock.invocationCallOrder[0]);
+    expect(calls).toEqual([
+      "local-stop:start",
+      "local-stop:end",
+      "server-abandon",
+      "controller-restart",
+    ]);
   });
 
   it("does not publish a report continuation after unmount cleanup begins", async () => {

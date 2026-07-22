@@ -9,6 +9,17 @@ import { buildPracticeFeedback } from "../src/ielts/feedback.mjs";
 
 const root = join(dirname(fileURLToPath(import.meta.url)), "..");
 const loadJson = async (name) => JSON.parse(await readFile(join(root, "public/ielts/question-bank", name), "utf8"));
+const flush = () => new Promise((resolve) => setImmediate(resolve));
+
+function deferred() {
+  let resolve;
+  let reject;
+  const promise = new Promise((resolvePromise, rejectPromise) => {
+    resolve = resolvePromise;
+    reject = rejectPromise;
+  });
+  return { promise, resolve, reject };
+}
 
 function createMemoryStorage() {
   const values = new Map();
@@ -174,4 +185,59 @@ test("an empty ASR result stays empty and is never replaced with a fabricated an
   controller.submitAnswer("");
   assert.equal(completedTranscript, "");
   assert.equal(controller.getSnapshot().answers[0].transcript, "");
+});
+
+test("dispose returns the runtime stop promise and does not settle before local teardown", async () => {
+  const stopped = deferred();
+  const runtime = { stop: () => stopped.promise };
+  const { controller } = createController({ runtime });
+
+  let disposed = false;
+  const disposing = controller.dispose().then(() => { disposed = true; });
+  await flush();
+  assert.equal(disposed, false);
+
+  stopped.resolve();
+  await disposing;
+  assert.equal(disposed, true);
+});
+
+test("an old finalize continuation cannot mutate or publish a restarted new session", async () => {
+  const oldFinalizer = deferred();
+  const published = [];
+  let startCount = 0;
+  const runtime = {
+    async start() {
+      startCount += 1;
+      return { attempt_id: `att-${startCount}`, scoring_status: "COLLECTING" };
+    },
+    examinerInstruction(_text, onDone) { onDone?.(); },
+    openTurn() {},
+    questionAsked() {},
+    completeTurn() {},
+    finalize: () => oldFinalizer.promise,
+  };
+  const { controller } = createController({
+    runtime,
+    onChange: (snapshot) => published.push(snapshot),
+  });
+
+  controller.selectMode("practice_part", "part2");
+  await controller.start();
+  controller.expirePreparationForTest();
+  controller.submitAnswer("The old answer.");
+  assert.equal(controller.getSnapshot().screen, "report");
+
+  controller.restart();
+  controller.selectMode("practice_part", "part1");
+  await controller.start();
+  const beforeOldFinalize = controller.getSnapshot();
+  const publishCount = published.length;
+
+  oldFinalizer.resolve({ scoring_status: "COMPLETE", overallBand: 9 });
+  await flush();
+
+  assert.deepEqual(controller.getSnapshot(), beforeOldFinalize);
+  assert.equal(published.length, publishCount);
+  assert.equal(controller.getSnapshot().attemptId, "att-2");
 });

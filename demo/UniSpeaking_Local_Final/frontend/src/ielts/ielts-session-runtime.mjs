@@ -323,18 +323,19 @@ export function createIeltsSessionRuntime({
       transcript = "";
     },
     async finalize() {
-      if (!attempt) throw new Error("IELTS attempt has not started");
+      const attemptId = attempt?.attempt_id;
+      if (!attemptId) throw new Error("IELTS attempt has not started");
       // Keep the shared PCM stream alive for the configured 700 ms post-roll.
       await wait(750);
-      scoringEvent("stream.end", {});
-      await api.finalize(attempt.attempt_id);
+      scoringEvent("stream.end", { attempt_id: attemptId });
+      await api.finalize(attemptId);
       const terminal = new Set(["COMPLETE", "PARTIAL", "UNSCORABLE"]);
       for (let i = 0; i < 120; i += 1) {
-        const report = await api.report(attempt.attempt_id);
+        const report = await api.report(attemptId);
         if (terminal.has(report?.scoringStatus || report?.scoring_status)) return report;
         await wait(1000);
       }
-      return { scoring_status: "FINALIZING", attempt_id: attempt.attempt_id };
+      return { scoring_status: "FINALIZING", attempt_id: attemptId };
     },
     async abandon() { clearExaminerRequests(); if (attempt) await api.abandon(attempt.attempt_id); await realtime.stop(); await streamer.stop(); },
     async stop() { clearExaminerRequests(); await realtime.stop(); await streamer.stop(); },

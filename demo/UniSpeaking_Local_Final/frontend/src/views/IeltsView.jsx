@@ -23,7 +23,7 @@ export default function IeltsView() {
 
   if (snapshot.loading || snapshot.error) {
     const retry = retryForScreen(snapshot.screen, actions);
-    const exit = exitForScreen(snapshot.screen, actions);
+    const exit = snapshot.loading ? actions.restart : exitForScreen(snapshot.screen, actions);
     return (
       <main className="ielts-recovery-state">
         {snapshot.error ? (

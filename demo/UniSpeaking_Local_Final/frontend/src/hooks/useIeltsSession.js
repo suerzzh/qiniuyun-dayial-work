@@ -23,6 +23,8 @@ import { resolveHttpBase } from "../services/local-service-config.mjs";
  * @property {Promise<void> | null} teardownPromise
  * @property {boolean} controllerDisposed
  * @property {number} lifecycleGeneration
+ * @property {string | null} latestAttemptId
+ * @property {Set<string>} cleanedAttemptIds
  */
 /**
  * @typedef {object} IeltsSessionOptions
@@ -119,20 +121,50 @@ function canContinue(owner, generation) {
   return canPublish(owner) && owner.lifecycleGeneration === generation;
 }
 
-/** @param {IeltsOwner} owner @param {{ ensureStop?: boolean }} [options] */
-function teardownRuntime(owner, { ensureStop = false } = {}) {
-  if (owner.teardownPromise) return owner.teardownPromise;
-  const teardown = (async () => {
-    try {
-      await owner.runtime?.abandon?.();
-    } catch {
-      // The local transport still has to close if server abandonment fails.
-    } finally {
-      if (ensureStop) {
-        try { await owner.runtime?.stop?.(); } catch { /* cleanup is best effort */ }
-      }
+/** @param {IeltsOwner} owner */
+function activeAttemptId(owner) {
+  const attemptId = owner.latestAttemptId
+    || owner.controller?.getSnapshot?.()?.attemptId
+    || owner.runtime?.getAttemptId?.()
+    || null;
+  return attemptId && !owner.cleanedAttemptIds.has(attemptId) ? String(attemptId) : null;
+}
+
+/** @param {IeltsOwner} owner */
+async function abandonServerAttempt(owner) {
+  const attemptId = activeAttemptId(owner);
+  if (!attemptId) return;
+  try {
+    if (typeof owner.api.abandon === "function") await owner.api.abandon(attemptId);
+    else await owner.api.delete?.(attemptId);
+    owner.cleanedAttemptIds.add(attemptId);
+    if (owner.latestAttemptId === attemptId) owner.latestAttemptId = null;
+  } catch {
+    if (typeof owner.api.abandon === "function" && typeof owner.api.delete === "function") {
+      try {
+        await owner.api.delete(attemptId);
+        owner.cleanedAttemptIds.add(attemptId);
+        if (owner.latestAttemptId === attemptId) owner.latestAttemptId = null;
+      } catch { /* server cleanup is best effort */ }
     }
-  })();
+  }
+}
+
+/**
+ * @param {IeltsOwner} owner
+ * @param {{ disposeController?: boolean, stopRuntime?: boolean, terminal?: boolean }} [options]
+ */
+function queueTeardown(owner, { disposeController = false, stopRuntime = false, terminal = false } = {}) {
+  const previous = owner.teardownPromise || Promise.resolve();
+  const teardown = previous.catch(() => {}).then(async () => {
+    if (disposeController && (!terminal || !owner.controllerDisposed)) {
+      if (terminal) owner.controllerDisposed = true;
+      try { await owner.controller?.dispose?.(); } catch { /* local cleanup is best effort */ }
+    } else if (stopRuntime) {
+      try { await owner.runtime?.stop?.(); } catch { /* local cleanup is best effort */ }
+    }
+    await abandonServerAttempt(owner);
+  });
   const trackedTeardown = teardown.finally(() => {
     if (owner.teardownPromise === trackedTeardown) owner.teardownPromise = null;
   });
@@ -146,18 +178,13 @@ function requestOwnerDisposal(owner) {
   owner.lifecycleGeneration += 1;
   owner.acceptingChanges = false;
   owner.disposed = true;
-  if (!owner.controllerDisposed) {
-    owner.controllerDisposed = true;
-    owner.controller?.dispose?.();
-  }
   const pendingStart = owner.startPromise;
+  void queueTeardown(owner, { disposeController: true, terminal: true });
   if (pendingStart) {
     void pendingStart.then(
-      () => teardownRuntime(owner, { ensureStop: true }),
-      () => teardownRuntime(owner, { ensureStop: true }),
+      () => queueTeardown(owner, { stopRuntime: true }),
+      () => queueTeardown(owner, { stopRuntime: true }),
     );
-  } else {
-    void teardownRuntime(owner);
   }
 }
 
@@ -214,11 +241,17 @@ export function useIeltsSession(options = {}) {
         teardownPromise: null,
         controllerDisposed: false,
         lifecycleGeneration: 0,
+        latestAttemptId: null,
+        cleanedAttemptIds: new Set(),
       });
       /** @param {IeltsSnapshot} nextSnapshot */
       const publish = (nextSnapshot) => {
         if (!canPublish(owner)) return;
-        if (nextSnapshot?.attemptId) latestAttemptIdRef.current = nextSnapshot.attemptId;
+        if (nextSnapshot?.attemptId) {
+          latestAttemptIdRef.current = nextSnapshot.attemptId;
+          owner.latestAttemptId = nextSnapshot.attemptId;
+          owner.cleanedAttemptIds.delete(nextSnapshot.attemptId);
+        }
         const exam = nextSnapshot?.exam;
         const examContextKey = nextSnapshot?.screen === "session" && exam
           ? [exam.status, exam.currentPart, exam.currentItemIndex, exam.attemptNo].join(":")
@@ -351,9 +384,10 @@ export function useIeltsSession(options = {}) {
       if (pendingStart) {
         try { await pendingStart; } catch { /* teardown still runs after failed start */ }
       }
-      await teardownRuntime(owner, { ensureStop: true });
+      await queueTeardown(owner, { disposeController: true });
       if (owner.disposed) return null;
       latestAttemptIdRef.current = null;
+      owner.latestAttemptId = null;
       owner.liveTranscript = "";
       owner.examContextKey = null;
       owner.activeAnswerKey = null;

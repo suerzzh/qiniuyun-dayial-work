@@ -85,6 +85,7 @@ export function createIeltsDemoController(dependencies) {
   let part3TimerId = null;
   let answerStartedAt = null;
   let part3ElapsedSeconds = 0;
+  let sessionGeneration = 0;
 
   const publish = () => dependencies.onChange?.(structuredClone(snapshot));
   const clearStageTimer = () => {
@@ -199,11 +200,14 @@ export function createIeltsDemoController(dependencies) {
     snapshot.screen = "report";
     if (snapshot.exam.status === "completed") saveCompletedHistory(storage, snapshot.paper, clock.now().toISOString());
     if (dependencies.runtime && snapshot.exam.status === "completed") {
+      const finalizeGeneration = sessionGeneration;
       dependencies.runtime.finalize().then((report) => {
+        if (sessionGeneration !== finalizeGeneration) return;
         snapshot.report = report;
         snapshot.scoringStatus = report.scoringStatus || report.scoring_status || "PARTIAL";
         publish();
       }).catch((error) => {
+        if (sessionGeneration !== finalizeGeneration) return;
         snapshot.scoringStatus = "UNSCORABLE";
         snapshot.report = { scoring_status: "UNSCORABLE", overallBand: null,
           disclaimer: "本次评分服务不可用，未生成分数。", dataQualityWarnings: [error.message] };
@@ -249,7 +253,7 @@ export function createIeltsDemoController(dependencies) {
 
   const controller = {
     getSnapshot() { return structuredClone(snapshot); },
-    openHome() { clearTimers(); snapshot = createHomeSnapshot(); publish(); },
+    openHome() { sessionGeneration += 1; clearTimers(); snapshot = createHomeSnapshot(); publish(); },
     selectMode(mode, selectedPart = null) {
       if (!new Set(["full_mock", "practice_part"]).has(mode)) throw new Error(`Unsupported IELTS mode: ${mode}`);
       if (mode === "practice_part" && !new Set(["part1", "part2", "part3"]).has(selectedPart)) {
@@ -271,6 +275,7 @@ export function createIeltsDemoController(dependencies) {
     },
     async start() {
       if (snapshot.screen !== "preflight" || !snapshot.selection) throw new Error("Select an IELTS mode before start");
+      sessionGeneration += 1;
       snapshot.loading = true; snapshot.error = null; publish();
       try {
         const bank = await loadQuestionBank(loadJson);
@@ -339,10 +344,11 @@ export function createIeltsDemoController(dependencies) {
       dispatch({ type: "EXIT_CONFIRMED" });
     },
     restart() { controller.openHome(); },
-    dispose() {
+    async dispose() {
+      sessionGeneration += 1;
       clearTimers();
       if (typeof speak.cancel === "function") speak.cancel();
-      dependencies.runtime?.stop?.().catch?.(() => {});
+      await dependencies.runtime?.stop?.();
     },
   };
   return controller;

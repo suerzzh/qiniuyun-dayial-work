@@ -240,7 +240,8 @@ describe("IELTS React flow", () => {
     expect(screen.queryByRole("button", { name: "重试" })).not.toBeInTheDocument();
     fireEvent.click(screen.getByRole("button", { name: "退出" }));
     expect(session.actions.start).not.toHaveBeenCalled();
-    expect(session.actions.exit).toHaveBeenCalledOnce();
+    expect(session.actions.restart).toHaveBeenCalledOnce();
+    expect(session.actions.exit).not.toHaveBeenCalled();
   });
 
   it("uses safe restart/home when exiting report recovery", () => {
