@@ -1,46 +1,24 @@
 {
   "main": {
-    "id": "1a59b840c7683c5c",
+    "id": "5d2d00d4f99578b2",
     "type": "split",
     "children": [
       {
-        "id": "3f12f89b3e542310",
+        "id": "27f49e4379dd7bdd",
         "type": "tabs",
-        "dimension": 58.7360594795539,
         "children": [
           {
-            "id": "bbbf51797686d6f4",
+            "id": "aba994e1357ddfd7",
             "type": "leaf",
             "state": {
               "type": "markdown",
               "state": {
-                "file": "雅思架构内容逐步说明.md",
+                "file": "UniSpeaking架构设计.md",
                 "mode": "source",
                 "source": false
               },
               "icon": "lucide-file",
-              "title": "雅思架构内容逐步说明"
-            }
-          }
-        ]
-      },
-      {
-        "id": "257b656363ba4d46",
-        "type": "tabs",
-        "dimension": 41.2639405204461,
-        "children": [
-          {
-            "id": "052f125374542fcd",
-            "type": "leaf",
-            "state": {
-              "type": "markdown",
-              "state": {
-                "file": "雅思架构内容逐步说明.md",
-                "mode": "source",
-                "source": false
-              },
-              "icon": "lucide-file",
-              "title": "雅思架构内容逐步说明"
+              "title": "UniSpeaking架构设计"
             }
           }
         ]
@@ -49,28 +27,28 @@
     "direction": "vertical"
   },
   "left": {
-    "id": "956a5ccccc14dd3b",
+    "id": "e7feb827fb7d3e29",
     "type": "split",
     "children": [
       {
-        "id": "752f0c718c39ddbf",
+        "id": "d09a6c0d3e19647d",
         "type": "tabs",
         "children": [
           {
-            "id": "533996ea1bb395e7",
+            "id": "e80145a9cfdc8323",
             "type": "leaf",
             "state": {
               "type": "file-explorer",
               "state": {
                 "sortOrder": "alphabetical",
-                "autoReveal": false
+                "autoReveal": true
               },
               "icon": "lucide-folder-closed",
               "title": "文件列表"
             }
           },
           {
-            "id": "b0128eb6d65c4ace",
+            "id": "042bcf4300cc744e",
             "type": "leaf",
             "state": {
               "type": "search",
@@ -87,7 +65,7 @@
             }
           },
           {
-            "id": "86a820ee785222aa",
+            "id": "bdba68d95ddf73a8",
             "type": "leaf",
             "state": {
               "type": "bookmarks",
@@ -100,23 +78,24 @@
       }
     ],
     "direction": "horizontal",
-    "width": 200
+    "width": 300,
+    "collapsed": true
   },
   "right": {
-    "id": "a3d9d9047acc3024",
+    "id": "4a18d86e50a0c89c",
     "type": "split",
     "children": [
       {
-        "id": "b8b0607e3e5ed43a",
+        "id": "647aff1f31504b54",
         "type": "tabs",
         "children": [
           {
-            "id": "296b36d461dbe835",
+            "id": "ca480819e970ed0d",
             "type": "leaf",
             "state": {
               "type": "backlink",
               "state": {
-                "file": "雅思架构内容逐步说明.md",
+                "file": "UniSpeaking架构设计.md",
                 "collapseAll": false,
                 "extraContext": false,
                 "sortOrder": "alphabetical",
@@ -126,25 +105,25 @@
                 "unlinkedCollapsed": true
               },
               "icon": "links-coming-in",
-              "title": "雅思架构内容逐步说明 的反向链接列表"
+              "title": "UniSpeaking架构设计 的反向链接列表"
             }
           },
           {
-            "id": "82e46094723f9a3e",
+            "id": "18c79bf9c582c76d",
             "type": "leaf",
             "state": {
               "type": "outgoing-link",
               "state": {
-                "file": "雅思架构内容逐步说明.md",
+                "file": "UniSpeaking架构设计.md",
                 "linksCollapsed": false,
                 "unlinkedCollapsed": true
               },
               "icon": "links-going-out",
-              "title": "雅思架构内容逐步说明 的出链列表"
+              "title": "UniSpeaking架构设计 的出链列表"
             }
           },
           {
-            "id": "3a1ee6fba2fcaa23",
+            "id": "372f78d27c52db86",
             "type": "leaf",
             "state": {
               "type": "tag",
@@ -159,7 +138,7 @@
             }
           },
           {
-            "id": "98933140bd99a434",
+            "id": "863751389957ff50",
             "type": "leaf",
             "state": {
               "type": "all-properties",
@@ -173,18 +152,18 @@
             }
           },
           {
-            "id": "a3a67f314b4e9d9e",
+            "id": "153358229e71d38d",
             "type": "leaf",
             "state": {
               "type": "outline",
               "state": {
-                "file": "雅思架构内容逐步说明.md",
+                "file": "UniSpeaking架构设计.md",
                 "followCursor": false,
                 "showSearch": false,
                 "searchQuery": ""
               },
               "icon": "lucide-list",
-              "title": "雅思架构内容逐步说明 的大纲"
+              "title": "UniSpeaking架构设计 的大纲"
             }
           }
         ]
@@ -205,20 +184,9 @@
       "bases:新建数据库": false
     }
   },
-  "active": "bbbf51797686d6f4",
+  "active": "aba994e1357ddfd7",
   "lastOpenFiles": [
-    "雅思架构内容逐步说明 1.md",
-    "雅思架构内容逐步说明.md",
-    "UniSpeaking架构设计.md",
-    "Unispeaking架构设计 copy.md",
-    "雅思场景伪代码.md",
-    "雅思模拟模块整体框架_基于自由聊天框架改造版.md",
-    "雅思口语模块调用流程与组件关系说明.pdf",
-    "雅思模拟模块伪代码_带注释版.md",
-    "自由聊天伪代码.md",
-    "雅思模拟模块伪代码1.md",
-    "自定义场景伪代码.md",
-    "UniSpeaking架构设计~.md",
-    "雅思口语模块调用流程与组件关系说明.docx"
+    "UniSpeaking架构设计初版.md",
+    "UniSpeaking架构设计.md"
   ]
 }
