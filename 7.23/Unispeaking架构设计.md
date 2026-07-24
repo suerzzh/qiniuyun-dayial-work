@@ -1,4 +1,4 @@
-```text
+## UniSpeaking框架设计
 AI 场景会话架构 DOM 树
 │
 ├── 一、Controller 接口层
@@ -6,7 +6,6 @@ AI 场景会话架构 DOM 树
 │   ├── FreeChatSessionController
 │   │   └── start()
 │   │       └── [调用] FreeChatSessionService.start()
-│   │
 │   ├── IeltsAttemptController
 │   │   ├── createAttempt()
 │   │   │   └── [调用] IeltsAttemptService.createAttempt()
@@ -48,24 +47,24 @@ AI 场景会话架构 DOM 树
 │   └── SessionWebSocketHandler
 │       ├── 自由聊天事件
 │       │   └── [调用] FreeChatSessionService.handleEvent()
-│       ├── 自定义场景事件
-│       │   └── [调用] CustomSessionService.handleEvent()
-│       ├── 自定义场景评分音频
-│       │   ├── UTTERANCE_AUDIO_START
-│       │   │   └── [调用] CustomSceneEvaluationService.start()
-│       │   ├── UTTERANCE_AUDIO_CHUNK
-│       │   │   └── [调用] CustomSceneEvaluationService.setAudio()
-│       │   └── UTTERANCE_AUDIO_END
-│       │      └── [调用] CustomSceneEvaluationService.finishAudio()
 │       ├── 雅思考试事件
 │       │   └── [调用] IeltsSessionService.handleEvent()
-│       └── 雅思评分音频
+│       ├── 雅思评分音频
+│       │   ├── UTTERANCE_AUDIO_START
+│       │   │   └── [调用] IeltsEvaluationService.start()
+│       │   ├── UTTERANCE_AUDIO_CHUNK
+│       │   │   └── [调用] IeltsEvaluationService.setAudio()
+│       │   └── UTTERANCE_AUDIO_END
+│       │       └── [调用] IeltsEvaluationService.finishAudio()
+│       ├── 自定义场景事件
+│       │   └── [调用] CustomSessionService.handleEvent()
+│       └── 自定义场景评分音频
 │           ├── UTTERANCE_AUDIO_START
-│           │   └── [调用] IeltsEvaluationService.start()
+│           │   └── [调用] CustomSceneEvaluationService.start()
 │           ├── UTTERANCE_AUDIO_CHUNK
-│           │   └── [调用] IeltsEvaluationService.setAudio()
+│           │   └── [调用] CustomSceneEvaluationService.setAudio()
 │           └── UTTERANCE_AUDIO_END
-│               └── [调用] IeltsEvaluationService.finishAudio()
+│               └── [调用] CustomSceneEvaluationService.finishAudio()
 │
 ├── 三、实时会话体系
 │   │
@@ -114,56 +113,55 @@ AI 场景会话架构 DOM 树
 │   │   └── completeSession()
 │   │       ├── [调用] UsageQuotaService.settle()
 │   │       └── [调用] SessionMemoryService.updateMemory()
-│   │
-│   ├── CustomSessionService
+│   ├── IeltsSessionService
 │   │   ├── 类型：具体 Service
 │   │   ├── [继承] SessionService
 │   │   │
 │   │   ├── createSession()
-│   │   │   └── 创建 CustomSceneSession
+│   │   │   └── 创建 IeltsAttempt
 │   │   │
 │   │   ├── prepareSession()
 │   │   │   ├── [调用]
-│   │   │   │   CustomSceneFlowService.validateRealtimeSessionStart()
-│   │   │   ├── [调用] SceneContentService.getDialoguePrompt()
-│   │   │   └── [调用] CustomScenePromptService.buildPrompt()
+│   │   │   │   IeltsAttemptService.validateRealtimeSessionStart()
+│   │   │   └── [调用] IeltsPromptService.buildPrompt()
 │   │   │
 │   │   ├── saveTranscript()
-│   │   │   ├── [调用] SessionConversationService.setMessage()
-│   │   │   ├── [调用] SessionConversationService.saveMessageAsync()
+│   │   │   ├── [调用] IeltsAttemptService.setTranscript()
+│   │   │   ├── [调用] IeltsAttemptService.saveTranscriptAsync()
 │   │   │   └── 用户字幕调用
-│   │   │       CustomSceneEvaluationService.setTranscript()
+│   │   │       IeltsEvaluationService.setTranscript()
 │   │   │
 │   │   └── completeSession()
-│   │       ├── [调用] CustomSceneEvaluationService.getFinalReport()
-│   │       ├── [调用] EvaluationRecordService.setReport()
-│   │       ├── [调用] EvaluationRecordService.saveReportAsync()
-│   │       ├── [调用] SessionConversationService.saveConversationAsync()
-│   │       ├── [调用] CustomSceneFlowService.completeScene()
+│   │       ├── [调用] IeltsEvaluationService.getFinalReport()
+│   │       ├── [调用] IeltsAttemptService.setReport()
+│   │       ├── [调用] IeltsAttemptService.saveReportAsync()
 │   │       └── [调用] UsageQuotaService.settle()
 │   │
-│   └── IeltsSessionService
+│   └── CustomSessionService
 │       ├── 类型：具体 Service
 │       ├── [继承] SessionService
 │       │
 │       ├── createSession()
-│       │   └── 创建 IeltsAttempt
+│       │   └── 创建 CustomSceneSession
 │       │
 │       ├── prepareSession()
 │       │   ├── [调用]
-│       │   │   IeltsAttemptService.validateRealtimeSessionStart()
-│       │   └── [调用] IeltsPromptService.buildPrompt()
+│       │   │   CustomSceneFlowService.validateRealtimeSessionStart()
+│       │   ├── [调用] SceneContentService.getDialoguePrompt()
+│       │   └── [调用] CustomScenePromptService.buildPrompt()
 │       │
 │       ├── saveTranscript()
-│       │   ├── [调用] IeltsAttemptService.setTranscript()
-│       │   ├── [调用] IeltsAttemptService.saveTranscriptAsync()
+│       │   ├── [调用] SessionConversationService.setMessage()
+│       │   ├── [调用] SessionConversationService.saveMessageAsync()
 │       │   └── 用户字幕调用
-│       │       IeltsEvaluationService.setTranscript()
+│       │       CustomSceneEvaluationService.setTranscript()
 │       │
 │       └── completeSession()
-│           ├── [调用] IeltsEvaluationService.getFinalReport()
-│           ├── [调用] IeltsAttemptService.setReport()
-│           ├── [调用] IeltsAttemptService.saveReportAsync()
+│           ├── [调用] CustomSceneEvaluationService.getFinalReport()
+│           ├── [调用] EvaluationRecordService.setReport()
+│           ├── [调用] EvaluationRecordService.saveReportAsync()
+│           ├── [调用] SessionConversationService.saveConversationAsync()
+│           ├── [调用] CustomSceneFlowService.completeScene()
 │           └── [调用] UsageQuotaService.settle()
 │
 ├── 四、自定义场景流程体系
@@ -177,104 +175,104 @@ AI 场景会话架构 DOM 树
 │   │   ├── validateRealtimeSessionStart()
 │   │   └── completeScene()
 │   │
-│   ├── CustomSceneFlowService
+│   ├── IeltsExamFlowService
 │   │   ├── 类型：具体 Service
-│   │   ├── [实现] SceneFlowService<CustomStage>
+│   │   ├── [实现] SceneFlowService<IeltsStage>
+│   │   ├── 作用：组装雅思试卷快照并驱动考试状态流转
 │   │   │
 │   │   ├── generateScene()
-│   │   │   ├── [调用] SceneService.create()
-│   │   │   ├── [调用] CustomSceneGenerationService.generate()
-│   │   │   ├── [调用] SceneContentService.setLocal()
-│   │   │   ├── [调用] SceneContentService.saveAsync()
-│   │   │   └── [调用] SceneProgressService.set(WORD)
+│   │   │   ├── [调用] IeltsQuestionBankService.loadAndValidate()
+│   │   │   ├── [调用] IeltsPaperAssemblerService.assemble()
+│   │   │   ├── [调用] IeltsAttemptService.setPaperSnapshot()
+│   │   │   └── [调用] IeltsFlowStateService.set(READY)
 │   │   │
 │   │   ├── getCurrentStage()
-│   │   │   ├── [调用] SceneProgressService.get()
-│   │   │   └── [调用] SceneContentService.getLocal()
+│   │   │   ├── [调用] IeltsFlowStateService.get()
+│   │   │   └── [调用] IeltsAttemptService.getPaperSnapshot()
 │   │   │
 │   │   ├── advanceStage()
-│   │   │   ├── [调用] SceneProgressService.get()
-│   │   │   ├── 判断 WORD → PHRASE → SENTENCE
-│   │   │   ├── [调用] SceneProgressService.set()
-│   │   │   └── [调用] SceneContentService.getLocal()
+│   │   │   ├── [调用] IeltsFlowStateService.get()
+│   │   │   ├── 判断 READY → OPENING → INTRODUCTION → PART1_ANSWERING
+│   │   │   ├── 判断 PART1_ANSWERING → PART2_PREPARING → PART2_ANSWERING
+│   │   │   ├── 判断 PART2_ANSWERING → PART3_ANSWERING → REPORT
+│   │   │   ├── [调用] IeltsFlowStateService.transition()
+│   │   │   └── [调用] IeltsAttemptService.setCurrentStage()
 │   │   │
 │   │   ├── validateRealtimeSessionStart()
-│   │   │   ├── [调用] SceneService.get()
-│   │   │   ├── [调用] SceneProgressService.get()
-│   │   │   └── [调用] SceneContentService.getDialoguePrompt()
+│   │   │   ├── [调用] IeltsAttemptService.getAttempt()
+│   │   │   ├── [调用] IeltsAttemptService.validatePaperSnapshot()
+│   │   │   └── [调用] IeltsPromptService.getExaminerPrompt()
 │   │   │
 │   │   ├── completeScene()
-│   │   │   ├── [调用] SceneProgressService.set(REPORT)
-│   │   │   └── [调用] SceneService.setCompletedAsync()
+│   │   │   ├── [调用] IeltsFlowStateService.set(REPORT)
+│   │   │   └── [调用] IeltsAttemptService.finalizeAttempt()
 │   │   │
-│   │   ├── 自定义场景独有方法
+│   │   ├── 雅思考试独有方法
 │   │   │
-│   │   ├── playLearningMaterialAudio()
-│   │   │   ├── [调用] SceneContentService.getMaterial()
-│   │   │   ├── [调用] TtsService.getAudio()
-│   │   │   └── [调用] LearningWebSocketService.setAudio()
+│   │   ├── startPart2Preparation()
+│   │   │   ├── [调用] IeltsFlowStateService.set(PART2_PREPARING)
+│   │   │   └── [调用] IeltsExamTimerService.startPreparationTimer()
 │   │   │
-│   │   ├── startSentenceReading()
-│   │   │   └── [调用] PronunciationService.start()
+│   │   ├── retryCurrentQuestion()
+│   │   │   └── [调用] IeltsFlowStateService.transition(RETRY)
 │   │   │
-│   │   ├── appendSentenceAudio()
-│   │   │   └── [调用] PronunciationService.setAudio()
+│   │   ├── skipCurrentQuestion()
+│   │   │   └── [调用] IeltsFlowStateService.transition(NEXT)
 │   │   │
-│   │   └── finishSentenceReading()
-│   │       ├── [调用] PronunciationService.getResult()
-│   │       ├── [调用] SceneContentService.setSentenceScore()
-│   │       ├── [调用] SceneContentService.saveSentenceScoreAsync()
-│   │       ├── [调用] LearningWebSocketService.setSentenceScore()
-│   │       └── 全部句子通过后：
-│   │           [调用] SceneProgressService.set(DIALOGUE_READY)
+│   │   └── abandonAttempt()
+│   │       ├── [调用] IeltsFlowStateService.set(ABANDONED)
+│   │       └── [调用] IeltsAttemptService.abandonAttempt()
 │   │
-│   └── IeltsExamFlowService
+│   └── CustomSceneFlowService
 │       ├── 类型：具体 Service
-│       ├── [实现] SceneFlowService<IeltsStage>
-│       ├── 作用：组装雅思试卷快照并驱动考试状态流转
+│       ├── [实现] SceneFlowService<CustomStage>
 │       │
 │       ├── generateScene()
-│       │   ├── [调用] IeltsQuestionBankService.loadAndValidate()
-│       │   ├── [调用] IeltsPaperAssemblerService.assemble()
-│       │   ├── [调用] IeltsAttemptService.setPaperSnapshot()
-│       │   └── [调用] IeltsFlowStateService.set(READY)
+│       │   ├── [调用] SceneService.create()
+│       │   ├── [调用] CustomSceneGenerationService.generate()
+│       │   ├── [调用] SceneContentService.setLocal()
+│       │   ├── [调用] SceneContentService.saveAsync()
+│       │   └── [调用] SceneProgressService.set(WORD)
 │       │
 │       ├── getCurrentStage()
-│       │   ├── [调用] IeltsFlowStateService.get()
-│       │   └── [调用] IeltsAttemptService.getPaperSnapshot()
+│       │   ├── [调用] SceneProgressService.get()
+│       │   └── [调用] SceneContentService.getLocal()
 │       │
 │       ├── advanceStage()
-│       │   ├── [调用] IeltsFlowStateService.get()
-│       │   ├── 判断 READY → OPENING → INTRODUCTION → PART1_ANSWERING
-│       │   ├── 判断 PART1_ANSWERING → PART2_PREPARING → PART2_ANSWERING
-│       │   ├── 判断 PART2_ANSWERING → PART3_ANSWERING → REPORT
-│       │   ├── [调用] IeltsFlowStateService.transition()
-│       │   └── [调用] IeltsAttemptService.setCurrentStage()
+│       │   ├── [调用] SceneProgressService.get()
+│       │   ├── 判断 WORD → PHRASE → SENTENCE
+│       │   ├── [调用] SceneProgressService.set()
+│       │   └── [调用] SceneContentService.getLocal()
 │       │
 │       ├── validateRealtimeSessionStart()
-│       │   ├── [调用] IeltsAttemptService.getAttempt()
-│       │   ├── [调用] IeltsAttemptService.validatePaperSnapshot()
-│       │   └── [调用] IeltsPromptService.getExaminerPrompt()
+│       │   ├── [调用] SceneService.get()
+│       │   ├── [调用] SceneProgressService.get()
+│       │   └── [调用] SceneContentService.getDialoguePrompt()
 │       │
 │       ├── completeScene()
-│       │   ├── [调用] IeltsFlowStateService.set(REPORT)
-│       │   └── [调用] IeltsAttemptService.finalizeAttempt()
+│       │   ├── [调用] SceneProgressService.set(REPORT)
+│       │   └── [调用] SceneService.setCompletedAsync()
 │       │
-│       ├── 雅思考试独有方法
+│       ├── 自定义场景独有方法
 │       │
-│       ├── startPart2Preparation()
-│       │   ├── [调用] IeltsFlowStateService.set(PART2_PREPARING)
-│       │   └── [调用] IeltsExamTimerService.startPreparationTimer()
+│       ├── playLearningMaterialAudio()
+│       │   ├── [调用] SceneContentService.getMaterial()
+│       │   ├── [调用] TtsService.getAudio()
+│       │   └── [调用] CustomSceneLearningService.setAudio()
 │       │
-│       ├── retryCurrentQuestion()
-│       │   └── [调用] IeltsFlowStateService.transition(RETRY)
+│       ├── startSentenceReading()
+│       │   └── [调用] PronunciationService.start()
 │       │
-│       ├── skipCurrentQuestion()
-│       │   └── [调用] IeltsFlowStateService.transition(NEXT)
+│       ├── appendSentenceAudio()
+│       │   └── [调用] PronunciationService.setAudio()
 │       │
-│       └── abandonAttempt()
-│           ├── [调用] IeltsFlowStateService.set(ABANDONED)
-│           └── [调用] IeltsAttemptService.abandonAttempt()
+│       └── finishSentenceReading()
+│           ├── [调用] PronunciationService.getResult()
+│           ├── [调用] SceneContentService.setSentenceScore()
+│           ├── [调用] SceneContentService.saveSentenceScoreAsync()
+│           ├── [调用] CustomSceneLearningService.setSentenceScore()
+│           └── 全部句子通过后：
+│               [调用] SceneProgressService.set(DIALOGUE_READY)
 │
 ├── 五、场景生成体系
 │   │
@@ -282,15 +280,6 @@ AI 场景会话架构 DOM 树
 │   │   ├── 类型：接口
 │   │   ├── 作用：定义场景内容生成能力
 │   │   └── generate()
-│   │
-│   ├── CustomSceneGenerationService
-│   │   ├── 类型：具体 Service
-│   │   ├── [实现] SceneGenerationService<CustomSceneContent>
-│   │   │
-│   │   └── generate()
-│   │       ├── 构建自定义场景生成 Prompt
-│   │       ├── [调用] LlmService.generateStructuredContent()
-│   │       └── 返回单词、词组、句子和对话提示词
 │   │
 │   ├── IeltsQuestionBankService
 │   │   ├── 类型：具体 Service
@@ -304,24 +293,33 @@ AI 场景会话架构 DOM 树
 │   │       ├── 校验 Part 2 卡片与 Part 3 追问题属于同一原子 Topic
 │   │       └── 返回已标准化的 IeltsQuestionBank
 │   │
-│   └── IeltsPaperAssemblerService
+│   ├── IeltsPaperAssemblerService
+│   │   ├── 类型：具体 Service
+│   │   ├── [实现] SceneGenerationService<IeltsPaperSnapshot>
+│   │   ├── 作用：确定性组装本次考试使用的不可变 PaperSnapshot
+│   │   │
+│   │   ├── generate()
+│   │   │   ├── [调用] IeltsQuestionBankService.loadAndValidate()
+│   │   │   └── [调用] assemble()
+│   │   │
+│   │   └── assemble()
+│   │       ├── 校验 full_mock 或 practice_part 考试模式
+│   │       ├── 校验 real_exam 或 accelerated_demo 计时配置
+│   │       ├── Part 1 从同一 Topic 选择四至五道不重复题目并保持原顺序
+│   │       ├── Part 2 与 Part 3 作为同一 Topic 的原子组合选择
+│   │       ├── 优先避开最近已完成考试使用过的题目，候选耗尽时允许放宽
+│   │       ├── 注入 bankVersion、schemaVersion、promptVersion 和 timingProfile
+│   │       ├── 记录组卷策略、历史避让结果和各 Part 内容
+│   │       └── 深度冻结并返回 IeltsPaperSnapshot
+│   │   
+│   └── CustomSceneGenerationService
 │       ├── 类型：具体 Service
-│       ├── [实现] SceneGenerationService<IeltsPaperSnapshot>
-│       ├── 作用：确定性组装本次考试使用的不可变 PaperSnapshot
+│       ├── [实现] SceneGenerationService<CustomSceneContent>
 │       │
-│       ├── generate()
-│       │   ├── [调用] IeltsQuestionBankService.loadAndValidate()
-│       │   └── [调用] assemble()
-│       │
-│       └── assemble()
-│           ├── 校验 full_mock 或 practice_part 考试模式
-│           ├── 校验 real_exam 或 accelerated_demo 计时配置
-│           ├── Part 1 从同一 Topic 选择四至五道不重复题目并保持原顺序
-│           ├── Part 2 与 Part 3 作为同一 Topic 的原子组合选择
-│           ├── 优先避开最近已完成考试使用过的题目，候选耗尽时允许放宽
-│           ├── 注入 bankVersion、schemaVersion、promptVersion 和 timingProfile
-│           ├── 记录组卷策略、历史避让结果和各 Part 内容
-│           └── 深度冻结并返回 IeltsPaperSnapshot
+│       └── generate()
+│           ├── 构建自定义场景生成 Prompt
+│           ├── [调用] LlmService.generateStructuredContent()
+│           └── 返回单词、词组、句子和对话提示词
 │
 ├── 六、Prompt 体系
 │   │
@@ -337,43 +335,26 @@ AI 场景会话架构 DOM 树
 │   │       ├── 使用用户画像
 │   │       └── 使用自由聊天 SceneConfig
 │   │
-│   ├── CustomScenePromptService
+│   ├── IeltsPromptService
 │   │   ├── 类型：具体 Service
-│   │   ├── [实现] ScenePromptService<CustomScenePromptContext>
+│   │   ├── [实现] ScenePromptService<IeltsPromptContext>
+│   │   ├── 作用：统一管理版本化的雅思考官与评分 Prompt
+│   │   │
 │   │   └── buildPrompt()
-│   │       ├── [调用] SceneContentService.getDialoguePrompt()
-│   │       └── 注入用户等级、角色、目标、关键词和结束条件
-│   │
-│   └── IeltsPromptService
+│   │       ├── [调用] IeltsPromptCatalog.examinerSystem()
+│   │       ├── [调用] IeltsAttemptService.getPaperSnapshot()
+│   │       ├── 注入固定考官指令或 PaperSnapshot 中的冻结题目
+│   │       ├── 约束考官仅使用英语，不教学、不纠错、不评分
+│   │       └── 题目顺序、计时和阶段流转由 IeltsExamFlowService 控制
+│   │   
+│   └── CustomScenePromptService
 │       ├── 类型：具体 Service
-│       ├── [实现] ScenePromptService<IeltsPromptContext>
-│       ├── 作用：统一管理版本化的雅思考官与评分 Prompt
-│       │
-│       ├── buildPrompt()
-│       │   ├── [调用] IeltsPromptCatalog.examinerSystem()
-│       │   ├── [调用] IeltsAttemptService.getPaperSnapshot()
-│       │   ├── 注入固定考官指令或 PaperSnapshot 中的冻结题目
-│       │   ├── 约束考官仅使用英语，不教学、不纠错、不评分
-│       │   └── 题目顺序、计时和阶段流转由 IeltsExamFlowService 控制
-│       │
-│       ├── getExaminerPrompt()
-│       │   └── [调用] buildPrompt()
-│       │
-│       ├── getPromptVersion()
-│       │   └── [调用] IeltsPromptCatalog.version()
-│       │
-│       ├── buildLanguageEvidencePrompt()
-│       │   ├── [调用] IeltsPromptCatalog.languageEvidence()
-│       │   ├── 注入 Part 1、Part 2、Part 3 原始转写和客观流利度指标
-│       │   └── 排除 INTRODUCTION、纠正表达和非评分轮次
-│       │
-│       └── buildJudgePrompt()
-│           ├── [调用] IeltsPromptCatalog.judge()
-│           ├── 注入语言证据、发音证据和数据质量警告
-│           ├── 要求输出严格 JSON 和中文学习证据
-│           └── 禁止模型直接生成 Overall Band
+│       ├── [实现] ScenePromptService<CustomScenePromptContext>
+│       └── buildPrompt()
+│           ├── [调用] SceneContentService.getDialoguePrompt()
+│           └── 注入用户等级、角色、目标、关键词和结束条件
 │
-├── 七、自定义场景评分体系
+├── 七、场景评分体系
 │   │
 │   ├── SceneEvaluationService
 │   │   ├── 类型：接口
@@ -385,80 +366,70 @@ AI 场景会话架构 DOM 树
 │   │   ├── getTurnResult()
 │   │   └── getFinalReport()
 │   │
-│   ├── CustomSceneEvaluationService
+│   ├── IeltsEvaluationService
 │   │   ├── 类型：具体 Service
 │   │   ├── [实现] SceneEvaluationService
+│   │   ├── 作用：采集雅思考试证据并在考试结束后生成五维训练报告
 │   │   │
 │   │   ├── start()
-│   │   │   └── 创建本轮 utteranceId 和评分上下文
+│   │   │   ├── [调用] IeltsTurnAssembler.open()
+│   │   │   └── 创建包含 Part、冻结题目和 scoringEligible 的评分轮次
 │   │   │
 │   │   ├── setAudio()
-│   │   │   └── [调用] PronunciationService.setAudio()
+│   │   │   └── [调用] IeltsTurnAssembler.appendPcm()
 │   │   │
 │   │   ├── finishAudio()
-│   │   │   └── [调用] PronunciationService.getResult()
+│   │   │   ├── [调用] IeltsTurnAssembler.complete()
+│   │   │   └── 仅显式完成或时间上限结束逻辑轮次，VAD 停顿不结束 Part 2
 │   │   │
 │   │   ├── setTranscript()
-│   │   │   ├── [调用] SessionConversationService.getMessages()
-│   │   │   ├── [调用] LlmService.evaluateCustomSceneAnswer()
-│   │   │   └── [调用] LlmService.getRecommendedExpressionAsync()
+│   │   │   ├── [调用] IeltsTurnAssembler.transcript()
+│   │   │   └── 只保存 rawTranscript，不生成或保存纠正表达
 │   │   │
 │   │   ├── getTurnResult()
-│   │   │   ├── 汇总发音、流利度、语法、词汇和上下文评分
-│   │   │   ├── [调用] EvaluationRecordService.setTurnResult()
-│   │   │   └── [调用] EvaluationRecordService.saveTurnResultAsync()
+│   │   │   ├── [调用] IeltsClientEventPolicy.turnScored()
+│   │   │   └── 返回 TURN_CAPTURED，考试过程中不暴露单题分数
 │   │   │
 │   │   └── getFinalReport()
-│   │       ├── [调用] EvaluationRecordService.getTurnResults()
-│   │       ├── [调用] SessionConversationService.getMessages()
-│   │       └── 汇总总分、五维分数、错误和推荐表达
+│   │       ├── [调用] IeltsScoringOrchestrator.score()
+│   │       ├── 仅保留 Part 1、Part 2、Part 3 已完成且可评分的回答
+│   │       ├── [调用] IeltsAcousticFeatureService.calculate()
+│   │       ├── [调用] PronunciationEvidenceProvider.evaluate()
+│   │       │   └── [实现] XfyunPronunciationEvidenceProvider
+│   │       ├── [调用] IeltsTwoStageTextScorer.languageEvidence()
+│   │       ├── [调用] IeltsTwoStageTextScorer.holisticJudge()
+│   │       │   └── [实现] QwenIeltsTextScorer
+│   │       ├── [调用] IeltsBandCalculator.calculate()
+│   │       ├── [调用] IeltsRadarMapper.map()
+│   │       └── 生成 Overall、五维雷达数据、分项证据、Part 总结和免责声明
 │   │
-│   └── IeltsEvaluationService
+│   └── CustomSceneEvaluationService
 │       ├── 类型：具体 Service
 │       ├── [实现] SceneEvaluationService
-│       ├── 作用：采集雅思考试证据并在考试结束后生成五维训练报告
 │       │
 │       ├── start()
-│       │   ├── [调用] IeltsTurnAssembler.open()
-│       │   └── 创建包含 Part、冻结题目和 scoringEligible 的评分轮次
+│       │   └── 创建本轮 utteranceId 和评分上下文
 │       │
 │       ├── setAudio()
-│       │   └── [调用] IeltsTurnAssembler.appendPcm()
+│       │   └── [调用] PronunciationService.setAudio()
 │       │
 │       ├── finishAudio()
-│       │   ├── [调用] IeltsTurnAssembler.complete()
-│       │   └── 仅显式完成或时间上限结束逻辑轮次，VAD 停顿不结束 Part 2
+│       │   └── [调用] PronunciationService.getResult()
 │       │
 │       ├── setTranscript()
-│       │   ├── [调用] IeltsTurnAssembler.transcript()
-│       │   └── 只保存 rawTranscript，不生成或保存纠正表达
+│       │   ├── [调用] SessionConversationService.getMessages()
+│       │   ├── [调用] LlmService.evaluateCustomSceneAnswer()
+│       │   └── [调用] LlmService.getRecommendedExpressionAsync()
 │       │
 │       ├── getTurnResult()
-│       │   ├── [调用] IeltsClientEventPolicy.turnScored()
-│       │   └── 返回 TURN_CAPTURED，考试过程中不暴露单题分数
+│       │   ├── 汇总发音、流利度、语法、词汇和上下文评分
+│       │   ├── [调用] EvaluationRecordService.setTurnResult()
+│       │   └── [调用] EvaluationRecordService.saveTurnResultAsync()
 │       │
-│       ├── getFinalReport()
-│       │   ├── [调用] IeltsScoringOrchestrator.score()
-│       │   ├── 仅保留 Part 1、Part 2、Part 3 已完成且可评分的回答
-│       │   ├── [调用] IeltsAcousticFeatureService.calculate()
-│       │   ├── [调用] PronunciationEvidenceProvider.evaluate()
-│       │   │   └── [实现] XfyunPronunciationEvidenceProvider
-│       │   ├── [调用] IeltsTwoStageTextScorer.languageEvidence()
-│       │   ├── [调用] IeltsTwoStageTextScorer.holisticJudge()
-│       │   │   └── [实现] QwenIeltsTextScorer
-│       │   ├── [调用] IeltsBandCalculator.calculate()
-│       │   ├── [调用] IeltsRadarMapper.map()
-│       │   └── 生成 Overall、五维雷达数据、分项证据、Part 总结和免责声明
-│       │
-│       └── 雅思五维评分规则
-│           ├── FC：流利度与连贯性，Band 0–9
-│           ├── LR：词汇资源，Band 0–9
-│           ├── GRA：语法多样性与准确性，Band 0–9
-│           ├── P：发音，Band 0–9
-│           ├── TA：任务完成度/互动回应，训练维度 0–100
-│           ├── Overall 仅由 FC、LR、GRA、P 平均并按 0.5 Band 取整
-│           ├── TA 仅用于五维训练诊断，不参与 IELTS Overall
-│           └── 缺失证据保持 null，并返回 PARTIAL 或 UNSCORABLE，不以 0 代替
+│       └── getFinalReport()
+│           ├── [调用] EvaluationRecordService.getTurnResults()
+│           ├── [调用] SessionConversationService.getMessages()
+│           └── 汇总总分、五维分数、错误和推荐表达
 │
 ├── 八、模型能力 Service
 │   │
@@ -570,18 +541,16 @@ AI 场景会话架构 DOM 树
 │       ├── 使用本地 HashMap 保存实时评分
 │       └── [调用] EvaluationRepository
 │
-├── 十一、学习 WebSocket Service
+├── 十一、自定义场景学习阶段的单词、词组、句子及跟读评分管理
 │   │
-│   ├── LearningWebSocketService
+│   ├── CustomSceneLearningService
 │   │   ├── 类型：接口
-│   │   ├── open()
 │   │   ├── setMaterials()
 │   │   ├── setAudio()
-│   │   ├── setSentenceScore()
-│   │   └── close()
+│   │   └── setSentenceScore()
 │   │
-│   └── LearningWebSocketServiceImpl
-│       └── [实现] LearningWebSocketService
+│   └── CustomSceneLearningServiceImpl
+│       └── [实现] CustomSceneLearningService
 │
 └── 十二、公共会话基础能力
     │
@@ -618,11 +587,8 @@ AI 场景会话架构 DOM 树
     │
     └── SessionMemoryService
         └── updateMemory()
-```
 
 ## 最终继承与实现关系
-
-```text
 SessionService
 ├── FreeChatSessionService
 └── CustomSessionService
@@ -639,12 +605,9 @@ ScenePromptService<C>
 
 SceneEvaluationService
 └── CustomSceneEvaluationService
-```
 
 ## 两条核心业务链
-
-```text
-自由聊天
+### 自由聊天
 
 FreeChatSessionService
 ├── SceneService
@@ -652,10 +615,8 @@ FreeChatSessionService
 ├── FreeChatConversationService
 ├── RealtimeConnectionService
 └── SessionMemoryService
-```
 
-```text
-自定义场景
+### 自定义场景
 
 CustomSceneFlowService
 ├── SceneService
@@ -663,7 +624,7 @@ CustomSceneFlowService
 │   └── LlmService
 ├── SceneContentService
 ├── SceneProgressService
-├── LearningWebSocketService
+├── CustomSceneLearningService
 ├── TtsService
 └── PronunciationService
 
@@ -675,4 +636,3 @@ CustomSessionService
     ├── PronunciationService
     ├── LlmService
     └── EvaluationRecordService
-```
