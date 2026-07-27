@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>UniSpeaking Scenario Engine Demo</title>
+  <link rel="stylesheet" href="/styles.css">
+</head>
+<body>
+<main>
+  <header>
+    <div>
+      <p class="eyebrow">UNISPEAKING · FUNCTION DEMO</p>
+      <h1>自定义口语场景引擎</h1>
+      <p>分层教练提示词 + 真实 Qwen 实时语音 + 旁路任务状态机。</p>
+    </div>
+  </header>
+
+  <section class="launcher panel">
+    <label for="topic">自定义练习话题</label>
+    <div class="topic-row">
+      <input id="topic" value="在咖啡店用英语完成点单" placeholder="例如：和美国经理讨论项目延期">
+    </div>
+    <div class="profile-grid">
+      <label>教练
+        <select id="coach">
+          <option value="clara">Clara · 温柔耐心</option>
+          <option value="james">James · 清晰理性</option>
+          <option value="leo">Leo · 开朗活力</option>
+          <option value="david">David · 沉稳直接</option>
+          <option value="emily">Emily · 自然亲切</option>
+          <option value="arthur">Arthur · 睿智从容</option>
+        </select>
+      </label>
+      <label>难度
+        <select id="difficulty">
+          <option value="starter">刚开始学</option>
+          <option value="basic" selected>可以简单交流</option>
+          <option value="connected">可以连续表达</option>
+          <option value="fluent">表达比较流利</option>
+        </select>
+      </label>
+      <label>语速
+        <select id="speed">
+          <option value="0.5">0.5 · 很慢</option>
+          <option value="1.0" selected>1.0 · 正常</option>
+          <option value="1.5">1.5 · 较快</option>
+          <option value="2.0">2.0 · 很快</option>
+        </select>
+      </label>
+      <label>纠错
+        <select id="correction">
+          <option value="minimal">少纠错</option>
+          <option value="moderate" selected>适度纠错</option>
+          <option value="active">主动纠错</option>
+        </select>
+      </label>
+      <label class="memory-field">相关记忆（可空）
+        <input id="memory" placeholder="例如：学习者喜欢旅行，想练习出差英语">
+      </label>
+    </div>
+    <div class="call-actions">
+      <button id="start">生成场景并开始通话</button>
+      <button id="mute" class="secondary" disabled>静音</button>
+      <button id="stop" class="ghost" disabled>结束</button>
+    </div>
+    <p id="connection" class="muted">尚未连接</p>
+    <div class="prompt-audit">
+      <p id="promptStatus">后端 Prompt 尚未生成</p>
+      <details id="promptDetails" hidden>
+        <summary>查看本次后端最终 Prompt</summary>
+        <pre id="promptPreview"></pre>
+      </details>
+    </div>
+    <audio id="remoteAudio" autoplay></audio>
+  </section>
+
+  <section class="flow" id="flow"></section>
+
+  <section class="grid">
+    <article class="panel conversation-panel">
+      <div class="panel-title"><h2>模拟实时对话</h2><span id="turnCount">0 turns</span></div>
+      <div id="conversation" class="conversation empty">生成场景并允许麦克风后开始说话</div>
+    </article>
+
+    <aside>
+      <article class="panel">
+        <div class="panel-title"><h2>场景状态</h2><span id="status" class="badge">created</span></div>
+        <div id="definition" class="definition"></div>
+        <dl id="slots"></dl>
+        <p id="revision" class="muted"></p>
+      </article>
+
+      <article class="panel">
+        <div class="panel-title"><h2>语义事件</h2><span>非关键词匹配</span></div>
+        <div id="events" class="event-list empty">暂无事件</div>
+      </article>
+
+      <article class="panel control-panel">
+        <div class="panel-title"><h2>控制指令</h2><span>仅重要时刻发送</span></div>
+        <div id="controls" class="empty">尚未触发 session.update</div>
+      </article>
+    </aside>
+  </section>
+</main>
+<script src="/app.js?v=20260727-2"></script>
+</body>
+</html>
