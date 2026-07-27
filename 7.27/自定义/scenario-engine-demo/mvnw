@@ -1,0 +1,27 @@
+#!/bin/sh
+set -eu
+
+PROJECT_DIR=$(CDPATH= cd -- "$(dirname -- "$0")" && pwd)
+PROPERTIES_FILE="$PROJECT_DIR/.mvn/wrapper/maven-wrapper.properties"
+MAVEN_URL=$(sed -n 's/^distributionUrl=//p' "$PROPERTIES_FILE")
+ARCHIVE_NAME=${MAVEN_URL##*/}
+MAVEN_NAME=${ARCHIVE_NAME%-bin.zip}
+MAVEN_CACHE_ROOT=${MAVEN_USER_HOME:-"$HOME/.m2"}/wrapper/dists
+MAVEN_HOME_DIR="$MAVEN_CACHE_ROOT/$MAVEN_NAME"
+
+if [ ! -x "$MAVEN_HOME_DIR/bin/mvn" ]; then
+  TEMP_DIR=$(mktemp -d)
+  cleanup() {
+    rm -rf -- "$TEMP_DIR"
+  }
+  trap cleanup EXIT HUP INT TERM
+
+  mkdir -p "$MAVEN_CACHE_ROOT"
+  printf 'Downloading Maven %s...\n' "${MAVEN_NAME#apache-maven-}"
+  curl -fsSL "$MAVEN_URL" -o "$TEMP_DIR/$ARCHIVE_NAME"
+  unzip -q "$TEMP_DIR/$ARCHIVE_NAME" -d "$TEMP_DIR"
+  rm -rf -- "$MAVEN_HOME_DIR"
+  mv "$TEMP_DIR/$MAVEN_NAME" "$MAVEN_HOME_DIR"
+fi
+
+exec "$MAVEN_HOME_DIR/bin/mvn" "$@"
