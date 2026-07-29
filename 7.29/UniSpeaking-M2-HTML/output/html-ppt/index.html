@@ -1,0 +1,912 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <link rel="icon" href="data:," />
+  <title>UniSpeaking · Milestone 2</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Noto+Sans+SC:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+  <style>
+    /* === THEME === */
+    :root { --stage-bg:#efefec; --slide-bg:#ffffff; --ink:#151515; --muted:#74746f; --line:#deded9; --soft:#f7f7f5; --font-display:"Manrope","Noto Sans SC",sans-serif; --font-body:"Noto Sans SC","Manrope",sans-serif; --ease-out:cubic-bezier(.22,1,.36,1); }
+    * { box-sizing:border-box; }
+    /* === FIXED 16:9 STAGE: viewport-base.css === */
+    html, body { width:100%; height:100%; margin:0; overflow:hidden; background:var(--stage-bg,#000); }
+    .deck-viewport { position:fixed; inset:0; overflow:hidden; background:var(--stage-bg,#000); }
+    .deck-stage { position:absolute; left:0; top:0; width:1920px; height:1080px; overflow:hidden; transform-origin:0 0; background:var(--slide-bg,#fff); cursor:grab; user-select:none; -webkit-user-select:none; }
+    .deck-stage:active { cursor:grabbing; }.is-editing .deck-stage { cursor:default; user-select:text; -webkit-user-select:text; }
+    .slide { position:absolute; inset:0; width:1920px; height:1080px; overflow:hidden; display:block; visibility:hidden; opacity:0; pointer-events:none; background:var(--slide-bg,#fff); }
+    .slide.active,.slide.visible { visibility:visible; opacity:1; pointer-events:auto; z-index:1; }
+    .slide.page-enter-forward,.slide.page-enter-backward,.slide.page-leave-forward,.slide.page-leave-backward { visibility:visible; pointer-events:none; will-change:transform,opacity,filter; }
+    .slide.page-enter-forward { z-index:4; animation:page-enter-forward .78s cubic-bezier(.16,1,.3,1) both; }.slide.page-leave-forward { z-index:3; animation:page-leave-forward .72s cubic-bezier(.55,0,1,.45) both; }
+    .slide.page-enter-backward { z-index:4; animation:page-enter-backward .78s cubic-bezier(.16,1,.3,1) both; }.slide.page-leave-backward { z-index:3; animation:page-leave-backward .72s cubic-bezier(.55,0,1,.45) both; }
+    @keyframes page-enter-forward { from { opacity:0; transform:translateX(158px) scale(.955); filter:blur(9px); } 62% { opacity:1; transform:translateX(-9px) scale(1.006); filter:blur(0); } to { opacity:1; transform:translateX(0) scale(1); filter:blur(0); } }
+    @keyframes page-leave-forward { to { opacity:0; transform:translateX(-112px) scale(.975); filter:blur(7px); } }
+    @keyframes page-enter-backward { from { opacity:0; transform:translateX(-158px) scale(.955); filter:blur(9px); } 62% { opacity:1; transform:translateX(9px) scale(1.006); filter:blur(0); } to { opacity:1; transform:translateX(0) scale(1); filter:blur(0); } }
+    @keyframes page-leave-backward { to { opacity:0; transform:translateX(112px) scale(.975); filter:blur(7px); } }
+    img,video,canvas,svg { max-width:100%; max-height:100%; }
+    .deck-controls { position:fixed; left:50%; bottom:22px; transform:translateX(-50%); z-index:1000; }
+    @media print { html,body{width:1920px;height:auto;overflow:visible;background:#fff}.deck-viewport{position:static;overflow:visible;background:#fff}.deck-stage{position:static;width:auto;height:auto;transform:none!important;background:none}.slide{position:relative;display:block!important;visibility:visible!important;opacity:1!important;pointer-events:auto!important;width:1920px;height:1080px;break-after:page;page-break-after:always}.slide:last-child{break-after:auto;page-break-after:auto}.deck-controls{display:none!important} }
+    @media (prefers-reduced-motion:reduce){*,*::before,*::after{animation-duration:.01ms!important;transition-duration:.2s!important}}
+    /* === BASE SLIDE CHROME === */
+    body { color:var(--ink); font-family:var(--font-body); }
+    .slide-inner { position:absolute; inset:0; padding:96px 132px 90px; }
+    .brand { position:absolute; top:58px; right:132px; display:flex; align-items:center; gap:16px; height:48px; }
+    .brand img:first-child { width:48px; height:48px; object-fit:cover; mix-blend-mode:multiply; }
+    .brand img:last-child { width:210px; height:auto; mix-blend-mode:multiply; }
+    .eyebrow { margin:0 0 18px; color:#91918c; font-family:var(--font-display); font-size:14px; font-weight:800; letter-spacing:3px; }
+    .slide-title { margin:0; font-family:var(--font-display); font-size:70px; font-weight:800; line-height:1.08; letter-spacing:-4.2px; }
+    .page-num { position:absolute; right:132px; bottom:56px; color:#8d8d88; font-family:var(--font-display); font-size:15px; font-variant-numeric:tabular-nums; }
+    .reveal { opacity:0; transform:translateY(18px); transition:opacity .5s var(--ease-out),transform .5s var(--ease-out); }
+    .visible .reveal { opacity:1; transform:translateY(0); }
+    .visible .delay-1 { transition-delay:.06s; }.visible .delay-2 { transition-delay:.12s; }.visible .delay-3 { transition-delay:.18s; }.visible .delay-4 { transition-delay:.24s; }
+    /* === SEQUENCED CONTENT ENTRANCE === */
+    .sequence-item { opacity:0; transform:translateX(-74px) translateY(20px) scale(.93) rotate(-1.4deg); filter:blur(10px); }
+    .visible .sequence-item.revealed { animation:panel-enter .86s cubic-bezier(.16,1,.3,1) forwards; }
+    .visible .sequence-item.revealed .icon-square,.visible .sequence-item.revealed .step-icon { animation:icon-pop .52s var(--ease-out) both; animation-delay:.36s; }
+    .visible .sequence-item.revealed .logic-cell { opacity:0; transform:translateY(12px); animation:cell-enter .36s var(--ease-out) forwards; }
+    .visible .sequence-item.revealed .logic-cell:nth-child(1) { animation-delay:.16s; }.visible .sequence-item.revealed .logic-cell:nth-child(2) { animation-delay:.30s; }.visible .sequence-item.revealed .logic-cell:nth-child(3) { animation-delay:.44s; }
+    @keyframes panel-enter { 0% { opacity:0; transform:translateX(-74px) translateY(20px) scale(.93) rotate(-1.4deg); filter:blur(10px); } 72% { opacity:1; transform:translateX(7px) translateY(-3px) scale(1.015) rotate(.2deg); filter:blur(0); } 100% { opacity:1; transform:translateX(0) translateY(0) scale(1) rotate(0); filter:blur(0); } }
+    @keyframes cell-enter { to { opacity:1; transform:translateY(0); } }
+    @keyframes icon-pop { from { opacity:0; transform:scale(.72) rotate(-8deg); } to { opacity:1; transform:scale(1) rotate(0); } }
+    /* === GESTURE FOCUS MODE: one idea owns the stage, then returns to overview === */
+    .focus-mode .sequence-item.revealed { transition:transform .64s var(--ease-out), width .64s var(--ease-out), height .64s var(--ease-out), top .64s var(--ease-out), opacity .4s ease, filter .4s ease; }
+    .focus-mode .sequence-item.compact { opacity:.72; filter:none; z-index:4; }
+    .focus-mode .sequence-item.focused { opacity:1; filter:none; z-index:12; box-shadow:0 28px 65px rgba(22,22,18,.12); }
+    .focus-mode .text-box.compact { height:104px; padding:18px 22px; overflow:hidden; transform:scale(.42); transform-origin:top left; box-shadow:none; }
+    .focus-mode .text-box.compact .box-heading { margin:0; }.focus-mode .text-box.compact .icon-square { width:38px; height:38px; }.focus-mode .text-box.compact .box-heading h2 { font-size:19px; }.focus-mode .text-box.compact .pain-row,.focus-mode .text-box.compact .rule-row { display:none; }
+    .focus-mode .text-box.focused { position:absolute; top:-34px; height:490px; width:1120px; padding:42px 48px; transform:translateX(196px) scale(1.12); transform-origin:center; }.focus-mode .text-box.focused .box-heading h2 { font-size:36px; }.focus-mode .text-box.focused .pain-row { min-height:100px; padding:20px 0; }.focus-mode .text-box.focused .pain-row p,.focus-mode .text-box.focused .rule-row p { font-size:24px; }.focus-mode .text-box.focused .rule-row { min-height:74px; padding:14px 0; }.focus-mode .text-box:nth-child(2).focused { transform:translateX(-622px) scale(1.12); }
+    .focus-mode .learning-logic.compact { top:820px; height:72px; transform:scale(.46); transform-origin:left top; box-shadow:none; }.focus-mode .learning-logic.compact .logic-cell { padding:11px 16px; }.focus-mode .learning-logic.compact .logic-cell p { display:none; }
+    .focus-mode .learning-logic.focused { top:390px; height:330px; grid-template-columns:1fr 1.28fr 1.28fr; transform:scale(1); }.focus-mode .learning-logic.focused .logic-cell { grid-template-columns:40px 1fr; padding:38px 42px; }.focus-mode .learning-logic.focused .logic-cell svg { width:32px; height:32px; }.focus-mode .learning-logic.focused .logic-cell strong { font-size:26px; }.focus-mode .learning-logic.focused .logic-cell p { font-size:20px; }
+    .focus-mode .journey.compact { top:758px; transform:scale(.22); transform-origin:top left; box-shadow:none; }.focus-mode .journey.focused { transform:translateY(-20px); transform-origin:center; }.focus-mode .journey.focused .journey-step { box-shadow:0 10px 25px rgba(22,22,18,.06); }
+    .focus-mode .acceptance-checks.compact { transform:scale(.48); transform-origin:left top; box-shadow:none; }.focus-mode .acceptance-checks.focused { top:426px; min-height:270px; transform:scale(1); }.focus-mode .acceptance-checks.focused .check { min-height:270px; padding:46px 42px; grid-template-columns:42px 1fr; }.focus-mode .acceptance-checks.focused .check svg { width:32px; height:32px; }.focus-mode .acceptance-checks.focused .check strong { font-size:27px; }.focus-mode .acceptance-checks.focused .check p { font-size:19px; }
+    .focus-mode .model-proof.compact { transform:scale(.55); transform-origin:top right; box-shadow:none; }.focus-mode .model-proof.focused { top:340px; right:360px; width:720px; padding:34px 36px; grid-template-columns:58px 1fr; gap:24px; transform:scale(1.1); }.focus-mode .model-proof.focused svg { width:42px; height:42px; }.focus-mode .model-proof.focused p { font-size:21px; line-height:1.65; }
+    .focus-stage-3 .journey.compact { top:900px; transform:scale(.12); opacity:.42; }.focus-stage-3 .acceptance-checks.compact { top:832px; transform:scale(.20); opacity:.52; }.focus-stage-3 .model-proof.focused { top:344px; right:auto; left:410px; width:900px; padding:42px 46px; grid-template-columns:64px 1fr; gap:28px; transform:scale(1.14); }
+    .slide[aria-label="第 2 页｜问题、差异与本轮范围"].focus-stage-3 .judgement-board { top:314px; grid-template-columns:280px 280px; gap:16px; }
+    .slide[aria-label="第 2 页｜问题、差异与本轮范围"].focus-stage-3 .text-box.compact { position:static; width:auto; height:62px; padding:12px 16px; transform:none; border-radius:12px; }
+    .slide[aria-label="第 2 页｜问题、差异与本轮范围"].focus-stage-3 .text-box.compact .icon-square { width:28px; height:28px; border-radius:8px; }.slide[aria-label="第 2 页｜问题、差异与本轮范围"].focus-stage-3 .text-box.compact .box-heading { gap:9px; }.slide[aria-label="第 2 页｜问题、差异与本轮范围"].focus-stage-3 .text-box.compact .box-heading h2 { font-size:15px; letter-spacing:-.4px; }
+    .slide[aria-label="第 2 页｜问题、差异与本轮范围"].focus-stage-3 .learning-logic.focused { top:442px; height:300px; }
+    .slide[aria-label="第 3 页｜MVP 验收标准"] .model-proof { opacity:0; pointer-events:none; transition:opacity .46s ease, transform .64s var(--ease-out); }
+    .slide[aria-label="第 3 页｜MVP 验收标准"].focus-stage-2 .acceptance-checks.focused { top:400px; min-height:238px; border-radius:18px 18px 0 0; border-bottom-color:transparent; }
+    .slide[aria-label="第 3 页｜MVP 验收标准"].focus-stage-2 .acceptance-checks.focused .check { min-height:238px; }
+    .slide[aria-label="第 3 页｜MVP 验收标准"].focus-stage-2 .model-proof { opacity:1; pointer-events:auto; top:638px; left:132px; right:auto; width:1524px; padding:24px 30px; grid-template-columns:42px 1fr; gap:18px; border-color:var(--line); border-radius:0 0 18px 18px; transform:none; box-shadow:0 22px 48px rgba(22,22,18,.10); }
+    .slide[aria-label="第 3 页｜MVP 验收标准"].focus-stage-2 .model-proof svg { width:32px; height:32px; }.slide[aria-label="第 3 页｜MVP 验收标准"].focus-stage-2 .model-proof p { font-size:18px; line-height:1.55; }
+    .journey { width:1656px; grid-template-columns:356px 370px 370px 512px; }.acceptance-checks { width:1656px; }.slide[aria-label="第 3 页｜MVP 验收标准"].focus-stage-2 .model-proof { width:1656px; }
+    .ph { display:block; width:100%; height:100%; fill:currentColor; }
+    /* === SLIDE 1: COVER === */
+    .cover-title { position:absolute; top:215px; left:132px; width:1230px; margin:0; font-family:var(--font-display); font-size:100px; font-weight:800; line-height:1.04; letter-spacing:-6.5px; }
+    .cover-subtitle { position:absolute; top:465px; left:138px; margin:0; color:#696965; font-size:30px; font-weight:500; }
+    .cover-mark { position:absolute; right:205px; bottom:212px; width:420px; height:420px; opacity:.05; }
+    .cover-mark img { width:100%; height:100%; object-fit:contain; mix-blend-mode:multiply; }
+    .cover-question { position:absolute; right:140px; bottom:194px; width:365px; color:#757570; font-size:19px; line-height:1.7; }
+    .cover-question b { display:block; margin-bottom:12px; color:#151515; font-family:var(--font-display); font-size:13px; letter-spacing:2.6px; }
+    .cover-footer { position:absolute; left:132px; bottom:58px; display:flex; gap:44px; color:#898984; font-family:var(--font-display); font-size:15px; letter-spacing:.5px; }
+    /* === SLIDE 2: PRODUCT JUDGEMENT === */
+    .judgement-title { width:1180px; }
+    .judgement-board { position:absolute; top:340px; left:132px; display:grid; grid-template-columns:744px 744px; gap:36px; }
+    .text-box { height:410px; padding:32px 36px; border:1px solid var(--line); border-radius:18px; background:#fff; }
+    .box-heading { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+    .icon-square { width:48px; height:48px; display:grid; place-items:center; flex:0 0 auto; border:1px solid var(--line); border-radius:13px; color:#2a2a27; }
+    .icon-square svg { width:25px; height:25px; }
+    .box-heading h2 { margin:0; font-family:var(--font-display); font-size:29px; font-weight:800; letter-spacing:-1.4px; }
+    .pain-row { display:grid; grid-template-columns:35px 1fr; gap:18px; align-items:center; min-height:82px; padding:17px 0; border-top:1px solid var(--line); }
+    .pain-row:first-of-type { border-top:0; }
+    .pain-row svg { width:28px; height:28px; color:#5f5f5a; }
+    .pain-row p { margin:0; color:#4e4e49; font-size:20px; line-height:1.5; }
+    .rule-row { display:grid; grid-template-columns:76px 1fr; gap:16px; align-items:center; min-height:65px; padding:12px 0; border-top:1px solid var(--line); }
+    .rule-row:first-of-type { border-top:0; }
+    .rule-num { color:#999994; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:1.8px; line-height:1.2; }
+    .rule-row p { margin:0; color:#3f3f3b; font-size:19px; line-height:1.42; }
+    .learning-logic { position:absolute; left:132px; top:804px; width:1524px; height:126px; display:grid; grid-template-columns:1fr 1.28fr 1.28fr; overflow:hidden; border:1px solid var(--line); border-radius:18px; background:#fff; }
+    .logic-cell { display:grid; grid-template-columns:29px 1fr; gap:12px; align-items:center; padding:21px 28px; border-left:1px solid var(--line); }
+    .logic-cell:first-child { border-left:0; }.logic-cell svg { width:23px; height:23px; color:#4f4f4a; }.logic-cell strong { display:block; margin-bottom:6px; font-family:var(--font-display); font-size:18px; font-weight:800; letter-spacing:-.7px; }.logic-cell p { margin:0; color:#777772; font-size:15px; line-height:1.45; }
+    /* === SLIDE 3: MVP ACCEPTANCE === */
+    .acceptance-title { width:1110px; }
+    .model-proof { position:absolute; top:162px; right:132px; width:390px; display:grid; grid-template-columns:36px 1fr; gap:13px; padding:17px 18px; border:1px solid var(--line); border-radius:16px; }
+    .model-proof svg { width:29px; height:29px; color:#4d4d48; }.model-proof p { margin:0; color:#767671; font-size:14px; line-height:1.5; }.model-proof b { color:#242422; }
+    .journey { position:absolute; top:360px; left:132px; width:1524px; display:grid; grid-template-columns:356px 336px 336px 420px; grid-template-rows:155px 155px; gap:16px; }
+    .journey-step { position:relative; display:grid; grid-template-columns:56px 1fr; gap:16px; align-items:center; padding:24px; border:1px solid var(--line); border-radius:18px; background:#fff; }
+    .journey-step .step-icon { width:56px; height:56px; display:grid; place-items:center; border-radius:14px; background:var(--soft); color:#282825; }.journey-step .step-icon svg { width:29px; height:29px; }.step-tag { display:block; margin-bottom:8px; color:#999994; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:2px; }.journey-step strong { display:block; color:#252523; font-size:20px; line-height:1.35; letter-spacing:-.6px; }
+    .journey-step.prepare { grid-row:1 / span 2; grid-template-columns:1fr; align-content:space-between; padding:28px; }.journey-step.prepare .step-icon { width:66px; height:66px; }.journey-step.prepare strong { font-size:26px; line-height:1.38; }.journey-step.practice { grid-column:2 / span 2; grid-row:2; }.journey-step.review { grid-column:4; grid-row:2; }
+    .journey-arrow { position:absolute; z-index:3; color:#a4a49f; font-family:var(--font-display); font-size:28px; }.a1{left:508px;top:423px}.a2{left:860px;top:423px}.a3{left:1212px;top:423px}.a4{left:1438px;top:522px;transform:rotate(90deg)}.a5{left:830px;top:607px;transform:rotate(180deg)}
+    .acceptance-checks { position:absolute; top:738px; left:132px; width:1524px; display:grid; grid-template-columns:1fr 1fr 1fr; overflow:hidden; border:1px solid transparent; border-radius:18px; background:transparent; }.acceptance-checks.has-revealed { border-color:var(--line); background:#fff; }.check { display:grid; grid-template-columns:33px 1fr; gap:14px; min-height:136px; padding:26px 28px; border-left:1px solid transparent; }.acceptance-checks.has-revealed .check { border-left-color:var(--line); }.check:first-child { border-left:0; }.check svg { width:25px; height:25px; color:#353532; }.check strong { display:block; margin-bottom:7px; font-family:var(--font-display); font-size:19px; font-weight:800; letter-spacing:-.7px; }.check p { margin:0; color:#757570; font-size:15px; line-height:1.48; }
+    .journey { width:1656px; grid-template-columns:356px 370px 370px 512px; }.acceptance-checks { width:1656px; }.slide[aria-label="第 3 页｜MVP 验收标准"].focus-stage-2 .model-proof { width:1656px; }
+    /* === SLIDES 4–9: ARCHITECTURE === */
+    .architecture-slide .slide-title { width:1280px; font-size:60px; line-height:1.06; letter-spacing:-3.5px; }
+    .arch-step { position:absolute; left:132px; width:1656px; overflow:hidden; border:1px solid var(--line); border-radius:20px; background:#fff; }
+    .arch-primary { top:334px; min-height:310px; padding:30px 34px; }
+    .arch-secondary { top:754px; min-height:142px; padding:24px 30px; }
+    .architecture-slide.focus-mode .arch-step.focused { filter:none; box-shadow:0 25px 62px rgba(22,22,18,.12); }
+    .architecture-slide.focus-stage-1 .arch-primary.focused { transform:translateY(-10px) scale(1.02); transform-origin:center; }
+    .architecture-slide.focus-stage-2 .arch-primary.compact { min-height:96px; padding:14px 18px; transform:scale(.48); transform-origin:top left; box-shadow:none; }
+    .architecture-slide.focus-stage-2 .arch-primary.compact .arch-detail { display:none; }
+    .architecture-slide.focus-stage-2 .arch-secondary.focused { top:520px; min-height:290px; padding:34px 38px; transform:scale(1); }
+    .arch-kicker { margin:0 0 16px; color:#999994; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:2.2px; }
+    .service-grid { display:grid; grid-template-columns:repeat(4,1fr); gap:16px; }
+    .service-card { min-height:190px; padding:22px; border:1px solid var(--line); border-radius:15px; background:#fff; }.service-card b { display:block; margin-bottom:12px; font-family:var(--font-display); font-size:23px; letter-spacing:-.9px; }.service-card p { margin:0; color:#71716c; font-size:17px; line-height:1.5; }.service-index { display:block; margin-bottom:24px; color:#a2a29c; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:1.8px; }
+    .provider-rail { display:grid; grid-template-columns:260px repeat(5,1fr); gap:0; align-items:stretch; }.provider-intro { display:flex; flex-direction:column; justify-content:center; padding-right:26px; }.provider-intro b { font-family:var(--font-display); font-size:25px; letter-spacing:-1px; }.provider-intro p { margin:8px 0 0; color:#74746f; font-size:16px; line-height:1.45; }.provider-capability { display:grid; place-items:center; min-height:120px; padding:16px; border-left:1px solid var(--line); text-align:center; }.provider-capability span { display:block; margin-bottom:7px; color:#999994; font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:1.5px; }.provider-capability b { font-size:17px; letter-spacing:-.5px; }
+    .arch-flow { display:grid; grid-template-columns:1fr 76px 1.2fr 76px 1fr; align-items:center; min-height:190px; }.flow-node { min-height:142px; padding:24px; border:1px solid var(--line); border-radius:16px; }.flow-node span { display:block; margin-bottom:12px; color:#9a9a95; font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:1.7px; }.flow-node b { display:block; margin-bottom:8px; font-family:var(--font-display); font-size:24px; letter-spacing:-1px; }.flow-node p { margin:0; color:#74746f; font-size:16px; line-height:1.45; }.flow-arrow { color:#a0a09b; font-family:var(--font-display); font-size:34px; text-align:center; }
+    .contract-grid { display:grid; grid-template-columns:1fr 1fr 1fr; gap:0; }.contract-cell { min-height:160px; padding:22px 28px; border-left:1px solid var(--line); }.contract-cell:first-child { border-left:0; }.contract-cell b { display:block; margin-bottom:12px; font-family:var(--font-display); font-size:20px; letter-spacing:-.7px; }.contract-cell p { margin:0; color:#6e6e69; font-size:16px; line-height:1.55; }.contract-cell em { color:#2e2e2b; font-style:normal; }
+    .state-track { display:grid; grid-template-columns:repeat(5,1fr); gap:0; overflow:hidden; border:1px solid var(--line); border-radius:16px; }.state-node { min-height:144px; padding:22px; border-left:1px solid var(--line); }.state-node:first-child { border-left:0; }.state-node span { display:block; margin-bottom:25px; color:#999994; font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:1.6px; }.state-node b { font-family:var(--font-display); font-size:18px; letter-spacing:-.6px; }.state-node:last-child { background:#171716; color:#fff; }.state-node:last-child span { color:#a7a7a1; }
+    .lifecycle { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }.lifecycle-card { min-height:190px; padding:26px; border:1px solid var(--line); border-radius:16px; }.lifecycle-card span { display:block; margin-bottom:34px; color:#999994; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:1.8px; }.lifecycle-card b { display:block; margin-bottom:10px; font-family:var(--font-display); font-size:25px; letter-spacing:-1px; }.lifecycle-card p { margin:0; color:#70706b; font-size:16px; line-height:1.5; }
+    .evidence-row { display:grid; grid-template-columns:repeat(3,1fr); gap:16px; }.evidence-card { min-height:188px; padding:24px; border:1px solid var(--line); border-radius:16px; }.evidence-card span { display:block; margin-bottom:25px; color:#999994; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:1.6px; }.evidence-card b { display:block; margin-bottom:9px; font-family:var(--font-display); font-size:23px; letter-spacing:-.8px; }.evidence-card p { margin:0; color:#6d6d68; font-size:16px; line-height:1.48; }
+    .dimension-grid { display:grid; grid-template-columns:300px repeat(5,1fr); min-height:138px; }.dimension-intro { display:flex; flex-direction:column; justify-content:center; padding-right:28px; }.dimension-intro b { font-family:var(--font-display); font-size:24px; letter-spacing:-.9px; }.dimension-intro p { margin:8px 0 0; color:#74746f; font-size:15px; }.dimension { display:grid; place-items:center; border-left:1px solid var(--line); text-align:center; }.dimension span { color:#999994; font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:1.4px; }.dimension b { margin-top:7px; font-size:18px; }
+    .context-bar { display:grid; grid-template-columns:360px 1fr; gap:28px; align-items:center; min-height:142px; }.context-key { padding:22px; border-radius:14px; background:var(--soft); }.context-key span { display:block; margin-bottom:9px; color:#999994; font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:1.5px; }.context-key b { font-family:var(--font-display); font-size:22px; letter-spacing:-.8px; }.context-list { display:flex; gap:18px; flex-wrap:wrap; }.context-list span { padding:10px 14px; border:1px solid var(--line); border-radius:999px; color:#5f5f5a; font-size:15px; }
+    /* === SOURCE-LED ARCHITECTURE PAGES === */
+    .source-card { display:grid; grid-template-columns:300px 1fr; gap:30px; min-height:208px; }.source-meta { display:flex; flex-direction:column; justify-content:space-between; padding:5px 0; }.source-file { margin:0; color:#9a9a95; font-family:ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-size:11px; line-height:1.55; overflow-wrap:break-word; }.source-meta h3 { margin:0; color:#20201e; font-family:var(--font-display); font-size:26px; line-height:1.18; letter-spacing:-1px; }.source-meta p { margin:0; color:#72726d; font-size:16px; line-height:1.5; }.source-code { margin:0; min-height:208px; padding:18px 22px; overflow:hidden; border-radius:14px; background:#171716; color:#e7e7e1; font:14px/1.56 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; white-space:pre-wrap; }.source-code .code-dim { color:#979791; }.source-code .code-key { color:#fcfcf8; font-weight:700; }.source-code .code-accent { color:#c9c9c1; }.source-insight { display:grid; grid-template-columns:1fr 1fr 1fr; min-height:180px; }.source-insight > div { display:flex; flex-direction:column; justify-content:center; gap:11px; padding:22px 28px; border-left:1px solid var(--line); }.source-insight > div:first-child { border-left:0; }.source-insight span { color:#999994; font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:1.6px; }.source-insight b { color:#222220; font-family:var(--font-display); font-size:22px; line-height:1.25; letter-spacing:-.8px; }.source-insight p { margin:0; color:#6e6e69; font-size:16px; line-height:1.48; }.architecture-slide.focus-stage-2 .source-card { grid-template-columns:270px 1fr; min-height:222px; }.architecture-slide.focus-stage-2 .source-code { min-height:222px; font-size:15px; }.architecture-slide.focus-stage-2 .source-insight { min-height:222px; }
+    .architecture-source-page { display:none !important; }
+    .architecture-hub .arch-primary { top:320px; min-height:348px; padding:30px 34px; transition:top .48s cubic-bezier(.22,.8,.2,1), min-height .48s cubic-bezier(.22,.8,.2,1), padding .48s cubic-bezier(.22,.8,.2,1); }
+    .architecture-hub .arch-secondary { top:728px; min-height:128px; padding:0; border-color:transparent; opacity:0; pointer-events:none; transform:translateY(26px); transition:top .48s cubic-bezier(.22,.8,.2,1), min-height .48s cubic-bezier(.22,.8,.2,1), padding .48s cubic-bezier(.22,.8,.2,1), opacity .25s ease .12s, transform .48s cubic-bezier(.22,.8,.2,1); }
+    .hub-grid { display:grid; grid-template-columns:repeat(5,1fr); gap:14px; }.hub-card { min-height:218px; padding:23px 22px; border:1px solid var(--line); border-radius:15px; background:#fff; color:#20201e; text-align:left; cursor:pointer; transition:background .3s ease,color .3s ease,transform .3s ease,padding .48s cubic-bezier(.22,.8,.2,1),min-height .48s cubic-bezier(.22,.8,.2,1); }.hub-card:hover { transform:translateY(-5px); box-shadow:0 14px 28px rgba(26,26,22,.08); }.hub-card:focus-visible { outline:2px solid #242422; outline-offset:4px; }.hub-card .hub-index { display:block; margin-bottom:46px; color:#9a9a95; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:1.5px; }.hub-card b { display:block; font-family:var(--font-display); font-size:22px; line-height:1.15; letter-spacing:-.9px; }.hub-card p { margin:11px 0 0; color:#74746f; font-size:15px; line-height:1.45; }
+    .architecture-hub.hub-selected .slide-title { width:1450px; font-size:49px; line-height:1.04; letter-spacing:-3px; }.architecture-hub.hub-selected .arch-primary { top:246px; min-height:92px; padding:10px 14px; }.architecture-hub.hub-selected .arch-kicker { position:absolute; top:-30px; left:0; opacity:0; }.architecture-hub.hub-selected .hub-grid { gap:8px; }.architecture-hub.hub-selected .hub-card { min-height:62px; padding:11px 12px; border-radius:11px; }.architecture-hub.hub-selected .hub-card:hover { transform:none; box-shadow:none; }.architecture-hub.hub-selected .hub-card .hub-index { display:inline; margin:0 8px 0 0; color:#9a9a95; font-size:9px; }.architecture-hub.hub-selected .hub-card b { display:inline; font-size:14px; letter-spacing:-.5px; }.architecture-hub.hub-selected .hub-card p { display:none; }.architecture-hub.hub-selected .hub-card.active { border-color:#1b1b19; background:#1b1b19; color:#fff; }.architecture-hub.hub-selected .hub-card.active .hub-index { color:#b7b7af; }
+    .architecture-hub.hub-selected { overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; scrollbar-color:#8b8b84 #f3f3f0; scrollbar-width:thin; }.architecture-hub.hub-selected::-webkit-scrollbar { width:12px; }.architecture-hub.hub-selected::-webkit-scrollbar-track { background:#f3f3f0; }.architecture-hub.hub-selected::-webkit-scrollbar-thumb { border:3px solid #f3f3f0; border-radius:99px; background:#85857e; }.architecture-hub.hub-selected .slide-inner { top:0; right:0; bottom:auto; left:0; height:var(--hub-page-height,1500px); }.architecture-hub.hub-selected .arch-secondary { top:370px; min-height:var(--hub-detail-height,700px); padding:22px 24px; border-color:var(--line); opacity:1; pointer-events:auto; transform:translateY(0); animation:hub-surface-in .58s cubic-bezier(.16,1,.3,1) both; }.architecture-hub.hub-selected .page-num { top:calc(var(--hub-page-height,1500px) - 78px); bottom:auto; }.hub-detail-head { display:flex; align-items:baseline; justify-content:space-between; margin-bottom:12px; }.hub-detail-head p { margin:0; color:#777772; font-family:var(--font-display); font-size:11px; font-weight:800; letter-spacing:1.7px; }.hub-detail-head b { color:#353532; font-size:14px; font-weight:700; }.hub-code-layout { display:grid; grid-template-columns:minmax(0,1fr) 386px; gap:20px; }.hub-code-panes { display:grid; grid-template-columns:1fr 1fr; gap:12px; align-items:stretch; }.full-code { min-height:calc(var(--hub-detail-height,700px) - 65px); margin:0; padding:18px 20px; overflow:visible; border:1px solid #292926; border-radius:13px; background:#131312; color:#f6f7f7; font:15px/1.52 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight:560; white-space:pre; }.full-code .code-key { color:#d8b4fe; font-weight:800; }.full-code .code-type { color:#67e8f9; font-weight:700; }.full-code .code-string { color:#fde68a; }.full-code .code-comment { color:#94a3b8; font-style:italic; }.service-boundary { align-self:start; display:flex; flex-direction:column; overflow:hidden; border:1px solid var(--line); border-radius:13px; background:#fff; }.service-boundary > div { flex:0 0 auto; min-height:158px; padding:20px 21px; border-top:1px solid var(--line); }.service-boundary > div:first-child { border-top:0; }.service-boundary span { display:block; margin-bottom:10px; color:#5e5e59; font-family:var(--font-body); font-size:14px; font-weight:700; letter-spacing:.25px; line-height:1.3; }.service-boundary b { display:block; color:#252523; font-family:var(--font-body); font-size:21px; font-weight:700; line-height:1.38; letter-spacing:-.45px; }.service-boundary p { margin:7px 0 0; color:#6e6e69; font-size:14px; line-height:1.42; }.hub-title-enter { animation:hub-title-in .42s cubic-bezier(.16,1,.3,1) both; }.hub-selected .hub-card { animation:hub-nav-settle .52s cubic-bezier(.16,1,.3,1) both; }.hub-selected .hub-card:nth-child(2) { animation-delay:.04s; }.hub-selected .hub-card:nth-child(3) { animation-delay:.08s; }.hub-selected .hub-card:nth-child(4) { animation-delay:.12s; }.hub-selected .hub-card:nth-child(5) { animation-delay:.16s; }.hub-selected .full-code { animation:code-panel-in .62s cubic-bezier(.16,1,.3,1) both; }.hub-selected .full-code:nth-child(2) { animation-delay:.08s; }.hub-selected .service-boundary { animation:boundary-in .62s cubic-bezier(.16,1,.3,1) both; animation-delay:.15s; } @keyframes hub-surface-in { from { opacity:0; transform:translateY(28px) scale(.985); } to { opacity:1; transform:translateY(0) scale(1); } } @keyframes hub-title-in { from { opacity:0; transform:translateY(18px); filter:blur(5px); } to { opacity:1; transform:translateY(0); filter:blur(0); } } @keyframes hub-nav-settle { from { opacity:0; transform:translateY(-14px) scale(1.08); } to { opacity:1; transform:translateY(0) scale(1); } } @keyframes code-panel-in { from { opacity:0; transform:translateY(22px); filter:blur(7px); } to { opacity:1; transform:translateY(0); filter:blur(0); } } @keyframes boundary-in { from { opacity:0; transform:translateX(24px); } to { opacity:1; transform:translateX(0); } }
+    /* === SLIDE 10: COMPLETE CUSTOM-SCENE PSEUDOCODE === */
+    .code-flow-slide { overflow-y:auto; overflow-x:hidden; scroll-behavior:smooth; scrollbar-color:#8b8b84 #f3f3f0; scrollbar-width:thin; }.code-flow-slide::-webkit-scrollbar { width:12px; }.code-flow-slide::-webkit-scrollbar-track { background:#f3f3f0; }.code-flow-slide::-webkit-scrollbar-thumb { border:3px solid #f3f3f0; border-radius:99px; background:#85857e; }.code-flow-slide .slide-inner { top:0; right:0; bottom:auto; left:0; height:auto; min-height:1080px; padding-bottom:150px; }.flow-page-title { width:1430px; margin-bottom:56px; font-size:59px!important; }.flow-script { display:grid; gap:22px; }.flow-code-block { overflow:hidden; border:1px solid var(--line); border-radius:19px; background:#fff; box-shadow:0 14px 34px rgba(24,24,21,.045); }.flow-code-caption { display:flex; align-items:center; min-height:58px; padding:0 25px; border-bottom:1px solid var(--line); color:#262624; font-family:var(--font-body); font-size:21px; font-weight:700; letter-spacing:-.4px; }.flow-code-caption::before { width:9px; height:9px; margin-right:12px; border-radius:50%; background:#171716; content:""; }.flow-code { margin:0; padding:24px 28px; background:#131312; color:#f6f7f7; font:15px/1.55 ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace; font-weight:560; white-space:pre-wrap; }.flow-code .code-key { color:#d8b4fe; font-weight:800; }.flow-code .code-type { color:#67e8f9; font-weight:700; }.flow-code .code-string { color:#fde68a; }.flow-code .code-comment { color:#94a3b8; font-style:italic; }.flow-summary { display:flex; align-items:center; justify-content:center; min-height:98px; padding:22px 34px; border:1px solid #1b1b19; border-radius:19px; background:#1b1b19; color:#fff; font-family:var(--font-body); font-size:22px; font-weight:700; letter-spacing:-.55px; text-align:center; }.flow-summary span { color:#c8c8c1; padding:0 11px; }
+    /* === SLIDE 11: MS2 TO MS3 SUMMARY === */
+    .summary-title { width:1420px; font-size:60px!important; }.summary-grid { position:absolute; top:337px; left:132px; width:1656px; display:grid; grid-template-columns:1fr 1fr; gap:20px; }.summary-card { min-height:390px; overflow:hidden; border:1px solid var(--line); border-radius:20px; background:#fff; }.summary-card header { display:flex; align-items:center; gap:15px; min-height:88px; padding:0 27px; border-bottom:1px solid var(--line); }.summary-card header span { display:grid; width:39px; height:39px; place-items:center; border-radius:11px; background:#1b1b19; color:#fff; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:1px; }.summary-card header h2 { margin:0; color:#242422; font-family:var(--font-body); font-size:26px; letter-spacing:-.8px; }.summary-list { margin:0; padding:19px 28px 24px 63px; }.summary-list li { padding:11px 0 11px 5px; color:#393936; font-size:18px; font-weight:600; line-height:1.38; }.summary-list li::marker { color:#1b1b19; font-family:var(--font-display); font-weight:800; }.summary-priority { list-style:none; counter-reset:priority; padding-left:29px; }.summary-priority li { position:relative; padding-left:42px; }.summary-priority li::before { position:absolute; left:0; top:8px; color:#999994; content:"0" counter(priority); counter-increment:priority; font-family:var(--font-display); font-size:12px; font-weight:800; letter-spacing:1px; }.summary-closing { position:absolute; left:132px; bottom:82px; width:1656px; min-height:152px; display:flex; align-items:center; padding:31px 39px; border-radius:20px; background:#1b1b19; color:#fff; font-family:var(--font-body); font-size:31px; font-weight:700; line-height:1.36; letter-spacing:-1px; }.summary-closing::before { width:14px; align-self:stretch; margin-right:25px; border-radius:99px; background:#d8b4fe; content:""; }
+    .summary-card,.summary-closing { transition:transform .72s cubic-bezier(.16,1,.3,1),opacity .38s ease,filter .38s ease; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-1 .summary-card.focused { transform:translateX(418px) scale(1.13); transform-origin:center; z-index:12; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-2 .summary-card.compact { min-height:176px; transform:translateY(-12px) scale(.5); transform-origin:top left; opacity:.72; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-2 .summary-card.focused { transform:translateX(-418px) scale(1.13); transform-origin:center; z-index:12; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-card.compact { min-height:150px; transform:translateY(-18px) scale(.44); transform-origin:top left; opacity:.58; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-closing.focused { transform:translateY(-188px) scale(1.12); transform-origin:center; z-index:12; box-shadow:0 30px 75px rgba(25,25,22,.22); }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-closing.focused::before { background:#67e8f9; }
+    /* Final slide: exactly one primary textbox per step; earlier ideas become anchors. */
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"] .summary-grid { display:block; height:420px; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"] .summary-card { position:absolute; top:0; width:818px; min-height:390px; transition:left .7s cubic-bezier(.16,1,.3,1),top .7s cubic-bezier(.16,1,.3,1),width .7s cubic-bezier(.16,1,.3,1),min-height .7s cubic-bezier(.16,1,.3,1),opacity .36s ease,transform .7s cubic-bezier(.16,1,.3,1); }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"] .summary-card:nth-child(1) { left:0; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"] .summary-card:nth-child(2) { left:838px; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-1 .summary-card.focused { left:419px; top:0; width:818px; min-height:420px; transform:none!important; transform-origin:center; z-index:12; animation:summary-primary-in .72s cubic-bezier(.16,1,.3,1) both; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-2 .summary-card.compact { top:-8px; width:300px; min-height:102px; transform:none!important; opacity:.68!important; overflow:hidden; z-index:5; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-2 .summary-card.compact .summary-list { display:none; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-2 .summary-card.focused { left:419px; top:0; width:818px; min-height:420px; transform:none!important; z-index:12; animation:summary-primary-in .72s cubic-bezier(.16,1,.3,1) both; }.final-mark { position:absolute; top:686px; left:50%; display:flex; align-items:center; gap:26px; height:132px; opacity:0; transform:translateX(-50%) scale(.7); }.final-wordmark { width:324px; height:auto; mix-blend-mode:multiply; clip-path:inset(0 100% 0 0); }.final-logo-icon { position:relative; display:block; width:132px; height:132px; }.final-logo-icon::before,.final-logo-icon::after { position:absolute; inset:-23px; border:1px solid rgba(21,21,21,.12); border-radius:50%; content:""; opacity:0; }.final-logo-icon::after { inset:-48px; }.final-logo-icon img { position:relative; z-index:2; width:132px; height:132px; object-fit:cover; mix-blend-mode:multiply; clip-path:inset(100% 0 0 0); }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .eyebrow,.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-title,.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-grid,.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .brand { opacity:0; transform:translateY(-22px) scale(.985); filter:blur(5px); pointer-events:none; transition:opacity .56s ease,transform .66s cubic-bezier(.16,1,.3,1),filter .45s ease; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-closing.focused { top:365px; bottom:auto; left:220px; width:1480px; min-height:0; padding:0; border-radius:0; background:transparent; color:#171716; font-family:"Songti SC","STSong","STKaiti","KaiTi",serif; font-size:63px; font-weight:700; line-height:1.42; letter-spacing:1.5px; text-align:center; transform:none!important; z-index:12; box-shadow:none; animation:summary-quote-in 1s cubic-bezier(.16,1,.3,1) .2s both; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-closing.focused::before { display:none; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-mark { animation:brand-lockup-in 1s cubic-bezier(.16,1,.3,1) .68s both; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-wordmark { animation:wordmark-unfold .9s cubic-bezier(.16,1,.3,1) .86s both; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-logo-icon img { animation:logo-draw 1.05s cubic-bezier(.16,1,.3,1) 1.02s both,logo-breathe 3.2s ease-in-out 2.1s infinite; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-logo-icon::before { animation:logo-ring 1.35s ease-out 1.08s both; }.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-logo-icon::after { animation:logo-ring 1.35s ease-out 1.26s both; } @keyframes summary-primary-in { from { opacity:0; transform:translateY(46px) scale(.9); filter:blur(9px); } 70% { opacity:1; transform:translateY(-5px) scale(1.015); filter:blur(0); } to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); } } @keyframes summary-quote-in { from { opacity:0; transform:translateY(54px) scale(.94); filter:blur(12px); } 65% { opacity:1; transform:translateY(-5px) scale(1.012); filter:blur(0); } to { opacity:1; transform:translateY(0) scale(1); filter:blur(0); } } @keyframes brand-lockup-in { from { opacity:0; transform:translateX(-50%) translateY(18px) scale(.84); filter:blur(8px); } to { opacity:1; transform:translateX(-50%) translateY(0) scale(1); filter:blur(0); } } @keyframes wordmark-unfold { from { clip-path:inset(0 100% 0 0); } to { clip-path:inset(0 0 0 0); } } @keyframes logo-draw { from { clip-path:inset(100% 0 0 0); } to { clip-path:inset(0 0 0 0); } } @keyframes logo-ring { from { opacity:.55; transform:scale(.55); } to { opacity:0; transform:scale(1.16); } } @keyframes logo-breathe { 0%,100% { transform:scale(1); } 50% { transform:scale(1.04); } }
+    /* Final hold: let the review land before the closing thought takes the stage. */
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .eyebrow,
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-title,
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-grid,
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .brand {
+      transition:
+        opacity 1.22s cubic-bezier(.4,0,.2,1) .52s,
+        transform 1.32s cubic-bezier(.16,1,.3,1) .52s,
+        filter .92s ease .52s;
+    }
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .summary-closing.focused {
+      animation:summary-quote-in 1.45s ease-out 1.12s both;
+    }
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-mark {
+      animation:brand-lockup-in 1.25s cubic-bezier(.16,1,.3,1) 3.08s both;
+    }
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-wordmark {
+      animation:wordmark-unfold 1.34s cubic-bezier(.16,1,.3,1) 3.45s both;
+    }
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-logo-icon img {
+      animation:logo-draw 1.62s cubic-bezier(.16,1,.3,1) 3.72s both,logo-breathe 3.6s ease-in-out 5.62s infinite;
+    }
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-logo-icon::before {
+      animation:logo-ring 1.7s ease-out 3.88s both;
+    }
+    .slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"].focus-stage-3 .final-logo-icon::after {
+      animation:logo-ring 1.7s ease-out 4.12s both;
+    }
+    @keyframes summary-quote-in {
+      from { opacity:0; transform:translateY(14px); }
+      to { opacity:1; transform:translateY(0); }
+    }
+    @keyframes brand-lockup-in {
+      0% { opacity:0; transform:translateX(-50%) translateY(24px) scale(.86); filter:blur(9px); }
+      68% { opacity:1; transform:translateX(-50%) translateY(-2px) scale(1.012); filter:blur(0); }
+      100% { opacity:1; transform:translateX(-50%) translateY(0) scale(1); filter:blur(0); }
+    }
+    /* === OUTSIDE-STAGE CONTROLS AND EDITING === */
+    .deck-controls { display:flex; align-items:center; gap:8px; padding:7px; border:1px solid rgba(180,180,174,.6); border-radius:999px; background:rgba(255,255,255,.94); box-shadow:0 10px 30px rgba(21,21,21,.08); }.deck-controls button { width:34px; height:34px; border:0; border-radius:50%; background:transparent; color:#151515; font:inherit; cursor:pointer; }.deck-controls button:hover { background:#f1f1ee; }.deck-count { min-width:43px; color:#777772; font-family:var(--font-display); font-size:12px; text-align:center; }
+    .edit-hotzone { position:fixed; top:0; left:0; width:80px; height:80px; z-index:10000; cursor:pointer; }.edit-toggle { position:fixed; top:18px; left:18px; z-index:10001; width:38px; height:38px; border:1px solid #d5d5d0; border-radius:50%; background:#fff; opacity:0; pointer-events:none; transition:opacity .2s; cursor:pointer; }.edit-toggle.show,.edit-toggle.active { opacity:1; pointer-events:auto; }.is-editing [data-editable] { outline:1px dashed #9d9d97; outline-offset:5px; cursor:text; }.speaker-notes { position:fixed; right:22px; bottom:76px; z-index:2000; display:none; width:360px; max-height:55vh; overflow:auto; padding:18px; border:1px solid #d8d8d3; border-radius:14px; background:rgba(255,255,255,.98); box-shadow:0 18px 44px rgba(21,21,21,.12); color:#5f5f5a; font-size:13px; line-height:1.65; }.speaker-notes.open { display:block; }.speaker-notes h2 { margin:0 0 8px; color:#151515; font-size:14px; }.speaker-notes p { margin:0; }
+  </style>
+</head>
+<body>
+  <div class="deck-viewport"><main class="deck-stage" id="deckStage" aria-label="UniSpeaking Milestone 2 演示文稿">
+    <!-- === SLIDE 1: COVER === -->
+    <section class="slide active visible" aria-label="第 1 页｜封面"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>MILESTONE 2</p><h1 class="cover-title reveal delay-1" data-editable>UniSpeaking：让英语学习者<br>真正开口说</h1><p class="cover-subtitle reveal delay-2" data-editable>MVP 深化与架构落实</p><div class="cover-mark" aria-hidden="true"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /></div><p class="cover-question reveal delay-3" data-editable><b>OUR QUESTION</b>让每一位学习者，都能找到低压力、可持续的真实表达练习。</p><footer class="cover-footer" data-editable><span>团队成员</span><span>2026.07</span><span>github.com/1024XEngineer/UniSpeaking</span></footer><span class="page-num">01</span></div></section>
+    <!-- === SLIDE 2: PRODUCT JUDGEMENT === -->
+    <section class="slide" aria-label="第 2 页｜问题、差异与本轮范围"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>PRODUCT JUDGEMENT</p><h1 class="slide-title judgement-title reveal delay-1" data-editable>通用 AI 会聊天，<br>但不一定会陪学习者开口</h1><div class="judgement-board"><section class="text-box sequence-item" style="--enter-delay:.38s"><header class="box-heading"><span class="icon-square"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M190.92 212a8 8 0 1 1-13.84 8 57 57 0 0 0-98.16 0 8 8 0 1 1-13.84-8 72.06 72.06 0 0 1 33.74-29.92 48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212ZM128 176a32 32 0 1 0-32-32 32 32 0 0 0 32 32Z"></path></svg></span><h2 data-editable>用户真正遇到的三个阻力</h2></header><article class="pain-row"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M128 176a48.05 48.05 0 0 0 48-48V64a48 48 0 0 0-96 0v64A48.05 48.05 0 0 0 128 176ZM96 64a32 32 0 0 1 64 0v64a32 32 0 0 1-64 0Zm40 143.6V240a8 8 0 0 1-16 0v-32.4A80.11 80.11 0 0 1 48 128a8 8 0 0 1 16 0 64 64 0 0 0 128 0 8 8 0 0 1 16 0A80.11 80.11 0 0 1 136 207.6Z"></path></svg><p data-editable>真人陪练受时间、价格和心理压力限制</p></article><article class="pain-row"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M232 48H160a40 40 0 0 0-32 16A40 40 0 0 0 96 48H24a8 8 0 0 0-8 8v144a8 8 0 0 0 8 8h72a24 24 0 0 1 24 24 8 8 0 0 0 16 0 24 24 0 0 1 24-24h72a8 8 0 0 0 8-8V56a8 8 0 0 0-8-8ZM96 192H32V64h64a24 24 0 0 1 24 24v112a39.81 39.81 0 0 0-24-8Zm128 0h-64a39.81 39.81 0 0 0-24 8V88a24 24 0 0 1 24-24h64Z"></path></svg><p data-editable>跟读可以练发音，却不能训练临场组织语言</p></article><article class="pain-row"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M140 128a12 12 0 1 1-12-12 12 12 0 0 1 12 12Zm-56-12a12 12 0 1 0 12 12 12 12 0 0 0-12-12Zm88 0a12 12 0 1 0 12 12 12 12 0 0 0-12-12Zm60 12A104 104 0 0 1 79.12 219.82L45.07 231.17a16 16 0 0 1-20.24-20.24l11.35-34.05A104 104 0 1 1 232 128Z"></path></svg><p data-editable>通用语音 AI 容易说得太多、太难，也不理解学习者的卡壳</p></article></section><section class="text-box sequence-item" style="--enter-delay:1.06s"><header class="box-heading"><span class="icon-square"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M248 124a56.11 56.11 0 0 0-32-50.61V72a48 48 0 0 0-88-26.49A48 48 0 0 0 40 72v1.39a56 56 0 0 0 0 101.2V176a48 48 0 0 0 88 26.49A48 48 0 0 0 216 176v-1.41A56.09 56.09 0 0 0 248 124ZM88 208a32 32 0 0 1-31.81-28.56A55.87 55.87 0 0 0 64 180h8a8 8 0 0 0 0-16h-8A40 40 0 0 1 50.67 86.27 8 8 0 0 0 56 78.73V72a32 32 0 0 1 64 0v68.26A47.8 47.8 0 0 0 88 128a8 8 0 0 0 0 16 32 32 0 0 1 0 64Zm104-44h-8a8 8 0 0 0 0 16h8a55.87 55.87 0 0 0 7.81-.56A32 32 0 1 1 168 144a8 8 0 0 0 0-16 47.8 47.8 0 0 0-32 12.26V72a32 32 0 0 1 64 0v6.73a8 8 0 0 0 5.33 7.54A40 40 0 0 1 192 164Z"></path></svg></span><h2 data-editable>UniSpeaking 的四个核心规则</h2></header><div class="rule-row"><span class="rule-num">RULE<br>01</span><p data-editable>AI 每次回复 1-3 句</p></div><div class="rule-row"><span class="rule-num">RULE<br>02</span><p data-editable>一次只问一个相关问题</p></div><div class="rule-row"><span class="rule-num">RULE<br>03</span><p data-editable>根据水平、语速和表现调整难度</p></div><div class="rule-row"><span class="rule-num">RULE<br>04</span><p data-editable>自由对话先接住意思；场景训练再进行结构化反馈</p></div></section></div><section class="learning-logic sequence-item" style="--enter-delay:1.74s"><article class="logic-cell"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M140 128a12 12 0 1 1-12-12 12 12 0 0 1 12 12Zm-56-12a12 12 0 1 0 12 12 12 12 0 0 0-12-12Zm88 0a12 12 0 1 0 12 12 12 12 0 0 0-12-12Z"></path></svg><div><strong data-editable>自由对话</strong><p data-editable>降低开口门槛</p></div></article><article class="logic-cell"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M56 96v64a8 8 0 0 1-16 0V96a8 8 0 0 1 16 0ZM88 24a8 8 0 0 0-8 8v192a8 8 0 0 0 16 0V32a8 8 0 0 0-8-8Zm40 32a8 8 0 0 0-8 8v128a8 8 0 0 0 16 0V64a8 8 0 0 0-8-8Z"></path></svg><div><strong data-editable>场景训练</strong><p data-editable>学 → 读 → 说 → 反馈</p></div></article><article class="logic-cell"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M232 48H160a40 40 0 0 0-32 16A40 40 0 0 0 96 48H24a8 8 0 0 0-8 8v144a8 8 0 0 0 8 8h72a24 24 0 0 1 24 24 8 8 0 0 0 16 0 24 24 0 0 1 24-24h72a8 8 0 0 0 8-8V56a8 8 0 0 0-8-8Z"></path></svg><div><strong data-editable>学习资产</strong><p data-editable>把练习结果沉淀下来并支持复练</p></div></article></section><span class="page-num">02</span></div></section>
+    <!-- === SLIDE 3: MVP ACCEPTANCE === -->
+    <section class="slide" aria-label="第 3 页｜MVP 验收标准"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>MVP ACCEPTANCE</p><h1 class="slide-title acceptance-title reveal delay-1" data-editable>这次不展示页面数量，<br>只验证一条完整学习闭环</h1><aside class="model-proof reveal delay-2"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M173.66 98.34a8 8 0 0 1 0 11.32l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 0ZM232 128A104 104 0 1 1 128 24a104.11 104.11 0 0 1 104 104Z"></path></svg><p data-editable><b>模型行为另以 36 条用例验证</b><br>指令遵循、对话质量、语义适配、上下文、边界与稳定性。</p></aside><section class="journey reveal delay-2"><article class="journey-step prepare"><span class="step-icon"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M190.92 212a8 8 0 1 1-13.84 8 57 57 0 0 0-98.16 0 8 8 0 1 1-13.84-8 72.06 72.06 0 0 1 33.74-29.92 48 48 0 1 1 58.36 0A72.06 72.06 0 0 1 190.92 212Z"></path></svg></span><div><span class="step-tag">PREPARE</span><strong data-editable>选择老师与<br>学习设置</strong></div></article><article class="journey-step"><span class="step-icon">●</span><div><span class="step-tag">OPEN UP</span><strong data-editable>自由对话<br>低压力开口</strong></div></article><article class="journey-step"><span class="step-icon">＋</span><div><span class="step-tag">CREATE</span><strong data-editable>生成一个<br>真实场景</strong></div></article><article class="journey-step"><span class="step-icon">▰</span><div><span class="step-tag">LEARN</span><strong data-editable>学单词和词组</strong></div></article><article class="journey-step practice"><span class="step-icon">≋</span><div><span class="step-tag">PRACTISE</span><strong data-editable>听示范、完成句子跟读，再进入角色模拟对话</strong></div></article><article class="journey-step review"><span class="step-icon">✓</span><div><span class="step-tag">REVIEW</span><strong data-editable>查看反馈、资产并再次复练</strong></div></article></section><section class="acceptance-checks reveal delay-3"><article class="check"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M173.66 98.34a8 8 0 0 1 0 11.32l-56 56a8 8 0 0 1-11.32 0l-24-24a8 8 0 0 1 11.32-11.32L112 148.69l50.34-50.35a8 8 0 0 1 11.32 0Z"></path></svg><div><strong data-editable>端到端</strong><p data-editable>不是页面跳转，核心步骤能够连续完成。</p></div></article><article class="check"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M56 96v64a8 8 0 0 1-16 0V96a8 8 0 0 1 16 0ZM88 24a8 8 0 0 0-8 8v192a8 8 0 0 0 16 0V32a8 8 0 0 0-8-8Z"></path></svg><div><strong data-editable>用户价值可感知</strong><p data-editable>用户能从“不知道怎么说”走到完成一段场景对话。</p></div></article><article class="check"><svg class="ph" viewBox="0 0 256 256" aria-hidden="true"><path d="M232 48H160a40 40 0 0 0-32 16A40 40 0 0 0 96 48H24a8 8 0 0 0-8 8v144a8 8 0 0 0 8 8h72a24 24 0 0 1 24 24 8 8 0 0 0 16 0 24 24 0 0 1 24-24h72a8 8 0 0 0 8-8V56a8 8 0 0 0-8-8Z"></path></svg><div><strong data-editable>状态可沉淀</strong><p data-editable>对话、评分、学习材料和复练入口形成闭环。</p></div></article></section><span class="page-num">03</span></div></section>
+    <!-- === SLIDE 4: SERVICE MAP === -->
+    <section class="slide architecture-slide" aria-label="第 4 页｜五个核心 Service 总图"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>SYSTEM ARCHITECTURE / 01</p><h1 class="slide-title reveal delay-1" data-editable>五个业务 Service，<br>共同支撑完整口语学习闭环</h1><section class="arch-step arch-primary"><p class="arch-kicker">BUSINESS SERVICES</p><div class="service-grid arch-detail"><article class="service-card"><span class="service-index">01</span><b>SceneService</b><p>按用户需求生成结构化场景与学习内容。</p></article><article class="service-card"><span class="service-index">02</span><b>SceneFlowService</b><p>组织并推进“学—读—说”的学习状态。</p></article><article class="service-card"><span class="service-index">03</span><b>SessionService</b><p>管理实时对话从开始到结束的完整生命周期。</p></article><article class="service-card"><span class="service-index">04</span><b>EvaluationService</b><p>评估口语表现，并生成可解释的学习报告。</p></article></div></section><section class="arch-step arch-secondary"><div class="provider-rail"><div class="provider-intro"><b>AiProviderService</b><p>统一隔离外部模型与语音能力。</p></div><div class="provider-capability"><span>REALTIME</span><b>实时语音</b></div><div class="provider-capability"><span>LLM</span><b>场景生成</b></div><div class="provider-capability"><span>TTS</span><b>学习材料音频</b></div><div class="provider-capability"><span>STT</span><b>音频转写</b></div><div class="provider-capability"><span>ASSESS</span><b>发音评测</b></div></div></section><span class="page-num">04</span></div></section>
+    <!-- === SLIDE 5: SCENE SERVICE === -->
+    <section class="slide architecture-slide" aria-label="第 5 页｜SceneService"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>SYSTEM ARCHITECTURE / 02</p><h1 class="slide-title reveal delay-1" data-editable>SceneService 把一句自然语言需求，<br>变成可训练的场景内容</h1><section class="arch-step arch-primary"><p class="arch-kicker">GENERATE SCENE CONTENT</p><div class="arch-flow arch-detail"><article class="flow-node"><span>INPUT</span><b>用户需求</b><p>用户画像、场景类型、自然语言场景输入。</p></article><div class="flow-arrow">→</div><article class="flow-node"><span>SCENE SERVICE</span><b>生成与编排</b><p>CustomSceneGenerationService 生成；SceneContentService 管理内容。</p></article><div class="flow-arrow">→</div><article class="flow-node"><span>OUTPUT</span><b>结构化训练包</b><p>sceneId、单词、词组、句子与角色对话 Prompt。</p></article></div></section><section class="arch-step arch-secondary"><div class="contract-grid"><article class="contract-cell"><b>输入边界</b><p><em>userId</em>、偏好、<em>SceneType</em>、场景输入。</p></article><article class="contract-cell"><b>输出边界</b><p>完整学习内容，不直接推进学习阶段。</p></article><article class="contract-cell"><b>不负责</b><p>实时会话、流程推进与口语评分。</p></article></div></section><span class="page-num">05</span></div></section>
+    <!-- === SLIDE 6: SCENE FLOW === -->
+    <section class="slide architecture-slide" aria-label="第 6 页｜SceneFlowService"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>SYSTEM ARCHITECTURE / 03</p><h1 class="slide-title reveal delay-1" data-editable>SceneFlowService 是“学—读—说”状态机，<br>也是实时会话的准入门</h1><section class="arch-step arch-primary"><p class="arch-kicker">SCENE FLOW STAGE</p><div class="state-track arch-detail"><article class="state-node"><span>01</span><b>WORD<br>LEARNING</b></article><article class="state-node"><span>02</span><b>PHRASE<br>LEARNING</b></article><article class="state-node"><span>03</span><b>SENTENCE<br>LEARNING</b></article><article class="state-node"><span>04</span><b>DIALOGUE</b></article><article class="state-node"><span>05</span><b>COMPLETED</b></article></div></section><section class="arch-step arch-secondary"><div class="contract-grid"><article class="contract-cell"><b>读取内容</b><p>从 <em>SceneService</em> 获取当前场景与学习材料。</p></article><article class="contract-cell"><b>控制准入</b><p>句子跟读通过 <em>EvaluationService</em> 后，才进入 <em>DIALOGUE</em>。</p></article><article class="contract-cell"><b>完成闭环</b><p>报告生成后调用 <em>completeFlow()</em>，标记流程完成。</p></article></div></section><span class="page-num">06</span></div></section>
+    <!-- === SLIDE 7: SESSION === -->
+    <section class="slide architecture-slide" aria-label="第 7 页｜SessionService"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>SYSTEM ARCHITECTURE / 04</p><h1 class="slide-title reveal delay-1" data-editable>SessionService 统一管理对话会话的<br>完整生命周期</h1><section class="arch-step arch-primary"><p class="arch-kicker">SESSION LIFECYCLE</p><div class="lifecycle arch-detail"><article class="lifecycle-card"><span>01 / START</span><b>startSession()</b><p>根据场景类型与 Prompt 创建业务会话，返回 sessionId 与开始时间。</p></article><article class="lifecycle-card"><span>02 / APPEND</span><b>addMessage()</b><p>只保存用户或 AI 的完整消息；先内存追加，再异步持久化。</p></article><article class="lifecycle-card"><span>03 / END</span><b>endSession()</b><p>记录结束时间，为学习报告、资产与复练提供完整上下文。</p></article></div></section><section class="arch-step arch-secondary"><div class="contract-grid"><article class="contract-cell"><b>FreeChatSessionService</b><p>自由聊天 Prompt 与消息；结束后更新长期记忆。</p></article><article class="contract-cell"><b>CustomSessionService</b><p>场景 Prompt 与任务上下文；结束后生成报告并完成流程。</p></article><article class="contract-cell"><b>职责边界</b><p>Realtime SDP 属于 <em>AiProviderService</em>；单轮评分属于 <em>EvaluationService</em>。</p></article></div></section><span class="page-num">07</span></div></section>
+    <!-- === SLIDE 8: EVALUATION === -->
+    <section class="slide architecture-slide" aria-label="第 8 页｜EvaluationService"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>SYSTEM ARCHITECTURE / 05</p><h1 class="slide-title reveal delay-1" data-editable>EvaluationService 将音频、字幕和上下文，<br>合成可解释的学习结果</h1><section class="arch-step arch-primary"><p class="arch-kicker">THREE EVALUATION LEVELS</p><div class="evidence-row arch-detail"><article class="evidence-card"><span>LEARN</span><b>跟读评分</b><p>evaluateSentence() 返回总分，页面直接展示并控制句子阶段通过。</p></article><article class="evidence-card"><span>DIALOGUE</span><b>单轮评价</b><p>保存流利度、发音、节奏、语调、语法、词汇与相关性，不直接打断用户。</p></article><article class="evidence-card"><span>REPORT</span><b>最终报告</b><p>汇总整场对话各轮证据，生成五维、可复练的学习报告。</p></article></div></section><section class="arch-step arch-secondary"><div class="dimension-grid"><div class="dimension-intro"><b>FiveDimensionScore</b><p>结果只在完整对话结束后面向用户呈现。</p></div><div class="dimension"><span>01</span><b>发音</b></div><div class="dimension"><span>02</span><b>流利度</b></div><div class="dimension"><span>03</span><b>语法</b></div><div class="dimension"><span>04</span><b>词汇</b></div><div class="dimension"><span>05</span><b>沟通</b></div></div></section><span class="page-num">08</span></div></section>
+    <!-- === SLIDE 9: AI PROVIDER === -->
+    <section class="slide architecture-slide" aria-label="第 9 页｜AiProviderService"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal" data-editable>SYSTEM ARCHITECTURE / 06</p><h1 class="slide-title reveal delay-1" data-editable>AiProviderService 统一接入外部语音与<br>大模型能力</h1><section class="arch-step arch-primary"><p class="arch-kicker">EXTERNAL AI CAPABILITIES</p><div class="service-grid arch-detail"><article class="service-card"><span class="service-index">REALTIME</span><b>exchangeRealtimeSdp()</b><p>完成 Realtime 模型 Offer / Answer SDP 交换。</p></article><article class="service-card"><span class="service-index">SPEECH</span><b>generateSpeechAudio()</b><p>将学习材料文本转换为可播放音频。</p></article><article class="service-card"><span class="service-index">LLM</span><b>executeLlmTask()</b><p>完成场景生成、文本评分等任务。</p></article><article class="service-card"><span class="service-index">VOICE</span><b>convert / evaluate</b><p>完成音频转写与发音、音素表现评估。</p></article></div></section><section class="arch-step arch-secondary"><div class="context-bar"><div class="context-key"><span>UNIFIED CONTEXT</span><b>AiCallContext { userId, businessId }</b></div><div class="context-list"><span>密钥只保存在服务端</span><span>业务 Service 不依赖供应商协议</span><span>LlmService / TtsService / PronunciationService</span><span>RealtimeConnectionService</span></div></div></section><span class="page-num">09</span></div></section>
+    <!-- === SLIDE 10: CUSTOM SCENE END-TO-END PSEUDOCODE === -->
+    <section class="slide code-flow-slide" aria-label="第 10 页｜自定义场景伪代码"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow">SYSTEM ARCHITECTURE / 07</p><h1 class="slide-title flow-page-title">“咖啡店点单”如何经过五个 Service 完成闭环</h1><div class="flow-script" id="customSceneFlow"></div><span class="page-num">10</span></div></section>
+    <!-- === SLIDE 11: MS2 / MS3 SUMMARY === -->
+    <section class="slide" aria-label="第 11 页｜MS2 总结与 MS3 计划"><div class="slide-inner"><div class="brand"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /><img src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /></div><p class="eyebrow reveal">MILESTONE SUMMARY</p><h1 class="slide-title summary-title reveal delay-1">核心闭环已经成立，MS3 开始解决功能闭合与质量问题</h1><div class="summary-grid reveal delay-2"><section class="summary-card"><header><span>MS2</span><h2>MS2 已完成</h2></header><ul class="summary-list"><li>完整 MVP 用户路径</li><li>五个核心 Service 的职责与接口</li><li>Realtime 会话、场景流程和评价链路</li><li>数据模型、测试方法和主要技术风险</li><li>GitHub Proposal 与架构记录</li></ul></section><section class="summary-card"><header><span>MS3</span><h2>MS3 优先级</h2></header><ol class="summary-list summary-priority"><li>完成所有 Mock 与真实服务的最终联调</li><li>接入 PostgreSQL、Redis 和正式认证</li><li>补齐异常、重连、权限、配额和中断流程</li><li>用测试数据解决延迟、VAD、长对话和 Prompt 稳定性</li><li>完成关键模块测试与 PR Review</li></ol></section></div><blockquote class="summary-closing reveal delay-3">让用户不是“和 AI 聊过”，而是真的多说了几分钟英语。</blockquote><div class="final-mark" aria-label="UniSpeaking"><img class="final-wordmark" src="../../public/brand/unispeaking-wordmark.png" alt="UniSpeaking" /><span class="final-logo-icon"><img src="../../public/brand/unispeaking-mark-user.jpg" alt="" /></span></div><span class="page-num">11</span></div></section>
+  </main></div>
+  <div class="edit-hotzone" aria-label="启用编辑模式"></div><button class="edit-toggle" id="editToggle" title="编辑模式 (E)">✎</button><aside class="speaker-notes" id="notes" aria-live="polite"></aside><nav class="deck-controls" aria-label="翻页控制"><button id="prev" aria-label="上一页">←</button><span class="deck-count" id="count">1 / 3</span><button id="next" aria-label="下一页">→</button><button id="notesButton" aria-label="显示演讲稿">N</button></nav>
+  <script>
+    /* === SLIDE CONTROLLER: fixed-stage scaling, keyboard, touch and wheel === */
+    class SlidePresentation {
+      constructor(){ this.slides=[...document.querySelectorAll('.slide:not(.architecture-source-page)')]; this.stage=document.getElementById('deckStage'); this.current=0; this.dragStart=null; this.scaleStage=this.scaleStage.bind(this); this.scaleStage(); addEventListener('resize',this.scaleStage); this.bind(); this.show(0); }
+      scaleStage(){ const factor=Math.min(innerWidth/1920,innerHeight/1080); const x=(innerWidth-1920*factor)/2; const y=(innerHeight-1080*factor)/2; this.stage.style.height='1080px'; this.stage.style.transform=`translate(${x}px,${y}px) scale(${factor})`; }
+      sequenceItems(index=this.current){ return [...this.slides[index].querySelectorAll('.sequence-item')].sort((a,b)=>(Number(a.dataset.gestureStage)||0)-(Number(b.dataset.gestureStage)||0)); }
+      updateFocus(){ const slide=this.slides[this.current], items=this.sequenceItems(), revealed=items.filter(item=>item.classList.contains('revealed')); items.forEach(item=>item.classList.remove('focused','compact')); slide.classList.remove('focus-mode','focus-stage-1','focus-stage-2','focus-stage-3'); if(!revealed.length)return; slide.classList.add('focus-mode',`focus-stage-${revealed.length}`); revealed.at(-1).classList.add('focused'); revealed.slice(0,-1).forEach(item=>item.classList.add('compact')); }
+      advance(){ const next=this.sequenceItems().find(item=>!item.classList.contains('revealed')); if(!next)return false; next.classList.add('revealed'); next.closest('.acceptance-checks')?.classList.add('has-revealed'); this.updateFocus(); return true; }
+      recede(){ const revealed=this.sequenceItems().filter(item=>item.classList.contains('revealed')); if(!revealed.length)return false; const last=revealed.at(-1), checks=last.closest('.acceptance-checks'); last.classList.remove('revealed'); if(checks&&!checks.querySelector('.revealed'))checks.classList.remove('has-revealed'); this.updateFocus(); return true; }
+      show(index,direction='forward'){ const previous=this.current; const next=(index+this.slides.length)%this.slides.length; if(previous===next){ this.slides[next].classList.add('active','visible'); this.scaleStage(); this.updateFocus(); document.getElementById('count').textContent=`${next+1} / ${this.slides.length}`; renderNotes(next); return; } const outgoing=this.slides[previous], incoming=this.slides[next]; clearTimeout(this.transitionTimer); this.current=next; incoming.scrollTop=0; incoming.classList.remove('page-leave-forward','page-leave-backward'); incoming.classList.add('active','visible',direction==='forward'?'page-enter-forward':'page-enter-backward'); outgoing.classList.remove('page-enter-forward','page-enter-backward'); outgoing.classList.add(direction==='forward'?'page-leave-forward':'page-leave-backward'); this.scaleStage(); this.updateFocus(); document.getElementById('count').textContent=`${next+1} / ${this.slides.length}`; renderNotes(next); this.transitionTimer=setTimeout(()=>{ outgoing.classList.remove('active','visible','page-leave-forward','page-leave-backward'); incoming.classList.remove('page-enter-forward','page-enter-backward'); },800); }
+      next(){ if(this.advance())return; if(this.current<this.slides.length-1)this.show(this.current+1,'forward'); } prev(){ if(this.recede())return; if(this.current>0)this.show(this.current-1,'backward'); }
+      bind(){
+        const isControl = target => target.closest('.deck-controls,.edit-toggle,.edit-hotzone') || target.isContentEditable;
+        document.getElementById('next').onclick=()=>this.next(); document.getElementById('prev').onclick=()=>this.prev();
+        document.addEventListener('keydown',e=>{ if(e.target.isContentEditable) return; if(['ArrowRight','PageDown',' '].includes(e.key)){e.preventDefault();this.next()} if(['ArrowLeft','PageUp'].includes(e.key)){e.preventDefault();this.prev()} if(e.key.toLowerCase()==='n')document.getElementById('notes').classList.toggle('open'); });
+        document.addEventListener('wheel',e=>{ if(e.target.closest('.architecture-hub.hub-selected,.code-flow-slide')) return; e.preventDefault(); },{passive:false});
+      }
+    }
+    /* === SPEAKER NOTES === */
+    const noteData=[['第 1 页｜演讲稿','大家好，我们是 UniSpeaking 团队。<br><br>UniSpeaking 想解决的不是“AI 能不能说英语”，而是英语学习者能不能随时找到一个没有压力、愿意等他说完、并且知道怎么引导他继续表达的练习对象。<br><br>在 Milestone 2，我们完成了一条可演示的 MVP 闭环，并围绕这条闭环细化了系统架构。'],['第 2 页｜演讲稿','英语口语学习的核心矛盾，不是缺少学习工具，而是用户很难稳定、持续、低压力地开口。<br><br>UniSpeaking 用四条明确规则控制对话：短回复、单一相关问题、按表现调整难度，以及将自由表达与结构化反馈拆分到不同训练阶段。'],['第 3 页｜演讲稿','这次我们不通过展示很多独立页面来证明进展，而是验证一条完整用户路径。<br><br>核心步骤需要连续完成，用户价值需要能够感知，练习内容、对话和结果也需要形成后续复练的基础。']];
+    function renderNotes(index){const [title,body]=noteData[index]||[`第 ${index+1} 页｜架构讲稿`, '架构页演讲稿请参考《Milestone2路演方案与逐页讲稿-20分钟版》。'];document.getElementById('notes').innerHTML=`<h2>${title}</h2><p>${body}</p>`;}
+    document.getElementById('notesButton').onclick=()=>document.getElementById('notes').classList.toggle('open');
+    /* === INLINE EDITING: press E, edit text, automatic local save === */
+    const editor={active:false,key:'unispeaking-m2-html-edits',toggle(){this.active=!this.active;document.body.classList.toggle('is-editing',this.active);document.getElementById('editToggle').classList.toggle('active',this.active);document.querySelectorAll('[data-editable]').forEach(el=>el.contentEditable=this.active?'true':'false');if(!this.active)this.save()},save(){const data=[...document.querySelectorAll('[data-editable]')].map(el=>el.innerHTML);localStorage.setItem(this.key,JSON.stringify(data))},restore(){try{const data=JSON.parse(localStorage.getItem(this.key)||'[]');document.querySelectorAll('[data-editable]').forEach((el,i)=>{if(data[i])el.innerHTML=data[i]})}catch{}}};editor.restore();document.getElementById('editToggle').onclick=()=>editor.toggle();document.addEventListener('keydown',e=>{if(e.key.toLowerCase()==='e'&&!e.target.isContentEditable)editor.toggle()});document.querySelectorAll('[data-editable]').forEach(el=>el.addEventListener('input',()=>editor.save()));const hot=document.querySelector('.edit-hotzone'),toggle=document.getElementById('editToggle');let hideTimer;hot.onmouseenter=()=>{clearTimeout(hideTimer);toggle.classList.add('show')};hot.onmouseleave=()=>hideTimer=setTimeout(()=>{if(!editor.active)toggle.classList.remove('show')},400);toggle.onmouseenter=()=>clearTimeout(hideTimer);toggle.onmouseleave=()=>hideTimer=setTimeout(()=>{if(!editor.active)toggle.classList.remove('show')},400);
+    /* === STAGED CONTENT: keep dense slides readable during a presentation === */
+    const addSequence = (elements, stages=[]) => elements.forEach((element, index) => {
+      element.classList.add('sequence-item');
+      if(stages[index])element.dataset.gestureStage=String(stages[index]);
+    });
+    const pageTwo = document.querySelectorAll('.slide')[1];
+    addSequence([...pageTwo.querySelectorAll('.text-box, .learning-logic')], [1, 2, 3]);
+    const pageThree = document.querySelectorAll('.slide')[2];
+    const proof = pageThree.querySelector('.model-proof');
+    proof.classList.remove('reveal', 'delay-2');
+    proof.classList.remove('sequence-item','revealed');
+    const journey = pageThree.querySelector('.journey');
+    journey.classList.remove('reveal', 'delay-2');
+    const checks = pageThree.querySelector('.acceptance-checks');
+    checks.classList.remove('reveal', 'delay-3');
+    journey.querySelectorAll('.journey-step').forEach(item=>item.classList.remove('sequence-item','revealed'));
+    checks.querySelectorAll('.check').forEach(item=>item.classList.remove('sequence-item','revealed'));
+    addSequence([journey, checks], [1, 2]);
+    /* === PAGES 5–9: real implementation excerpts, not abstract diagrams === */
+    const sourcePanel = ({file, title, summary, code}) => `<div class="source-card"><div class="source-meta"><p class="source-file">${file}</p><h3>${title}</h3><p>${summary}</p></div><pre class="source-code"><code>${code}</code></pre></div>`;
+    const sourceSlides = {
+      '第 5 页｜SceneService': [
+        sourcePanel({file:'service/scene/SceneService.java<br>impl/SceneServiceImpl.java', title:'一个入口，生成完整训练包', summary:'场景类型、用户画像和自然语言输入在此汇合。', code:`<span class="code-dim">@Override</span>\n<span class="code-key">public</span> SceneGenerationResponse generateScene(\n    SceneGenerationRequest request) {\n  String userId = authService.requireUserId(request.userId());\n  SceneType sceneType = request.sceneType() == null\n      ? SceneType.FREE_CHAT : request.sceneType();\n  SceneConfig config = sceneRepository.findByType(sceneType)\n      .orElseThrow(() -&gt; new SceneNotFoundException(...));\n  UserProfile profile = profileService.getProfile(userId);\n  <span class="code-key">return</span> new SceneGenerationResponse(...);\n}`}),
+        sourcePanel({file:'service/scene/impl/SceneServiceImpl.java', title:'按场景分流 Prompt', summary:'自由对话与自定义场景使用不同 Prompt Builder，输出仍统一为 systemPrompt。', code:`<span class="code-key">private</span> String buildCompletePrompt(...) {\n  <span class="code-key">if</span> (sceneType == SceneType.FREE_CHAT) {\n    SessionPrompt prompt = freeChatPromptService.build(\n        new FreeChatPromptContext(profile, config, input, preference));\n    <span class="code-key">return</span> prompt.systemPrompt();\n  }\n  SessionPrompt prompt = customScenePromptService.build(\n      new CustomScenePromptContext(profile, config, sceneType, input,\n          preference, wordList, phraseList, sentenceList));\n  <span class="code-key">return</span> prompt.systemPrompt();\n}`})
+      ],
+      '第 6 页｜SceneFlowService': [
+        sourcePanel({file:'service/scene/SceneFlowService.java', title:'流程状态是明确接口', summary:'创建、推进、查询和完成四个动作，不把状态机散落在前端。', code:`<span class="code-key">public interface</span> SceneFlowService {\n  SceneFlowResponse createFlow(CreateSceneFlowRequest request);\n  SceneFlowResponse advanceStage(AdvanceSceneStageRequest request);\n  SceneFlowResponse getFlow(String flowId);\n  <span class="code-key">void</span> completeFlow(CompleteSceneFlowRequest request);\n}`}),
+        sourcePanel({file:'service/scene/impl/SceneFlowServiceImpl.java', title:'阶段迁移由后端收口', summary:'只有这一处定义合法的下一阶段；状态暂存 ConcurrentHashMap，便于 MVP 连续演示。', code:`<span class="code-key">private</span> SceneFlowStage next(SceneFlowStage current) {\n  <span class="code-key">return switch</span> (current) {\n    <span class="code-accent">case</span> WORD_LEARNING -&gt; PHRASE_LEARNING;\n    <span class="code-accent">case</span> PHRASE_LEARNING -&gt; SENTENCE_LEARNING;\n    <span class="code-accent">case</span> SENTENCE_LEARNING -&gt; DIALOGUE;\n    <span class="code-accent">case</span> DIALOGUE, COMPLETED -&gt; COMPLETED;\n  };\n}`})
+      ],
+      '第 7 页｜SessionService': [
+        sourcePanel({file:'service/session/SessionService.java', title:'启动时建立完整会话上下文', summary:'鉴权、配额、Prompt、实时连接都围绕 sessionId 被串成一个事务性入口。', code:`<span class="code-key">public final</span> StartSessionResponse startSession(...) {\n  String userId = authService.requireUserId(request.userId());\n  AbstractSceneSession session = createSession(generateSessionId(), userId);\n  session.setSceneId(request.sceneId());\n  SessionPrompt prompt = prepareScene(session, request);\n  session.markConnecting();\n  sessionStateStore.save(session);\n  usageQuotaService.reserve(userId, session.getId());\n  RealtimeConnectionResult connection = exchangeSdp(...);\n  session.waitForClient();\n}`}),
+        sourcePanel({file:'service/session/SessionService.java', title:'结束时结算并交给子类沉淀资产', summary:'自由聊天和场景训练共享生命周期，差异下沉到 handleSessionCompleted。', code:`<span class="code-key">public final</span> EndSessionResponse endSession(...) {\n  AbstractSceneSession session = get(request.sessionId());\n  <span class="code-key">if</span> (session.getStatus() != SessionStatus.COMPLETED) {\n    session.complete();\n    sessionStateStore.save(session);\n    usageQuotaService.settle(session.getId());\n    handleSessionCompleted(session);\n  }\n  <span class="code-key">return</span> new EndSessionResponse(session.getId(), ...);\n}`})
+      ],
+      '第 8 页｜EvaluationService': [
+        sourcePanel({file:'service/evaluation/EvaluationService.java', title:'评测层先定义三类证据', summary:'跟读、单轮、整段报告被隔离为三种 API，页面与调用方不依赖具体评分厂商。', code:`<span class="code-key">public interface</span> EvaluationService {\n  SentenceEvaluationResponse evaluateSentence(\n      SentenceEvaluationRequest request);\n  DialogueTurnEvaluationResponse evaluateDialogueTurn(\n      DialogueTurnEvaluationRequest request);\n  ConversationReportResponse generateConversationReport(\n      ConversationReportRequest request);\n}`}),
+        sourcePanel({file:'service/evaluation/impl/EvaluationServiceImpl.java', title:'当前实现如实标注：接口已通，评分适配待接入', summary:'MVP 已能保持调用链与结果模型稳定；下一步替换 0 分占位为 Provider 评分结果。', code:`<span class="code-dim">// current MVP placeholder implementation</span>\n<span class="code-key">public</span> ConversationReportResponse generateConversationReport(...) {\n  <span class="code-key">return</span> new ConversationReportResponse(\n      <span class="code-accent">"report_"</span> + UUID.randomUUID(),\n      request.localSessionId(),\n      <span class="code-accent">0</span>,\n      new FiveDimensionScore(<span class="code-accent">0, 0, 0, 0, 0</span>),\n      <span class="code-accent">""</span>);\n}\n<span class="code-dim">// provider scoring result plugs in here next</span>`})
+      ],
+      '第 9 页｜AiProviderService': [
+        sourcePanel({file:'provider/AiProviderRegistry.java', title:'能力与模型目录由注册表统一管理', summary:'实际类名是 AiProviderRegistry；业务层按能力调用，不直接绑定厂商 SDK。', code:`<span class="code-key">private static final</span> List&lt;AiModelDefinition&gt; MODEL_CATALOG = List.of(\n  new AiModelDefinition(QWEN_REALTIME_FLASH, QWEN, REALTIME, <span class="code-accent">true</span>),\n  new AiModelDefinition(QWEN_LLM_PLUS, QWEN, LLM, <span class="code-accent">true</span>),\n  new AiModelDefinition(DEEPSEEK_CHAT, DEEPSEEK, LLM, <span class="code-accent">false</span>),\n  new AiModelDefinition(IFLYTEK_PRONUNCIATION_SCORING,\n      IFLYTEK, SCORING, <span class="code-accent">true</span>),\n  new AiModelDefinition(ALIYUN_TTS, ALIYUN, TTS, <span class="code-accent">true</span>)\n);`}),
+        sourcePanel({file:'provider/AiProviderRegistry.java', title:'调用前先校验“模型—能力—Provider”', summary:'这一层把错误挡在外部调用之前，避免业务 Service 知道供应商协议或密钥细节。', code:`<span class="code-key">private</span> &lt;T <span class="code-key">extends</span> AiProvider&gt; T requiredProvider(\n    Map&lt;String, T&gt; providers, String modelId,\n    AiCapability expectedCapability) {\n  AiModelDefinition definition = getModel(modelId);\n  <span class="code-key">if</span> (definition.capability() != expectedCapability)\n    <span class="code-key">throw</span> new BusinessException(<span class="code-accent">"AI_MODEL_CAPABILITY_MISMATCH"</span>, ...);\n  T provider = providers.get(normalizeModelId(modelId));\n  <span class="code-key">if</span> (provider == null)\n    <span class="code-key">throw</span> new BusinessException(<span class="code-accent">"AI_PROVIDER_NOT_FOUND"</span>, ...);\n  <span class="code-key">return</span> provider;\n}`})
+      ]
+    };
+    Object.entries(sourceSlides).forEach(([label, panels]) => {
+      const slide = document.querySelector(`.architecture-slide[aria-label="${label}"]`);
+      if (!slide) return;
+      slide.querySelector('.arch-primary').innerHTML = `<p class="arch-kicker">SOURCE / PRIMARY IMPLEMENTATION</p>${panels[0]}`;
+      slide.querySelector('.arch-secondary').innerHTML = `<p class="arch-kicker">SOURCE / BOUNDARY OR NEXT STEP</p>${panels[1]}`;
+    });
+    /* The source services are one interactive architecture hub, not five linear slides. */
+    const architectureHub = document.querySelector('.architecture-slide[aria-label="第 4 页｜五个核心 Service 总图"]');
+    const hubServices = [
+      {
+        id:'scene', index:'01', name:'SceneService', description:'生成场景、训练材料与对话 Prompt。', headline:'SceneService｜把一句自然语言需求变成可训练的场景内容', boundary:'场景生成 / 内容编排',
+        left:`package com.unispeaking.SceneService;
+
+public interface SceneService {
+
+    /**
+     * 根据场景类型和用户输入生成场景内容。
+     */
+    SceneGenerationResponse generateScene(
+        SceneGenerationRequest request
+    );
+}
+
+enum SceneType {
+    FREE_CHAT,
+    CUSTOM_SCENE,
+    INTERVIEW_SCENE,
+    IELTS_SCENE
+}
+
+LearningContentItem {
+    String contentId;
+    String englishText;
+    String chineseText;
+    String phonetic;
+}`,
+        right:`SceneGenerationRequest {
+    String userId;
+    String userPreference;
+    SceneType sceneType;
+    String sceneInput;
+}
+
+SceneGenerationResponse {
+    String sceneId;
+    String sceneName;
+    SceneType sceneType;
+    List<LearningContentItem> wordList;
+    List<LearningContentItem> phraseList;
+    List<LearningContentItem> sentenceList;
+    String scenePrompt;
+}`,
+        responsibilities:[['输入','用户画像、场景类型、自然语言需求'],['输出','结构化场景和完整学习内容'],['内部细化','CustomSceneGenerationService、SceneContentService'],['不负责','学习阶段推进、实时会话、口语评分']]
+      },
+      {
+        id:'flow', index:'02', name:'SceneFlowService', description:'把“学—读—说”收口为后端状态机。', headline:'SceneFlowService｜“学—读—说”状态机与会话准入门', boundary:'学习状态 / 阶段准入',
+        left:`package com.unispeaking.SceneFlowService;
+
+public interface SceneFlowService {
+    // 为已经生成完成的场景创建流程。
+    SceneFlowResponse createFlow(
+        CreateSceneFlowRequest request
+    );
+
+    // 完成当前阶段并进入下一阶段。
+    SceneFlowResponse advanceStage(
+        AdvanceSceneStageRequest request
+    );
+
+    void completeFlow(
+        CompleteSceneFlowRequest request
+    );
+}
+
+enum SceneFlowStage {
+    WORD_LEARNING,
+    PHRASE_LEARNING,
+    SENTENCE_LEARNING,
+    DIALOGUE,
+    COMPLETED
+}`,
+        right:`CreateSceneFlowRequest {
+    String userId;
+    String sceneId;
+}
+
+SceneFlowResponse {
+    String flowId;
+    String sceneId;
+    SceneFlowStage currentStage;
+    Boolean completed;
+}
+
+AdvanceSceneStageRequest {
+    String userId;
+    String flowId;
+}
+
+CompleteSceneFlowRequest {
+    String userId;
+    String flowId;
+}`,
+        responsibilities:[['读取内容','从 SceneService 读取当前场景与学习材料'],['调用外部能力','学习材料通过 AiProviderService.generateSpeechAudio() 播放'],['控制准入','句子跟读通过 EvaluationService.evaluateSentence() 后进入 DIALOGUE'],['完成闭环','报告生成后调用 completeFlow() 标记完成']]
+      },
+      {
+        id:'session', index:'03', name:'SessionService', description:'统一管理实时对话的开始、过程和结束。', headline:'SessionService｜统一管理对话会话的完整生命周期', boundary:'会话上下文 / 生命周期',
+        left:`package com.unispeaking.SessionService;
+
+public interface SessionService {
+
+    /** 开始一次业务会话，生成 sessionId 并记录开始时间。 */
+    StartSessionResponse startSession(
+        StartSessionRequest request
+    );
+
+    /**
+     * 向当前会话中追加一条用户或 AI 的完整消息。
+     * 只保存最终完整文本，不保存流式 delta。
+     * 消息可以先追加到内存，再异步写入数据库。
+     */
+    void addMessage(
+        AddSessionMessageRequest request
+    );
+
+    /** 结束当前业务会话，记录结束时间。 */
+    EndSessionResponse endSession(
+        EndSessionRequest request
+    );
+}
+
+StartSessionRequest {
+    SceneType sceneType;
+    String prompt;
+}`,
+        right:`StartSessionResponse {
+    String sessionId;
+    String startTime;
+}
+
+EndSessionRequest {
+    String localSessionId;
+}
+
+EndSessionResponse {
+    String localSessionId;
+    String stopTime;
+}
+
+AppendSessionMessageRequest {
+    String localSessionId;
+    Message message;
+}
+
+Message {
+    Integer owner;    // 1：用户，0：模型
+    String content;   // 用户或模型的完整文本
+    byte[] audio;     // 可选音频，模型消息通常为空
+}`,
+        responsibilities:[['FreeChatSessionService','自由聊天 Prompt 与消息；结束后更新长期记忆'],['CustomSessionService','场景 Prompt 与任务上下文；结束后生成报告并完成流程'],['消息边界','保存最终完整消息，不保存流式 delta'],['不负责','Realtime SDP 属于 AiProviderService；单轮评分属于 EvaluationService']]
+      },
+      {
+        id:'evaluation', index:'04', name:'EvaluationService', description:'定义跟读、单轮和整段报告的评测契约。', headline:'EvaluationService｜将音频、字幕和上下文合成学习结果', boundary:'评测契约 / 学习报告',
+        left:`package com.unispeaking.EvaluationService;
+
+public interface EvaluationService {
+
+    /** 对学习阶段的句子跟读录音进行评分。页面可以直接展示该总分。 */
+    SentenceEvaluationResponse evaluateSentence(
+        SentenceEvaluationRequest request
+    );
+
+    /** 对场景对话中的单轮用户回答进行评分。该结果内部保存，不直接展示给用户。 */
+    DialogueTurnEvaluationResponse evaluateDialogueTurn(
+        DialogueTurnEvaluationRequest request
+    );
+
+    /** 根据整场对话的各轮评分生成最终五维报告。 */
+    ConversationReportResponse generateConversationReport(
+        ConversationReportRequest request
+    );
+}
+
+AudioInput {
+    byte[] audioData;
+    String audioFormat;
+}
+
+SentenceEvaluationRequest {
+    String userId;
+    String content;
+    AudioInput audio;
+}
+
+SentenceEvaluationResponse {
+    Integer totalScore;
+}`,
+        right:`DialogueTurnEvaluationRequest {
+    String userId;
+    String localSessionId;
+    String turnId;
+    AudioInput audio;
+    String userText;
+}
+
+DialogueTurnEvaluationResponse {
+    String userId;
+    String localSessionId;
+    String turnId;
+    Integer totalScore;
+    Integer fluency;
+    Integer pronunciation;
+    Integer rhythm;
+    Integer tone;
+    Integer grammar;
+    Integer vocabulary;
+    Integer relevance;
+}
+
+ConversationReportRequest {
+    String userId;
+    String localSessionId;
+}
+
+ConversationReportResponse {
+    String reportId;
+    String localSessionId;
+    Integer totalScore;
+    FiveDimensionScore dimensionScore;
+    String report;
+}
+
+FiveDimensionScore {
+    Integer pronunciation;
+    Integer fluency;
+    Integer grammar;
+    Integer vocabulary;
+    Integer communication;
+}`,
+        responsibilities:[['跟读评分','页面直接展示一个 totalScore'],['单轮评分','内部保存，不直接展示给用户'],['最终五维','发音、流利度、语法、词汇、沟通'],['内部细化','CustomSceneEvaluationService、EvaluationRecordService']]
+      },
+      {
+        id:'provider', index:'05', name:'AiProviderService', description:'统一接入语音与大模型能力。', headline:'AiProviderService｜统一接入外部语音与大模型能力', boundary:'供应商隔离 / 能力路由',
+        left:`package com.unispeaking.AiProviderService;
+
+public interface AiProviderService {
+
+    /** 完成 Realtime 模型的 Offer SDP / Answer SDP 交换。 */
+    RealtimeSdpExchangeResponse exchangeRealtimeSdp(
+        RealtimeSdpExchangeRequest request
+    );
+
+    /** 将文本转换为语音音频。 */
+    SpeechAudioResponse generateSpeechAudio(
+        SpeechAudioRequest request
+    );
+
+    /** 调用 LLM 执行场景生成、文本评分等任务。 */
+    LlmTaskResponse executeLlmTask(
+        LlmTaskRequest request
+    );
+
+    /** 将音频转换为文字。 */
+    AudioTranscriptionResponse convertAudioToText(
+        AudioTranscriptionRequest request
+    );
+
+    /** 评估用户跟读音频的发音和音素表现。 */
+    PronunciationEvaluationResponse evaluatePronunciation(
+        PronunciationEvaluationRequest request
+    );
+}
+
+AiCallContext {
+    String userId;
+    String businessId;
+    // Realtime：localSessionId；场景生成：sceneId
+    // 文本评分：evaluationId；音素评分：practiceId
+}`,
+        right:`AudioInput {
+    byte[] audioData;
+    String audioFormat;
+}
+
+RealtimeSdpExchangeRequest {
+    AiCallContext context;
+    String offerSdp;
+    String apiKey;
+}
+
+RealtimeSdpExchangeResponse {
+    String answerSdp;
+}
+
+SpeechAudioRequest {
+    AiCallContext context;
+    String text;
+    String apiKey;
+}
+
+SpeechAudioResponse {
+    AudioInput audio;
+}
+
+LlmTaskRequest {
+    AiCallContext context;
+    String prompt;
+    String apiKey;
+}
+
+LlmTaskResponse {
+    JsonNode data;
+}
+
+AudioTranscriptionRequest {
+    AiCallContext context;
+    AudioInput audio;
+    String apiKey;
+}
+
+AudioTranscriptionResponse {
+    String text;
+}
+
+PronunciationEvaluationRequest {
+    AiCallContext context;
+    AudioInput audio;
+    String referenceText;
+}
+
+PronunciationEvaluationResponse {
+    Integer totalScore;
+    Integer fluency;
+    Integer pronunciation;
+    Integer rhythm;
+    Integer tone;
+}`,
+        responsibilities:[['统一上下文','AiCallContext { userId, businessId }'],['密钥边界','apiKey 只保存在服务端'],['供应商隔离','业务 Service 不直接依赖 Qwen、豆包或其他协议'],['内部细化','LlmService、TtsService、PronunciationService、RealtimeConnectionService']]
+      }
+    ];
+    architectureHub.classList.add('architecture-hub');
+    document.querySelectorAll('.architecture-slide:not(.architecture-hub)').forEach(slide => slide.classList.add('architecture-source-page'));
+    const hubTitle = architectureHub.querySelector('.slide-title');
+    const initialHubTitle = hubTitle.innerHTML;
+    architectureHub.querySelector('.arch-primary').innerHTML = `<p class="arch-kicker">CLICK A SERVICE TO INSPECT REAL CODE</p><div class="hub-grid">${hubServices.map(service => `<button type="button" class="hub-card" data-service="${service.id}"><span class="hub-index">${service.index} / SERVICE</span><b>${service.name}</b><p>${service.description}</p></button>`).join('')}</div>`;
+    architectureHub.querySelector('.arch-secondary').innerHTML = '<div class="hub-detail"></div>';
+    const hubDetail = architectureHub.querySelector('.hub-detail');
+    const highlightCode = source => source
+      .replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+      .replace(/(\/\*[\s\S]*?\*\/|\/\/[^\n]*)/g, '<span class="code-comment">$1</span>')
+      .replace(/\b(package|public|interface|enum|void|return)\b/g, '<span class="code-key">$1</span>')
+      .replace(/\b(String|Integer|Boolean|List|JsonNode|AudioInput|SceneType|SceneFlowStage|LearningContentItem|AiCallContext|Message|[A-Z][A-Za-z0-9]*(?:Request|Response|Service|Item|Score|Context|Input|Stage|Type|Node))\b/g, '<span class="code-type">$1</span>');
+    const customScenePseudocode = String.raw`【场景生成】
+SceneService.generateScene(
+    userId = "user_1001",
+    userPreference = "英语基础一般，喜欢慢速对话",
+    sceneType = CUSTOM_SCENE,
+    sceneInput = "咖啡店点单"
+)
+    └── AiProviderService.executeLlmTask(
+            context.userId = "user_1001",
+            context.businessId = "scene_2001",
+            prompt = "生成咖啡店点单的单词、词组、句子和对话Prompt"
+        )
+        → LlmTaskResponse {
+            data = { wordList, phraseList, sentenceList, scenePrompt }
+        }
+
+→ SceneGenerationResponse {
+    sceneId = "scene_2001",
+    sceneName = "咖啡店点单",
+    wordList,
+    phraseList,
+    sentenceList,
+    scenePrompt = "你是一名咖啡店店员……"
+}
+
+【创建场景流程】
+SceneFlowService.createFlow(
+    userId = "user_1001",
+    sceneId = "scene_2001"
+)
+→ SceneFlowResponse {
+    flowId = "flow_3001",
+    currentStage = WORD_LEARNING,
+    completed = false
+}
+
+【单词学习】
+AiProviderService.generateSpeechAudio(
+    context.userId = "user_1001",
+    context.businessId = "scene_2001",
+    text = "coffee"
+)
+→ SpeechAudioResponse {
+    audioData = "单词音频",
+    audioFormat = "mp3"
+}
+
+SceneFlowService.advanceStage(
+    userId = "user_1001",
+    flowId = "flow_3001"
+)
+→ SceneFlowResponse {
+    currentStage = PHRASE_LEARNING
+}
+
+【词组学习】
+AiProviderService.generateSpeechAudio(
+    context.userId = "user_1001",
+    context.businessId = "scene_2001",
+    text = "a cup of coffee"
+)
+→ SpeechAudioResponse {
+    audioData = "词组音频",
+    audioFormat = "mp3"
+}
+
+SceneFlowService.advanceStage(
+    userId = "user_1001",
+    flowId = "flow_3001"
+)
+→ SceneFlowResponse {
+    currentStage = SENTENCE_LEARNING
+}
+
+【句子学习】
+AiProviderService.generateSpeechAudio(
+    context.userId = "user_1001",
+    context.businessId = "scene_2001",
+    text = "Could I have a cup of coffee?"
+)
+→ SpeechAudioResponse {
+    audioData = "标准句子音频",
+    audioFormat = "mp3"
+}
+
+EvaluationService.evaluateSentence(
+    userId = "user_1001",
+    content = "Could I have a cup of coffee?",
+    audio.audioData = "用户跟读音频",
+    audio.audioFormat = "webm"
+)
+    └── AiProviderService.evaluatePronunciation(
+            context.businessId = "practice_4001",
+            audio.audioData = "用户跟读音频",
+            referenceText = "Could I have a cup of coffee?"
+        )
+        → PronunciationEvaluationResponse {
+            totalScore = 86
+        }
+
+→ SentenceEvaluationResponse {
+    contentId = "sentence_001",
+    totalScore = 86
+}
+
+SceneFlowService.advanceStage(
+    userId = "user_1001",
+    flowId = "flow_3001"
+)
+→ SceneFlowResponse {
+    currentStage = DIALOGUE
+}
+
+【开始场景会话】
+SessionService.startSession(
+    sceneType = CUSTOM_SCENE,
+    prompt = "你是一名咖啡店店员……"
+)
+→ StartSessionResponse {
+    sessionId = "session_5001",
+    startTime = "2026-07-24 10:30:00"
+}
+
+AiProviderService.exchangeRealtimeSdp(
+    context.userId = "user_1001",
+    context.businessId = "session_5001",
+    offerSdp = "客户端Offer SDP",
+    apiKey = "Realtime临时API Key"
+)
+→ RealtimeSdpExchangeResponse {
+    answerSdp = "模型Answer SDP",
+}
+
+【保存对话内容】
+SessionService.addMessage(
+    localSessionId = "session_5001",
+    message = {
+        owner = 0,
+        content = "What would you like to order?",
+        audio = null
+    }
+)
+→ void
+
+SessionService.addMessage(
+    localSessionId = "session_5001",
+    message = {
+        owner = 1,
+        content = "I would like a cup of coffee.",
+        audio = "用户本轮音频"
+    }
+)
+→ void
+
+【单轮对话评分】
+EvaluationService.evaluateDialogueTurn(
+    userId = "user_1001",
+    localSessionId = "session_5001",
+    turnId = "turn_001",
+    audio.audioData = "用户本轮音频",
+    userText = "I would like a cup of coffee."
+)
+    ├── AiProviderService.evaluatePronunciation(
+            context.businessId = "evaluation_7001",
+            audio.audioData = "用户本轮音频",
+            referenceText = "I would like a cup of coffee."
+        )
+    └── AiProviderService.executeLlmTask(
+            context.businessId = "evaluation_7001",
+            prompt = "根据AI问题和用户回答评估语法、词汇和相关性"
+        )
+
+→ DialogueTurnEvaluationResponse {
+    userId = "user_1001",
+    localSessionId = "session_5001",
+    turnId = "turn_001",
+    totalScore = 84,
+    fluency = 83,
+    pronunciation = 86,
+    grammar = 88,
+    vocabulary = 82,
+    relevance = 90
+}
+
+【结束会话】
+SessionService.endSession(
+    localSessionId = "session_5001"
+)
+→ EndSessionResponse {
+    localSessionId = "session_5001",
+    stopTime = "2026-07-24 10:42:00"
+}
+
+【生成最终报告】
+EvaluationService.generateConversationReport(
+    userId = "user_1001",
+    localSessionId = "session_5001"
+)
+    ├── 获取每轮评分 {
+            turn_001 = { totalScore = 84, fluency = 83, pronunciation = 86,
+                         grammar = 88, vocabulary = 82, relevance = 90 },
+            turn_002 = { totalScore = 80, fluency = 78, pronunciation = 82,
+                         grammar = 84, vocabulary = 76, relevance = 85 }
+        }
+
+    └── AiProviderService.executeLlmTask(
+            context.userId = "user_1001",
+            context.businessId = "session_5001",
+            prompt = "根据以上每轮对话评分生成总分、五维评分和改进报告"
+        )
+        → LlmTaskResponse {
+            data = {
+                totalScore = 82,
+                pronunciation = 84,
+                fluency = 81,
+                grammar = 86,
+                vocabulary = 79,
+                communication = 87,
+                report = "用户能够完成咖啡店点单交流……"
+            }
+        }
+
+→ ConversationReportResponse {
+    reportId = "report_8001",
+    localSessionId = "session_5001",
+    totalScore = 82,
+    dimensionScore = {
+        pronunciation = 84,
+        fluency = 81,
+        grammar = 86,
+        vocabulary = 79,
+        communication = 87
+    },
+    report = "用户能够完成咖啡店点单交流……"
+}
+
+【完成流程】
+SceneFlowService.completeFlow(
+    userId = "user_1001",
+    flowId = "flow_3001"
+)
+→ void`;
+    const customSceneFlow = document.getElementById('customSceneFlow');
+    customSceneFlow.innerHTML = customScenePseudocode.trim().split(/\n(?=【)/).map(section => {
+      const [heading, ...body] = section.split('\n');
+      return `<article class="flow-code-block"><h2 class="flow-code-caption">${heading.slice(1, -1)}</h2><pre class="flow-code"><code>${highlightCode(body.join('\n'))}</code></pre></article>`;
+    }).join('') + '<footer class="flow-summary">Scene 生成内容 <span>→</span> Flow 推进流程 <span>→</span> Session 管理对话 <span>→</span> Evaluation 生成结果 <span>→</span> AiProvider 提供底层能力</footer>';
+    /* === FINAL SLIDE: progressive conclusion === */
+    const summarySlide = document.querySelector('.slide[aria-label="第 11 页｜MS2 总结与 MS3 计划"]');
+    const summaryGrid = summarySlide.querySelector('.summary-grid');
+    const summaryClosing = summarySlide.querySelector('.summary-closing');
+    summaryGrid.classList.remove('reveal', 'delay-2');
+    summaryClosing.classList.remove('reveal', 'delay-3');
+    addSequence([...summaryGrid.querySelectorAll('.summary-card'), summaryClosing], [1, 2, 3]);
+    const fullServiceLayout = service => `<div class="hub-detail-head"><p>FULL SERVICE CONTRACT / ${service.index}</p><b>滚动整页阅读完整契约</b></div><div class="hub-code-layout"><div class="hub-code-panes"><pre class="full-code"><code>${highlightCode(service.left)}</code></pre><pre class="full-code"><code>${highlightCode(service.right)}</code></pre></div><aside class="service-boundary">${service.responsibilities.map(([label, value]) => `<div><span>${label}</span><b>${value}</b></div>`).join('')}</aside></div>`;
+    function showHubService(service) {
+      architectureHub.classList.add('hub-selected');
+      const detailHeight = ({ scene:700, flow:720, session:830, evaluation:1120, provider:1320 })[service.id];
+      const pageHeight = detailHeight + 510;
+      architectureHub.style.setProperty('--hub-detail-height', `${detailHeight}px`);
+      architectureHub.style.setProperty('--hub-page-height', `${pageHeight}px`);
+      architectureHub.dataset.stageHeight = '1080';
+      hubTitle.innerHTML = `${service.headline}<br><span style="font-size:28px;letter-spacing:-1px;font-weight:650;color:#777772">${service.boundary}</span>`;
+      hubTitle.classList.remove('hub-title-enter');
+      void hubTitle.offsetWidth;
+      hubTitle.classList.add('hub-title-enter');
+      architectureHub.querySelectorAll('.hub-card').forEach(card => card.classList.toggle('active', card.dataset.service === service.id));
+      hubDetail.innerHTML = fullServiceLayout(service);
+      architectureHub.scrollTop = 0;
+    }
+    architectureHub.querySelectorAll('.hub-card').forEach(card => card.addEventListener('click', () => showHubService(hubServices.find(service => service.id === card.dataset.service))));
+    document.querySelectorAll('.architecture-slide:not(.architecture-hub)').forEach(slide=>addSequence([...slide.querySelectorAll('.arch-step')], [1, 2]));
+    const presentation = new SlidePresentation();
+  </script>
+</body>
+</html>
