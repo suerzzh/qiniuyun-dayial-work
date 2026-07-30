@@ -1,0 +1,209 @@
+const API_BASE = (import.meta.env?.VITE_BACKEND_URL || "").replace(/\/$/, "");
+const ACCESS_TOKEN_KEY = "unispeaking.accessToken";
+
+async function unwrap(response) {
+  const contentType = response.headers.get("content-type") || "";
+  const body = contentType.includes("application/json") ? await response.json() : await response.text();
+  if (!response.ok || (body && typeof body === "object" && body.success === false)) {
+    const message = body?.message || body?.code || `请求失败（${response.status}）`;
+    throw new Error(message);
+  }
+  return body && typeof body === "object" && "success" in body ? body.data : body;
+}
+
+async function request(path, options = {}) {
+  const token = getAccessToken();
+  const formDataBody = typeof FormData !== "undefined" && options.body instanceof FormData;
+  const response = await fetch(`${API_BASE}${path}`, {
+    ...options,
+    headers: {
+      ...(options.body && !formDataBody ? { "Content-Type": "application/json" } : {}),
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+      ...options.headers,
+    },
+  });
+  if (response.status === 401 && !path.startsWith("/api/auth/")) {
+    clearAuthSession();
+  }
+  return unwrap(response);
+}
+
+export function getAccessToken() {
+  return window.localStorage.getItem(ACCESS_TOKEN_KEY);
+}
+
+export function hasAuthSession() {
+  return Boolean(getAccessToken());
+}
+
+export function saveAuthSession(authResponse) {
+  window.localStorage.setItem(ACCESS_TOKEN_KEY, authResponse.accessToken);
+}
+
+export function clearAuthSession() {
+  window.localStorage.removeItem(ACCESS_TOKEN_KEY);
+}
+
+export async function register({ username, password, nickname = null }) {
+  const auth = await request("/api/auth/register", {
+    method: "POST",
+    body: JSON.stringify({ username, password, nickname }),
+  });
+  saveAuthSession(auth);
+  return auth;
+}
+
+export async function login({ username, password }) {
+  const auth = await request("/api/auth/login", {
+    method: "POST",
+    body: JSON.stringify({ username, password }),
+  });
+  saveAuthSession(auth);
+  return auth;
+}
+
+export function getCurrentUser() {
+  return request("/api/auth/me");
+}
+
+export function getUserPreference() {
+  return request("/api/user-preferences");
+}
+
+export function updateUserPreference(preference) {
+	return request("/api/user-preferences", {
+		method: "PUT",
+		body: JSON.stringify(preference),
+	});
+}
+
+export async function generateCustomScene(sceneInput, userPreference = null) {
+  const scene = await request("/api/custom-scenes/generate", {
+    method: "POST",
+    body: JSON.stringify({ sceneInput, userPreference }),
+  });
+  if (!scene || typeof scene !== "object" || !scene.sceneId) {
+    throw new Error("场景生成响应缺少 sceneId");
+  }
+  const normalized = {
+    ...scene,
+    wordList: Array.isArray(scene.wordList) ? scene.wordList : [],
+    phraseList: Array.isArray(scene.phraseList) ? scene.phraseList : [],
+    sentenceList: Array.isArray(scene.sentenceList) ? scene.sentenceList : [],
+  };
+  if (!normalized.wordList.length || !normalized.phraseList.length || !normalized.sentenceList.length) {
+    throw new Error("场景生成内容不完整，请重新生成");
+  }
+  return normalized;
+}
+
+export function createCustomSceneFlow(sceneId) {
+  return request("/api/custom-scenes/flows", {
+    method: "POST",
+    body: JSON.stringify({ sceneId }),
+  });
+}
+
+export function advanceCustomSceneFlow(sceneId, stage) {
+  return request("/api/custom-scenes/flows/advance", {
+    method: "POST",
+    body: JSON.stringify({ sceneId, stage }),
+  });
+}
+
+export function evaluateCustomDialogueTurn(
+  sceneId,
+  sessionId,
+  turnNo,
+  transcript,
+  wavAudio,
+) {
+  const formData = new FormData();
+  formData.append("transcript", transcript);
+  if (wavAudio) formData.append("audio", wavAudio, `turn-${turnNo}.wav`);
+  return request(
+    `/api/custom-scenes/${encodeURIComponent(sceneId)}/sessions/${encodeURIComponent(sessionId)}/turns/${turnNo}/evaluation`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+}
+
+export function advanceCustomDialogueState(
+  sceneId,
+  sessionId,
+  turnNo,
+  transcript,
+) {
+  return request(
+    `/api/custom-scenes/${encodeURIComponent(sceneId)}/sessions/${encodeURIComponent(sessionId)}/turns/${turnNo}/state`,
+    {
+      method: "POST",
+      body: JSON.stringify({ transcript }),
+    },
+  );
+}
+
+export function completeCustomDialogue(sceneId, sessionId, stopTime) {
+  return request(
+    `/api/custom-scenes/${encodeURIComponent(sceneId)}/sessions/${encodeURIComponent(sessionId)}/complete`,
+    {
+      method: "POST",
+      body: JSON.stringify({ stopTime }),
+    },
+  );
+}
+
+export function getCustomDialogueState(sceneId, sessionId) {
+  return request(
+    `/api/custom-scenes/${encodeURIComponent(sceneId)}/sessions/${encodeURIComponent(sessionId)}/state`,
+  );
+}
+
+export async function synthesizeSpeech(sceneId, text, model = null) {
+	const token = getAccessToken();
+	const response = await fetch(
+		`${API_BASE}/api/custom-scenes/${encodeURIComponent(sceneId)}/speech`,
+		{
+		method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      ...(token ? { Authorization: `Bearer ${token}` } : {}),
+    },
+			body: JSON.stringify({ text, model }),
+		},
+	);
+  if (!response.ok) {
+    const contentType = response.headers.get("content-type") || "";
+    const body = contentType.includes("application/json") ? await response.json() : null;
+    throw new Error(body?.message || body?.code || `语音生成失败（${response.status}）`);
+  }
+  return response.blob();
+}
+
+export function evaluateSentenceReading(sceneId, sentenceId, wavAudio) {
+  const formData = new FormData();
+  formData.append("audio", wavAudio, `${sentenceId}.wav`);
+  return request(
+    `/api/custom-scenes/${encodeURIComponent(sceneId)}/sentences/${encodeURIComponent(sentenceId)}/evaluation`,
+    {
+      method: "POST",
+      body: formData,
+    },
+  );
+}
+
+export function translateSceneText(sceneId, text) {
+	return request(`/api/custom-scenes/${encodeURIComponent(sceneId)}/translations`, {
+		method: "POST",
+		body: JSON.stringify({ text }),
+	});
+}
+
+export function translateSessionText(sessionId, text) {
+	return request(`/api/scene-sessions/${encodeURIComponent(sessionId)}/translations`, {
+		method: "POST",
+		body: JSON.stringify({ text }),
+	});
+}
